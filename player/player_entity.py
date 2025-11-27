@@ -3,6 +3,7 @@ from player_data import PlayerData
 from player_renderer import PlayerRenderer
 from player_state_machine import PlayerStateMachine as StateMachine
 from player_physics import PlayerPhysics
+from ..events_commands.commands import MovementCommand
 
 class PlayerEntity:
     def __init__(self):
@@ -13,6 +14,10 @@ class PlayerEntity:
         self.renderer = PlayerRenderer()
         self.state_machine = StateMachine()
         self.player_physics = PlayerPhysics()
+        self.tile_context = None
+        # later will grab surrounding tiles and pass for collision detection to physics
+        # it will just grab the most relevant tiles based on position
+        # and store them until requested again
 
 
     def update(self):
@@ -50,7 +55,9 @@ class PlayerEntity:
         pass
 
     def delegate_command(self, command):
-        pass
+        match command:
+            case MovementCommand():
+                return self.player_physics.handle_command(command, self.data)
 
     def draw(self):
-        pass
+        self.renderer.render(self.data)

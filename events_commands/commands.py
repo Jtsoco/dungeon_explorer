@@ -7,16 +7,22 @@ class Command():
     def __str__(self):
         return f"Command: {self.name}"
 
-class MoveCommand(Command):
+class MovementCommand(Command):
+    # commands for movement system
+    pass
 
-    def __init__(self, direction: DS):
+
+class MoveCommand(MovementCommand):
+
+    def __init__(self, direction: DS = None):
         super().__init__(name="MoveCommand")
         self.direction = direction
 
     def __str__(self):
         return f"MoveCommand: {self.direction}"
 
-class JumpCommand(Command):
+
+class JumpCommand(MovementCommand):
 
     def __init__(self):
         super().__init__(name="JumpCommand")

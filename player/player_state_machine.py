@@ -21,6 +21,7 @@ class PlayerStateMachine():
             elif event.input_type == IE.STOP_MOVE:
                 command = self.stop_move(data)
                 return_commands.append(command)
+        return return_items
 
 
     def set_walking(self, data, event_type):

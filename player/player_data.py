@@ -7,4 +7,5 @@ class PlayerData():
         self.movement_state = MS.IDLE
         self.direction_state = DS.RIGHT
         self.action_state = AS.NONE
+        self.move_speed = 8
         self.velocity = (0, 0)

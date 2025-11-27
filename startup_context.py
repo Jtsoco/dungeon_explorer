@@ -1,10 +1,13 @@
 import pyxel
 from cell_data import CellData
-
+from tile_context import TileContext
 class StartupContext():
     def __init__(self):
         # size in cells
+        self.tile_map = 0
         self.player_start = (0, 0)
+
+        self.tile_context = TileContext(self.tile_map)
         # player start is tuple, containing brick x and brick y
         self.ENEMY_SPAWNS = []
         self.cell_x = 3

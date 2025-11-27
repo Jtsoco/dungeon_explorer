@@ -13,7 +13,7 @@ class PlayerEntity:
         self.data = PlayerData()
         self.renderer = PlayerRenderer()
         self.state_machine = StateMachine()
-        self.player_physics = PlayerPhysics()
+        self.player_physics = PlayerPhysics(context)
         self.tile_context = None
         # later will grab surrounding tiles and pass for collision detection to physics
         # it will just grab the most relevant tiles based on position

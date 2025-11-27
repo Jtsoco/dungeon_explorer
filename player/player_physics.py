@@ -3,10 +3,10 @@ from player.player_enums import DirectionState as DS
 
 
 class PlayerPhysics:
-    def __init__(self):
-        pass
+    def __init__(self, context=None):
+        self.context = context
 
-    def update(self, data):
+    def update(self, data, context=None):
         # will eventually receive tile context too to know if it collides with walls/floors
         # update position based on velocity
         data.position[0] += data.velocity[0]

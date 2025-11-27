@@ -36,7 +36,7 @@ class App():
 
 
     def update(self):
-        pass
+        self.game.update()
 
     def draw(self):
         # would actually draw the current active state, game for now

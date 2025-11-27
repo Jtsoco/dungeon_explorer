@@ -1,12 +1,12 @@
-from player_controller import PlayerController
-from player_data import PlayerData
-from player_renderer import PlayerRenderer
-from player_state_machine import PlayerStateMachine as StateMachine
-from player_physics import PlayerPhysics
-from ..events_commands.commands import MovementCommand
+from player.player_controller import PlayerController
+from player.player_data import PlayerData
+from player.player_renderer import PlayerRenderer
+from player.player_state_machine import PlayerStateMachine as StateMachine
+from player.player_physics import PlayerPhysics
+from events_commands.commands import MovementCommand
 
 class PlayerEntity:
-    def __init__(self):
+    def __init__(self, context=None):
         self.events = []
         self.commands = []
         self.controller = PlayerController()
@@ -18,24 +18,29 @@ class PlayerEntity:
         # later will grab surrounding tiles and pass for collision detection to physics
         # it will just grab the most relevant tiles based on position
         # and store them until requested again
+        self.context = context
+        if self.context:
+            x, y = self.context.player_start
+            self.data.position = [x * self.context.BRICK_SIZE, y * self.context.BRICK_SIZE]
 
 
     def update(self):
+        print("Updating Player Entity")
         events, commands = [], []
         input_events = []
         input_events = input_events + self.controller.poll_events()
-        self.events, self.commands = self.state_machine.input_events(self.data, input_events)
+        events, commands = self.state_machine.input_events(self.data, input_events)
         killswitch = False
         count = 0
         # returns a tuple of (events, commands)
         # might not need this while loop, might become a one shot process each frame
         while (events or commands) and not (killswitch):
             if events:
-                new_events, new_commands = self.delegate_event(self.events.pop(0))
+                new_events, new_commands = self.delegate_event(events.pop(0))
                 events.extend(new_events)
                 commands.extend(new_commands)
             if commands:
-                new_events, new_commands = self.delegate_command(self.commands.pop(0))
+                new_events, new_commands = self.delegate_command(commands.pop(0))
                 events.extend(new_events)
                 commands.extend(new_commands)
             count += 1

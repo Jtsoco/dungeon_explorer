@@ -1,5 +1,5 @@
-from ..events_commands.commands import Command, MovementCommand, MoveCommand, JumpCommand
-from player_enums import DirectionState as DS
+from events_commands.commands import Command, MovementCommand, MoveCommand, JumpCommand
+from player.player_enums import DirectionState as DS
 
 
 class PlayerPhysics:

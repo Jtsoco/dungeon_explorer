@@ -3,6 +3,7 @@ import pyxel
 from startup_context import StartupContext
 from cell_manager import CellManager
 from scene_manager import SceneManager
+from player.player_entity import PlayerEntity
 
 class Game():
     def __init__(self):
@@ -21,9 +22,12 @@ class Game():
 
         self.cell_manager = CellManager(self.game_world, self.context.start_cell)
         self.scene_manager = SceneManager(self.context)
+        self.player = PlayerEntity(self.context)
+        # for now player is just stored here, later might make a separate player manager if needed
 
     def update(self):
-        pass
+        self.player.update()
 
     def draw(self):
         self.scene_manager.draw()
+        self.player.draw()

@@ -4,7 +4,7 @@ from cell_data import CellData
 class StartupContext():
     def __init__(self):
         # size in cells
-        self.player_start = (0,0)
+        self.player_start = (0, 0)
         # player start is tuple, containing brick x and brick y
         self.ENEMY_SPAWNS = []
         self.cell_x = 3
@@ -54,11 +54,13 @@ class StartupContext():
         # print(f"Checking brick at ({brick_x}, {brick_y}) for special tiles...")
         brick = pyxel.tilemaps[0].pget(brick_x, brick_y)
         # print(f"Brick at ({brick_x}, {brick_y}) has tile {brick}")
-        if brick == self.PLAYER_SPAWN:
-            # this is brick number
-            self.player_start = (brick_x, brick_y)
-            cell = self.find_cell(brick_x * self.BRICK_SIZE, brick_y * self.BRICK_SIZE)
-            self.start_cell = cell
+        match brick:
+            case self.PLAYER_SPAWN:
+                self.player_start = (brick_x, brick_y)
+                cell = self.find_cell(brick_x * self.BRICK_SIZE, brick_y * self.BRICK_SIZE)
+                self.start_cell = cell
+
+
 
     def find_cell(self, x, y):
         # floor division with //

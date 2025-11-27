@@ -1,4 +1,4 @@
-from ..player.player_enums import DirectionState as DS
+from player.player_enums import DirectionState as DS
 
 class Command():
     def __init__(self, name: str = "GenericCommand"):

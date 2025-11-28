@@ -25,7 +25,6 @@ class PlayerEntity:
 
 
     def update(self):
-        print("Updating Player Entity")
         events, commands = [], []
         input_events = []
         input_events = input_events + self.controller.poll_events()

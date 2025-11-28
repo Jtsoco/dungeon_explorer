@@ -22,6 +22,9 @@ class StartupContext():
         self.CELL_SIZE = 16  # 16 x 16 bricks
         self.game_world = {}
         self.start_cell = (0,0)
+        self.collideable_tile_x = 4
+        # anything greater than or equal to this tile number is collideable
+
         # can be more than one active cell at a time for transitions
 
     def get_context(self):

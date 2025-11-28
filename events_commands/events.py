@@ -17,3 +17,18 @@ class InputEvent(Event):
 
     def __str__(self):
         return f"InputEvent: {self.input_type}"
+
+class MovementEvent(Event):
+    # events for movement system
+    # indicating something movement related has happened
+    def __init__(self, name="MovementEvent"):
+        super().__init__(name)
+
+class LandedEvent(MovementEvent):
+    def __init__(self, name="LandedEvent"):
+        super().__init__(name)
+
+
+class StartedFallingEvent(MovementEvent):
+    def __init__(self, name="StartedFallingEvent"):
+        super().__init__(name)

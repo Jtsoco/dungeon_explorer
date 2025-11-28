@@ -1,4 +1,6 @@
 from events_commands.commands import Command, MovementCommand, MoveCommand, JumpCommand
+from events_commands.events import LandedEvent, StartedFallingEvent
+from player.player_enums import MovementState as MS
 from player.player_enums import DirectionState as DS
 
 
@@ -21,8 +23,9 @@ class PlayerPhysics:
 
         returned_events = self.horizontal_motion(data, context)
         events.extend(returned_events)
-        return_events = self.vertical_motion(data, context)
-        events.extend(return_events)
+        returned_event = self.vertical_motion(data, context)
+        if returned_event:
+            events.append(returned_event)
         # if there are any events after this, added here. might not actually be any, but jump will have some state change events probably
 
         # data.position[1] += data.velocity[1]
@@ -43,15 +46,72 @@ class PlayerPhysics:
         # for now just check collision with all, no need to make it only check the sides it could move into based on direction
 
     def check_tile_collisions(self, data, context):
-        tiles = context.tile_context.get_touching_bricks(data.position[0], data.position[1], 8, 8)
-        # 8x8 is player size for now, will need to adjust later for dynamic size
+        x, y = int(data.position[0]), int(data.position[1])
+        tiles = context.tile_context.get_touching_bricks(x, y, data.w_h[0], data.w_h[1])
+        return self.has_tile_collision(tiles, context)
+
+    def has_tile_collision(self, tiles, context):
         for tile in tiles:
             if tile[0] >= context.collideable_tile_x:
                 return True
         return False
 
     def vertical_motion(self, data, context):
-        return []  # no vertical motion yet
+        event = None
+        data.position[1] = int(data.position[1] - data.velocity[1])
+
+
+
+        match data.movement_state:
+            case MS.JUMPING | MS.FALLING:
+                if self.check_tile_collisions(data, context):
+                    self.stepback(data, data.velocity[1], context, axis=1)
+                    if self.updward_momentum(data):
+
+                        event = StartedFallingEvent()
+                        data.velocity[1] = 0
+                    else:
+                        # hit head/ceiling
+                        # return swap to falling event
+                        event = LandedEvent()
+                        data.velocity[1] = 0
+                        return event
+
+            case _:
+                ground_beneath = self.ground_beneath_player(data, context)
+                if ground_beneath:
+                    data.velocity[1] = 0
+                    return event
+                else:
+                    event = StartedFallingEvent()
+
+        # it gets to update gravity if not on ground
+        self.update_gravity(data, context)
+        return event
+
+    def ground_beneath_player(self, data, context):
+        x_start = int(data.position[0])
+
+        y_value = int(data.position[1] + data.w_h[1])
+        bricks = context.tile_context.get_touching_bricks(x_start, y_value, data.w_h[0], 1)
+        return self.has_tile_collision(bricks, context)
+
+
+    def updward_momentum(self, data):
+        if data.velocity[1] < 0:
+            return False
+        return True
+
+    def update_gravity(self, data, context):
+        # simple gravity, add proper gravity later
+        gravity = -0.4
+        terminal_velocity = -5
+        data.velocity[1] += gravity
+        if data.velocity[1] < terminal_velocity:
+            data.velocity[1] = terminal_velocity
+
+
+
 
     def stepback(self, data, reverse, context, axis=0):
         sign = -1 if reverse < 0 else 1
@@ -71,8 +131,12 @@ class PlayerPhysics:
                 return self.process_move_command(command, data)
             case JumpCommand():
                 # implement jump logic later
-                pass
+                self.jump(command, data)
         return ([], [])
+
+    def jump(self, command, data):
+        # actually probably don't need the command
+        data.velocity[1] = data.jump_strength
 
     def process_move_command(self, command, data):
 

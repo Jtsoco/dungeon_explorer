@@ -4,7 +4,6 @@ from player.player_renderer import PlayerRenderer
 from player.player_state_machine import PlayerStateMachine as StateMachine
 from player.player_physics import PlayerPhysics
 from events_commands.commands import MovementCommand
-
 class PlayerEntity:
     def __init__(self, context=None):
         self.events = []
@@ -48,10 +47,13 @@ class PlayerEntity:
                 # just a killswitch to prevent infinite loops for now. shouldn't need it if designed well, but just in case.
 
         state_updates = self.player_physics.update(self.data)
+        # should just return events as of now
+
+
         # update physics after all events and commands have been processed
         # state_updates can be events or commands to process after physics update
         # just keeping it events for now
-        self.state_machine.input_events(self.data, state_updates)
+        self.state_machine.state_updates(self.data, state_updates)
 
 
 

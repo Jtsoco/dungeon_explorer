@@ -4,6 +4,7 @@ from startup_context import StartupContext
 from cell_manager import CellManager
 from scene_manager import SceneManager
 from player.player_entity import PlayerEntity
+from debug.quick_debug import display_info
 
 class Game():
     def __init__(self):
@@ -31,3 +32,5 @@ class Game():
     def draw(self):
         self.scene_manager.draw()
         self.player.draw()
+        camera_pos = self.scene_manager.camera.current_camera
+        display_info(f"Player Pos: {self.player.data.position}", pos_x=camera_pos[0]+2, pos_y=camera_pos[1]+2)

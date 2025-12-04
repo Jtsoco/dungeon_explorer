@@ -4,6 +4,7 @@ from player.player_renderer import PlayerRenderer
 from player.player_state_machine import PlayerStateMachine as StateMachine
 from player.player_physics import PlayerPhysics
 from events_commands.commands import MovementCommand
+from player.animations.animation_manager import AnimationManager
 class PlayerEntity:
     def __init__(self, context=None):
         self.events = []
@@ -14,6 +15,7 @@ class PlayerEntity:
         self.state_machine = StateMachine()
         self.player_physics = PlayerPhysics(context)
         self.tile_context = None
+        self.animation_manager = AnimationManager()
         # later will grab surrounding tiles and pass for collision detection to physics
         # it will just grab the most relevant tiles based on position
         # and store them until requested again
@@ -28,8 +30,14 @@ class PlayerEntity:
         input_events = []
         input_events = input_events + self.controller.poll_events()
         events, commands = self.state_machine.input_events(self.data, input_events)
+
+        animation_event = self.animation_manager.update(self.data)
+        if animation_event:
+            events.append(animation_event)
+
         killswitch = False
         count = 0
+
         # returns a tuple of (events, commands)
         # might not need this while loop, might become a one shot process each frame
         while (events or commands) and not (killswitch):

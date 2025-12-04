@@ -13,3 +13,9 @@ def outline_rect(x, y, w, h, color=7):
     pyxel.rect(x, y + h - 1, w, 1, color)  # Bottom edge
     pyxel.rect(x, y, 1, h, color)          # Left edge
     pyxel.rect(x + w - 1, y, 1, h, color)  # Right edge
+
+def outline_entity(entity_data, color=7):
+    """Outline an entity's bounding box for debugging."""
+    x, y = entity_data.position
+    w, h = entity_data.w_h
+    outline_rect(x, y, w, h, color)

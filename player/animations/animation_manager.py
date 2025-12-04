@@ -1,4 +1,5 @@
 from player.player_enums import MovementState as MS
+from events_commands.events import StateChangedEvent
 
 class AnimationManager():
     def __init__(self):
@@ -18,7 +19,11 @@ class AnimationManager():
         return None
 
     def handle_event(self, event, data):
-        pass
+        match event:
+            case StateChangedEvent():
+                self.reset(data)
+                # set new animation based on new state
+                # could also pass in the new state via the event for more flexibility
     # this will respond to a state change event and reset animation frame counter, and set new animation accordingly
 
     def next_frame(self, frame_duration, data):
@@ -28,9 +33,15 @@ class AnimationManager():
             return True
         return False
 
-    def reset(self, data):
-        data.current_frame = 0
-        data.frame_timer = 0
+    def reset(self, player_data):
+        data = player_data.animation_data
+        last = data.last_frame
+        data.last_frame = self.get_frame(player_data)
+        if last != data.last_frame:
+            # reset frame counter only if the animation actually changed
+            data.current_frame = 0
+            data.frame_timer = 0
+
 
     def get_frame(self, player_data):
         state = player_data.movement_state

@@ -1,5 +1,5 @@
 from player.player_enums import MovementState as MS, ActionState as AS, DirectionState as DS, InputEnums as IE
-from events_commands.events import InputEvent, StartedFallingEvent, LandedEvent
+from events_commands.events import InputEvent, StartedFallingEvent, LandedEvent, StateChangedEvent
 from events_commands.commands import MoveCommand, JumpCommand
 class PlayerStateMachine():
     def __init__(self):
@@ -11,6 +11,8 @@ class PlayerStateMachine():
         # will it set the data to hold state of moving/idle, or let something else handle that?
         # it may be fine if it only changes that state, but it may be important to only let it do that once during a loop
         # then again it only gets the input events once, need to think about this more
+        last_states = [data.movement_state, data.action_state, data.direction_state]
+
         return_events = []
         return_commands = []
         return_items = (return_events, return_commands)
@@ -26,6 +28,9 @@ class PlayerStateMachine():
                 command = self.jump_input(data)
                 if command:
                     return_commands.append(command)
+        new_states = [data.movement_state, data.action_state, data.direction_state]
+        if new_states != last_states:
+            return_events.append(StateChangedEvent())
         return return_items
 
     def jump_input(self, data):

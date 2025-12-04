@@ -6,6 +6,11 @@ class Event():
 
     def __str__(self):
         return f"Event: {self.name}"
+class StateChangedEvent(Event):
+
+    def __init__(self):
+        super().__init__(name="StateChangedEvent")
+
 
 class InputEvent(Event):
 

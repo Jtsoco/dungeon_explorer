@@ -4,7 +4,7 @@ from startup_context import StartupContext
 from cell_manager import CellManager
 from scene_manager import SceneManager
 from player.player_entity import PlayerEntity
-from debug.quick_debug import display_info, quick_point, outline_rect
+from debug.quick_debug import display_info, quick_point, outline_entity
 
 class Game():
     def __init__(self):
@@ -34,5 +34,4 @@ class Game():
         self.player.draw()
         camera_pos = self.scene_manager.camera.current_camera
         display_info(f"Player Pos: {self.player.data.position}", pos_x=camera_pos[0]+2, pos_y=camera_pos[1]+2)
-        # top left
-        outline_rect(self.player.data.position[0], self.player.data.position[1], self.player.data.w_h[0], self.player.data.w_h[1], color=8)
+        # outline_entity(self.player.data)

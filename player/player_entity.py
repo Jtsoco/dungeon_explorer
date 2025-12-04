@@ -4,6 +4,7 @@ from player.player_renderer import PlayerRenderer
 from player.player_state_machine import PlayerStateMachine as StateMachine
 from player.player_physics import PlayerPhysics
 from events_commands.commands import MovementCommand
+from events_commands.events import StateChangedEvent
 from player.animations.animation_manager import AnimationManager
 class PlayerEntity:
     def __init__(self, context=None):
@@ -66,7 +67,11 @@ class PlayerEntity:
 
 
     def delegate_event(self, event):
-        pass
+        match event:
+            case StateChangedEvent():
+                # only animation manager needs it for now, but later it might be useful to have it delegated to all other systems too
+                self.animation_manager.handle_event(event, self.data)
+        return [], []  # Return empty lists if no new events/commands
 
     def delegate_command(self, command):
         match command:

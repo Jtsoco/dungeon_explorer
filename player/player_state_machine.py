@@ -58,9 +58,13 @@ class PlayerStateMachine():
         return MoveCommand(DS.HALT)
 
     def state_updates(self, data, updates):
+        last_states = [data.movement_state, data.action_state, data.direction_state]
         for event in updates:
             match event:
                 case StartedFallingEvent():
                     data.movement_state = MS.FALLING
                 case LandedEvent():
                     data.movement_state = MS.IDLE
+        new_states = [data.movement_state, data.action_state, data.direction_state]
+        if new_states != last_states:
+            return StateChangedEvent()

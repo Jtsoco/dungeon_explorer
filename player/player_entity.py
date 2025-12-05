@@ -62,8 +62,9 @@ class PlayerEntity:
         # update physics after all events and commands have been processed
         # state_updates can be events or commands to process after physics update
         # just keeping it events for now
-        self.state_machine.state_updates(self.data, state_updates)
-
+        state_changed = self.state_machine.state_updates(self.data, state_updates)
+        if state_changed:
+            self.delegate_event(state_changed)
 
 
     def delegate_event(self, event):

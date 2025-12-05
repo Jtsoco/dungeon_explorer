@@ -8,8 +8,10 @@ class AnimationData():
         self.current_frame = 0
         self.frame_timer = 0
         self.animations = animation_setup()
-        self.last_frame = self.animations[MS.IDLE][-1]
+        self.current_animation = self.animations[MS.IDLE]
     # the update handles frame duration, and is called by
+    def get_current_frame(self):
+        return self.current_animation[self.current_frame]
 
 class PlayerData():
     def __init__(self):

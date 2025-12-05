@@ -35,3 +35,9 @@ class Game():
         camera_pos = self.scene_manager.camera.current_camera
         display_info(f"Player Pos: {self.player.data.position}", pos_x=camera_pos[0]+2, pos_y=camera_pos[1]+2)
         # outline_entity(self.player.data)
+
+        # player animation
+        a_d = self.player.data.animation_data
+        display_info(f"Anim State: M-{self.player.data.movement_state.name} A-{self.player.data.action_state.name} D-{self.player.data.direction_state.name}", pos_x=camera_pos[0]+2, pos_y=camera_pos[1]+12)
+        display_info(f"Anim Frame: {a_d.current_frame}", pos_x=camera_pos[0]+2, pos_y=camera_pos[1]+22)
+        display_info(f"Frame Pos: {a_d.get_current_frame().pos}", pos_x=camera_pos[0]+2, pos_y=camera_pos[1]+32)

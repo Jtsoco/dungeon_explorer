@@ -14,7 +14,7 @@ class PlayerRenderer():
         x = player_data.position[0]
         y = player_data.position[1]
 
-        current_frame = player_data.animation_data.last_frame
+        current_frame = player_data.animation_data.get_current_frame()
         u = current_frame.pos[0] * 8
         v = current_frame.pos[1] * 8
         # have to multiply by 8 because each 'tile' in the sprite sheet is 8x8 pixels

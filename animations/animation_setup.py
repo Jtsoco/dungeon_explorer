@@ -1,5 +1,5 @@
 from player.player_enums import MovementState as MS, DirectionState as DS, ActionState as AS, WeaponActionState as WAS
-from player.animations.animation_enums import PlayerAnimationEnums as PAE
+from animations.animation_enums import PlayerAnimationEnums as PAE
 
 class AnimationFrame():
     def __init__(self, pos: tuple, duration: int=6, offset: tuple=(0,0)):

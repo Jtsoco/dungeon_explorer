@@ -1,6 +1,6 @@
 from player.player_enums import MovementState as MS, ActionState as AS, DirectionState as DS, InputEnums as IE
-from events_commands.events import InputEvent, StartedFallingEvent, LandedEvent, StateChangedEvent
-from events_commands.commands import MoveCommand, JumpCommand
+from events_commands.events import InputEvent, StartedFallingEvent, LandedEvent, StateChangedEvent, AttackFinishedEvent
+from events_commands.commands import MoveCommand, JumpCommand, AttackCommand
 class PlayerStateMachine():
     def __init__(self):
         self.events = []
@@ -17,21 +17,34 @@ class PlayerStateMachine():
         return_commands = []
         return_items = (return_events, return_commands)
         for event in input_events:
-            if event.input_type == IE.MOVE:
-                command = self.set_walking(data, event.direction)
-                return_commands.append(command)
-            elif event.input_type == IE.STOP_MOVE:
-                command = self.stop_move(data)
-                return_commands.append(command)
-            elif event.input_type == IE.JUMP:
-
-                command = self.jump_input(data)
-                if command:
+            match event.input_type:
+                case IE.MOVE:
+                    command = self.set_walking(data, event.direction)
                     return_commands.append(command)
+                case IE.STOP_MOVE:
+                    command = self.stop_move(data)
+                    return_commands.append(command)
+                case IE.JUMP:
+                    command = self.jump_input(data)
+                    if command:
+                        return_commands.append(command)
+                case IE.ATTACK:
+                    command = self.attack_input(data)
+                    if command:
+                        return_commands.append(command)
+
         new_states = [data.movement_state, data.action_state, data.direction_state]
         if new_states != last_states:
             return_events.append(StateChangedEvent())
         return return_items
+
+    def attack_input(self, data):
+        match data.action_state:
+            case AS.NONE:
+                data.action_state = AS.ATTACKING
+                return AttackCommand()
+            case _:
+                return None
 
     def jump_input(self, data):
         match data.movement_state:
@@ -65,6 +78,8 @@ class PlayerStateMachine():
                     data.movement_state = MS.FALLING
                 case LandedEvent():
                     data.movement_state = MS.IDLE
+                case AttackFinishedEvent():
+                    data.action_state = AS.NONE
         new_states = [data.movement_state, data.action_state, data.direction_state]
         if new_states != last_states:
             return StateChangedEvent()

@@ -7,25 +7,29 @@ class AttackManager():
         pass
 
     def update(self, player_data):
-        weapon_data = player_data.weapon_data
-        if weapon_data.active:
-            self.update_weapon(weapon_data)
+        if not player_data.weapon:
+            return None
+        # will create a dummy weapon data later, but also will in general will revisit how this is handled and if i will create a cleaner system that doesn't make calls to things that won't do anything, but for now this is fine
+        weapon = player_data.weapon
+        if weapon.active:
+            return self.update_weapon(weapon)
 
-    def update_weapon(self, weapon_data):
-        if self.update_frame_index(weapon_data):
-            if weapon_data.current_frame == 0:
+    def update_weapon(self, weapon):
+        if self.update_frame_index(weapon):
+            if weapon.current_frame == 0:
                 # finished attack animation
-                self.finish_attack(weapon_data)
+                self.finish_attack(weapon)
 
                 return AFE()
+        return None
 
-    def finish_attack(self, weapon_data):
-        weapon_data.active = False
-        weapon_data.state = WAS.SHEATHED
-        weapon_data.current_animation = weapon_data.animations[WAS.SHEATHED]
-        weapon_data.current_frame = 0
-        weapon_data.frame_timer = 0
-        weapon_data.current_hitbox = None
+    def finish_attack(self, weapon):
+        weapon.active = False
+        weapon.state = WAS.SHEATHED
+        weapon.current_animation = weapon.animations[WAS.SHEATHED]
+        weapon.current_frame = 0
+        weapon.frame_timer = 0
+        weapon.current_hitbox = None
 
     def handle_command(self, command, player_data):
         match command:
@@ -35,22 +39,23 @@ class AttackManager():
 
     def start_attack(self, player_data):
         # for now, just default. it will decide what attack to set otherwise, but for now there is only one
-        weapon_data = player_data.weapon_data
-        if not weapon_data.active:
-            weapon_data.active = True
-            weapon_data.state = WAS.DEFAULT
-            weapon_data.current_animation = weapon_data.animations[WAS.DEFAULT]
-            weapon_data.current_frame = 0
-            weapon_data.frame_timer = 0
+        weapon = player_data.weapon
+        if not weapon.active:
+            weapon.active = True
+            weapon.state = WAS.DEFAULT
+            weapon.current_animation = weapon.animations[WAS.DEFAULT]
+            weapon.current_frame = 0
+            weapon.frame_timer = 0
 
-    def update_frame_index(self, weapon_data):
-        if weapon_data.frame_timer >= weapon_data.current_animation[weapon_data.current_frame].duration:
-            weapon_data.current_frame += 1
-            weapon_data.frame_timer = 0
-            self.set_current_frame_index(weapon_data)
+    def update_frame_index(self, weapon):
+        if weapon.frame_timer >= weapon.current_animation[weapon.current_frame].duration:
+            weapon.current_frame += 1
+            weapon.frame_timer = 0
+            self.set_current_frame_index(weapon)
             return True
+        weapon.frame_timer += 1
         return False
 
-    def set_current_frame_index(self, weapon_data):
-        weapon_data.current_frame %= len(weapon_data.current_animation)
+    def set_current_frame_index(self, weapon):
+        weapon.current_frame %= len(weapon.current_animation)
         # for now this is same as animation manager, but when hitboxes are decoupled (if they are) then this will be different

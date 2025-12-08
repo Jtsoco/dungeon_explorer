@@ -17,6 +17,8 @@ class PlayerController():
             rl_movement.append(InputEvent(IE.MOVE, direction=DS.RIGHT))
         if pyxel.btn(pyxel.KEY_SPACE):
             new_recents.append(InputEvent(IE.JUMP))
+        if pyxel.btn(pyxel.KEY_D):
+            new_recents.append(InputEvent(IE.ATTACK))
 
         if not rl_movement or (len(rl_movement) == 2):
             new_recents.append(InputEvent(IE.STOP_MOVE))

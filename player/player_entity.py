@@ -3,8 +3,9 @@ from player.player_data import PlayerData
 from player.player_renderer import PlayerRenderer
 from player.player_state_machine import PlayerStateMachine as StateMachine
 from player.player_physics import PlayerPhysics
-from events_commands.commands import MovementCommand
+from events_commands.commands import MovementCommand, AttackCommand
 from events_commands.events import StateChangedEvent
+from player.attack.attack_manager import AttackManager
 from player.animations.animation_manager import AnimationManager
 class PlayerEntity:
     def __init__(self, context=None):
@@ -20,6 +21,8 @@ class PlayerEntity:
         # later will grab surrounding tiles and pass for collision detection to physics
         # it will just grab the most relevant tiles based on position
         # and store them until requested again
+
+        self.attack_manager = AttackManager()
         self.context = context
         if self.context:
             x, y = self.context.player_start
@@ -57,7 +60,9 @@ class PlayerEntity:
 
         state_updates = self.player_physics.update(self.data)
         # should just return events as of now
-
+        attack_event = self.attack_manager.update(self.data)
+        if attack_event:
+            state_updates.append(attack_event)
 
         # update physics after all events and commands have been processed
         # state_updates can be events or commands to process after physics update
@@ -78,6 +83,8 @@ class PlayerEntity:
         match command:
             case MovementCommand():
                 return self.player_physics.handle_command(command, self.data)
+            case AttackCommand():
+                return self.attack_manager.handle_command(command, self.data)
 
     def draw(self):
         self.renderer.render(self.data)

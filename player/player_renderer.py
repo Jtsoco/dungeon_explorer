@@ -1,6 +1,6 @@
 import pyxel
 from player.player_enums import MovementState as MS, DirectionState as DS, ActionState as AS
-
+from debug.quick_debug import display_info
 class PlayerRenderer():
     def __init__(self):
         pass
@@ -32,14 +32,17 @@ class PlayerRenderer():
             if player_data.direction_state == DS.RIGHT:
                 x_offset = abs(current_frame.offset[0] - weapon_frame.offset[0])
                 weapon_x += x_offset
+
+                # weapon_x = x
                 y_offset = abs(current_frame.offset[1] - weapon_frame.offset[1])
                 weapon_y -= y_offset
             else:
-                x_offset = abs(current_frame.offset[0] + weapon_frame.offset[0])
-                weapon_x -= x_offset
+                x_offset = abs(current_frame.offset[0] - weapon_frame.offset[0])
+                weapon_x = x - x_offset
                 y_offset = abs(current_frame.offset[1] - weapon_frame.offset[1])
                 weapon_y -= y_offset
                 w_width = -8
+            # display_info(f"X offset: {x_offset}", pos_x=x, pos_y=y-40)
 
             wu = weapon_frame.pos[0] * 8
             wv = weapon_frame.pos[1] * 8

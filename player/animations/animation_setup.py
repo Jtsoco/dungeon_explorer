@@ -19,7 +19,7 @@ def animation_setup():
     ]
     offset = (7, 1)
     animations[MS.JUMPING] = [AnimationFrame(PAE.PLAYER_JUMP.value, duration=12, offset=offset),]
-
+    offset = (7,2)
     animations[MS.FALLING] = [AnimationFrame(PAE.PLAYER_FALL.value, duration=12, offset=offset),]
 
     return animations
@@ -38,7 +38,7 @@ def default_attack_animation():
     attack_animation = [
         default_sheathed,
         AnimationFrame((3, 6), duration=6, offset=offset ),
-        AnimationFrame((2, 6), duration=6, offset=offset ),
+        AnimationFrame((2, 7), duration=6, offset=offset ),
         AnimationFrame((3, 7), duration=3, offset=offset ),
     ]
     animations[WAS.SHEATHED] = sheathed

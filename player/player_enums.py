@@ -24,3 +24,15 @@ class InputEnums(Enum):
     JUMP = auto()
     ATTACK = auto()
     STOP_MOVE = auto()
+
+class AttackType(Enum):
+    MELEE = auto()
+    RANGED = auto()
+
+
+class WeaponActionState(Enum):
+    SHEATHED = auto()
+    DRAWN = auto()
+    DASHATTACK = auto()
+    AIRATTACK = auto()
+    DEFAULT = auto()

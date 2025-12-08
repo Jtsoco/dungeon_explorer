@@ -37,3 +37,7 @@ class LandedEvent(MovementEvent):
 class StartedFallingEvent(MovementEvent):
     def __init__(self, name="StartedFallingEvent"):
         super().__init__(name)
+
+class AttackFinishedEvent(Event):
+    def __init__(self, name="AttackFinishedEvent"):
+        super().__init__(name)

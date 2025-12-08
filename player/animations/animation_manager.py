@@ -30,11 +30,11 @@ class AnimationManager():
         if data.frame_timer >= frame_duration:
             data.current_frame += 1
             data.frame_timer = 0
-            self.check_current_frame_index(data)
+            self.set_current_frame_index(data)
             return True
         return False
 
-    def check_current_frame_index(self, data):
+    def set_current_frame_index(self, data):
         data.current_frame %= len(data.current_animation)
 
     def set_next_animation(self, animation_data, animation):

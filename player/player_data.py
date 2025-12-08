@@ -2,7 +2,7 @@ from player.player_enums import MovementState as MS, DirectionState as DS, Actio
 
 
 from player.animations.animation_setup import animation_setup
-
+from player.attack.weapon_data import WeaponData
 class AnimationData():
     def __init__(self):
         self.current_frame = 0
@@ -34,3 +34,5 @@ class PlayerData():
         self.velocity = [0, 0]
 
         self.animation_data = AnimationData()
+
+        self.weapon = WeaponData()

@@ -26,3 +26,7 @@ class JumpCommand(MovementCommand):
 
     def __init__(self):
         super().__init__(name="JumpCommand")
+
+class AttackCommand(Command):
+    def __init__(self):
+        super().__init__(name="AttackCommand")

@@ -1,4 +1,4 @@
-from player.player_enums import MovementState as MS, DirectionState as DS, ActionState as AS
+from player.player_enums import MovementState as MS, DirectionState as DS, ActionState as AS, WeaponActionState as WAS
 from player.animations.animation_enums import PlayerAnimationEnums as PAE
 
 class AnimationFrame():
@@ -20,3 +20,21 @@ def animation_setup():
 
     return animations
 # return a dict of animations using some predefined setup
+
+
+def default_attack_animation():
+    animations = {}
+    default_sheathed = AnimationFrame((2, 6), duration=3)
+    sheathed = [
+        default_sheathed
+    ]
+
+    attack_animation = [
+        default_sheathed,
+        AnimationFrame((3, 6), duration=6),
+        AnimationFrame((2, 6), duration=6),
+        AnimationFrame((3, 7), duration=3)
+    ]
+    animations[WAS.SHEATHED] = sheathed
+    animations[WAS.DEFAULT] = attack_animation
+    return animations

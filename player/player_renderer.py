@@ -24,6 +24,13 @@ class PlayerRenderer():
 
         pyxel.blt(x, y, image_bank, u, v, width, height, color_key)
         # pyxel.rect(player_data.position[0], player_data.position[1], player_data.w_h[0], player_data.w_h[1], 8)
+        if player_data.weapon:
+            weapon_frame = player_data.weapon.get_current_frame()
+            wu = weapon_frame.pos[0] * 8
+            wv = weapon_frame.pos[1] * 8
+            w_width = 8 if player_data.direction_state == DS.RIGHT else -8
+            # for now just hardcoding weapon width and height, revisit later
+            pyxel.blt(x, y, image_bank, wu, wv, w_width, 8, color_key)
 
 
 

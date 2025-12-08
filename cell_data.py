@@ -7,6 +7,7 @@ class CellData():
         self.border_x = []
         self.border_y = []
         self.enemies = []
+        self.loaded = False
 
     def update(self):
         pass

@@ -44,3 +44,8 @@ def default_attack_animation():
     animations[WAS.SHEATHED] = sheathed
     animations[WAS.DEFAULT] = attack_animation
     return animations
+
+def skull_animation():
+    animations = {}
+    animations[MS.IDLE] = [AnimationFrame((0, 15), duration=12)]
+    return animations

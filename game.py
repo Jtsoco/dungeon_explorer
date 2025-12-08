@@ -31,6 +31,10 @@ class Game():
 
     def draw(self):
         self.scene_manager.draw()
+        # for now this, but change it later when i have time
+        enemies = self.cell_manager.current_state.get_enemies()
+        for enemy in enemies:
+            self.player.renderer.render(enemy)
         self.player.draw()
         camera_pos = self.scene_manager.camera.current_camera
         display_info(f"Player Pos: {self.player.data.position}", pos_x=camera_pos[0]+2, pos_y=camera_pos[1]+2)

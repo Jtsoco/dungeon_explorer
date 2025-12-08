@@ -1,6 +1,7 @@
 import pyxel
 from cell_data import CellData
 from tile_context import TileContext
+from enums.entity_enums import EntityType as ET
 class StartupContext():
     def __init__(self):
         # size in cells
@@ -9,7 +10,7 @@ class StartupContext():
 
         self.tile_context = TileContext(self.tile_map)
         # player start is tuple, containing brick x and brick y
-        self.ENEMY_SPAWNS = []
+        self.ENEMY_SPAWNS = {(0, 15): ET.SKULL}
         self.cell_x = 3
         self.cell_y = 2
         self.TRANSPARENT_COLOR = 2
@@ -65,6 +66,8 @@ class StartupContext():
                 self.player_start = (brick_x, brick_y)
                 cell = self.find_cell(brick_x * self.BRICK_SIZE, brick_y * self.BRICK_SIZE)
                 self.start_cell = cell
+
+
 
 
 

@@ -37,9 +37,9 @@ def default_attack_animation():
     offset = (1, 5)
     attack_animation = [
         default_sheathed,
-        AnimationFrame((3, 6), duration=6, offset=offset ),
-        AnimationFrame((2, 7), duration=6, offset=offset ),
-        AnimationFrame((3, 7), duration=3, offset=offset ),
+        AnimationFrame((3, 6), duration=1, offset=offset ),
+        AnimationFrame((2, 7), duration=1, offset=offset ),
+        AnimationFrame((3, 7), duration=11, offset=offset ),
     ]
     animations[WAS.SHEATHED] = sheathed
     animations[WAS.DEFAULT] = attack_animation

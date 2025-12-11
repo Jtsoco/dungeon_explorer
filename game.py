@@ -5,7 +5,7 @@ from cell_manager import CellManager
 from scene_manager import SceneManager
 from player.player_entity import PlayerEntity
 from debug.quick_debug import display_info, quick_point, outline_entity
-
+from entity.entity_manager import EntityManager
 class Game():
     def __init__(self):
     # need bus for communication between game systems
@@ -26,7 +26,15 @@ class Game():
         self.player = PlayerEntity(self.context)
         # for now player is just stored here, later might make a separate player manager if needed
 
+        # just have it use players attack and animation manager for now, as they work, restructure later if needed
+        self.entity_manager = EntityManager(self.player.animation_manager, self.player.attack_manager, self.context)
+        types = self.cell_manager.current_state.active_cell.entity_types
+        self.entity_manager.setup_entities(types)
+        # just this quick one for now on setting up entities, refactor later when redoing cell loading system
+
     def update(self):
+        for enemy in self.cell_manager.current_state.get_enemies():
+            self.entity_manager.update(enemy)
         self.player.update()
 
     def draw(self):

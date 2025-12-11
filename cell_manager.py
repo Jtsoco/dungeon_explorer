@@ -8,6 +8,8 @@ class CellManager():
     def __init__(self, cells_data, active_cell: tuple):
         self.logic_manager = CellLogicManager()
         self.cells = cells_data
+
+        # wait, what am i doing with single cell manager?? relook at this, change it, its really just a loader for a single cell...
         self.current_state = SingleCellManager(self.cells[active_cell])
 
     def update(self):
@@ -21,6 +23,10 @@ class SingleCellManager():
         self.parent = None
         self.logic_manager = None
         self.set_cell(cell_data)
+        self.active_cell = cell_data
+
+    def get_active(self):
+        return self.active_cell
 
     def set_logic_manager(self, logic_manager):
         self.logic_manager = logic_manager
@@ -30,17 +36,21 @@ class SingleCellManager():
     def set_cell(self, cell_data):
         if not cell_data.loaded:
             self.load_cell(cell_data)
+            return True
         self.cell_data = cell_data
+        return False
 
     def load_cell(self, cell_data):
         cell_data.loaded = True
-        enemies = self.load_enemies(cell_data)
+        enemies, entity_types = self.load_enemies(cell_data)
         cell_data.enemies = enemies
+        cell_data.entity_types = entity_types
 
     def load_enemies(self, cell_data):
         enemies = []
         start_x, start_y = cell_data.cell_x * 16, cell_data.cell_y * 16
         # honestly would be best to use context but for now this won't change so whatever, make it quick for now refactor later if needs change
+        entity_types = []
         for brick_x in range(start_x, start_x + 16):
             for brick_y in range(start_y, start_y + 16):
                 tile = pyxel.tilemaps[0].pget(brick_x, brick_y)
@@ -51,14 +61,16 @@ class SingleCellManager():
                             # honestly could probably share the animation frames between all entities, this is fine for now but maybe change later
                             enemy_data = EntityData(entity_type=ET.SKULL, position=[brick_x * 8, brick_y * 8], animation_data=animation_data)
                             enemies.append(enemy_data)
+                            if ET.SKULL not in entity_types:
+                                entity_types.append(ET.SKULL)
 
 
-        return enemies
+        return enemies, entity_types
 
 
 
     def get_enemies(self):
-        return self.cell_data.enemies
+        return self.active_cell.enemies
 
     def update(self):
         self.logic_manager.update(self.cell_data)

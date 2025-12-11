@@ -1,4 +1,4 @@
-from player.player_enums import MovementState as MS, DirectionState as DS, ActionState as AS, WeaponActionState as WAS
+from enums.entity_enums import MovementState as MS, DirectionState as DS, ActionState as AS, WeaponActionState as WAS
 from animations.animation_enums import PlayerAnimationEnums as PAE
 
 class AnimationFrame():
@@ -17,9 +17,9 @@ def animation_setup():
         AnimationFrame(PAE.PLAYER_WALK_1.value, duration=6, offset=offset),
         AnimationFrame(PAE.PLAYER_WALK_2.value, duration=6, offset=offset)
     ]
-    offset = (7, 1)
+    offset = (7, 5)
     animations[MS.JUMPING] = [AnimationFrame(PAE.PLAYER_JUMP.value, duration=12, offset=offset),]
-    offset = (7,2)
+    offset = (7,5)
     animations[MS.FALLING] = [AnimationFrame(PAE.PLAYER_FALL.value, duration=12, offset=offset),]
 
     return animations
@@ -48,4 +48,8 @@ def default_attack_animation():
 def skull_animation():
     animations = {}
     animations[MS.IDLE] = [AnimationFrame((0, 15), duration=12)]
+    animations[MS.WALKING] = [
+        AnimationFrame((0, 15), duration=6),
+        AnimationFrame((1, 15), duration=6)
+    ]
     return animations

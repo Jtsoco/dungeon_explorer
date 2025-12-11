@@ -1,4 +1,4 @@
-from player.player_enums import MovementState as MS, ActionState as AS, DirectionState as DS, InputEnums as IE
+from enums.entity_enums import MovementState as MS, ActionState as AS, DirectionState as DS, InputEnums as IE
 from events_commands.events import InputEvent, StartedFallingEvent, LandedEvent, StateChangedEvent, AttackFinishedEvent
 from events_commands.commands import MoveCommand, JumpCommand, AttackCommand
 class PlayerStateMachine():

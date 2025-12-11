@@ -30,7 +30,7 @@ class EntityManager():
         events, commands = [], []
 
         input_events = []
-        input_events = input_events + self.controllers[entity.entity_type].update(entity)
+        input_events = input_events + self.controllers[entity.entity_type].update(entity, self.context)
         events, commands = self.state_machine.input_events(entity, input_events)
 
         animation_event = self.animation_manager.update(entity)

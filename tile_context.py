@@ -1,4 +1,5 @@
 import pyxel
+from enums.entity_enums import DirectionState as DS
 
 # for now, this is just a module of functions that take in data and return info about tiles
 class TileContext():
@@ -56,3 +57,36 @@ class TileContext():
                 bricks.add((self.get_brick(brick_x, brick_y)))
 
         return bricks
+
+    def at_edge_of_cell_horizontal(self, cell_x, x, w, direction=DS.LEFT):
+        # x and w are pixel coordinates
+        brick_x = x // self.BRICK_SIZE
+        # brick_width = w // self.BRICK_SIZE
+        cell_start_brick_x = cell_x * self.CELL_SIZE
+        cell_end_brick_x = cell_start_brick_x + self.CELL_SIZE - 1
+        if direction == DS.LEFT:
+            if brick_x <= cell_start_brick_x:
+                return True
+        else:
+            if (brick_x + (w // self.BRICK_SIZE) - 1) >= cell_end_brick_x:
+                return True
+        return False
+
+    def at_edge_of_dropoff(self, x, y, w, h, direction=DS.LEFT, tile_map_index=4):
+        # check if entity is at edge of dropoff horizontally
+        # basically add if its position one to the left or right depending on direction, one down is empty, it's a dropoff
+        brick_x = x // self.BRICK_SIZE
+        brick_y = y // self.BRICK_SIZE
+        brick_width = w // self.BRICK_SIZE
+        brick_height = h // self.BRICK_SIZE
+        match direction:
+            case DS.LEFT:
+                check_brick_x = (brick_x - 1)
+            case DS.RIGHT:
+                check_brick_x = (brick_x + brick_width)
+        check_brick_y = (brick_y + brick_height)
+        check_brick = self.get_brick(check_brick_x, check_brick_y)
+        if check_brick[0] < tile_map_index:
+            # so in current iteration my standard is tiles 4 and beyond are collideable
+            return True
+        return False

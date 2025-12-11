@@ -4,7 +4,7 @@ from enums.entity_enums import MovementState as MS, DirectionState as DS, Action
 from entity.animation_data import AnimationData
 
 class EntityData():
-    def __init__(self, position: list = [0, 0], w_h: tuple = (8, 8), animation_data=AnimationData(), weapon_data = None, entity_type=ET.KNIGHT, entity_category=EC.GROUND):
+    def __init__(self, position: list = [0, 0], w_h: tuple = (8, 8), animation_data=AnimationData(), weapon_data = None, entity_type=ET.KNIGHT, entity_category=EC.GROUND, speed=1, cell_pos=(0,0)):
         self.position = position  # (x, y)
         self.w_h = w_h  # (width, height)
         self.entity_type = entity_type
@@ -19,10 +19,12 @@ class EntityData():
 
         self.velocity = [0, 0]  # (x_velocity, y_velocity)
 
-        self.move_speed = 2
+        self.move_speed = speed
 
         self.jump_strength = 3
 
         # for now, just a simple thing to keep track of how long it has been in a decision state, for simple AI
         self.state_timer = 0
         self.frame_rate = 30  # default frame rate, can be changed later
+
+        self.cell_pos = cell_pos  # (cell_x_min, cell_y_min, cell_x_max, cell_y_max)

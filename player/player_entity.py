@@ -5,8 +5,8 @@ from player.player_state_machine import PlayerStateMachine as StateMachine
 from player.player_physics import PlayerPhysics
 from events_commands.commands import MovementCommand, AttackCommand
 from events_commands.events import StateChangedEvent
-from player.attack.attack_manager import AttackManager
-from player.animations.animation_manager import AnimationManager
+from attack.attack_manager import AttackManager
+from animations.animation_manager import AnimationManager
 class PlayerEntity:
     def __init__(self, context=None):
         self.events = []

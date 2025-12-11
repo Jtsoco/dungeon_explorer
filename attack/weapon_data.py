@@ -1,4 +1,4 @@
-from player.player_enums import AttackType as AT, WeaponActionState as WS
+from enums.entity_enums import AttackType as AT, WeaponActionState as WS
 
 
 def default_hitbox():
@@ -8,7 +8,7 @@ def default_hitbox():
     dict[2] = (8, 8)
     # note, need to add x, y offsets later. for now just width, height
     return dict
-from player.animations.animation_setup import default_attack_animation
+from animations.animation_setup import default_attack_animation
 
 
 

@@ -36,3 +36,12 @@ class WeaponActionState(Enum):
     DASHATTACK = auto()
     AIRATTACK = auto()
     DEFAULT = auto()
+
+class EntityType(Enum):
+    # not including player for now
+    SKULL = (3, 15)
+    KNIGHT = (3, 16)
+
+class EntityCategory(Enum):
+    FLYING = auto()
+    GROUND = auto()

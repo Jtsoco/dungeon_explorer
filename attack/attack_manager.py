@@ -1,4 +1,4 @@
-from player.player_enums import WeaponActionState as WAS
+from enums.entity_enums import WeaponActionState as WAS
 from events_commands.events import AttackFinishedEvent as AFE
 from events_commands.commands import AttackCommand
 

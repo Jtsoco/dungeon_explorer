@@ -7,6 +7,10 @@ class CellData():
         self.border_x = []
         self.border_y = []
         self.enemies = []
+        self.entity_types = []
+        # think of a better way of telling what entities are in the cell later rather than saving all types in here, but for now is fine rather than checking all enemies every time
+        self.loaded = False
+
 
     def update(self):
         pass

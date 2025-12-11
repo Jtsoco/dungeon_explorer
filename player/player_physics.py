@@ -1,7 +1,7 @@
 from events_commands.commands import Command, MovementCommand, MoveCommand, JumpCommand
 from events_commands.events import LandedEvent, StartedFallingEvent
-from player.player_enums import MovementState as MS
-from player.player_enums import DirectionState as DS
+from enums.entity_enums import MovementState as MS
+from enums.entity_enums import DirectionState as DS
 
 
 class PlayerPhysics:

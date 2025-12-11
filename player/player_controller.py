@@ -1,4 +1,4 @@
-from player.player_enums import InputEnums as IE, DirectionState as DS
+from enums.entity_enums import InputEnums as IE, DirectionState as DS
 # change InputEvents to InputEnums
 from events_commands.events import InputEvent
 import pyxel

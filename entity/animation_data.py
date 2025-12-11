@@ -1,5 +1,5 @@
 from animations.animation_setup import animation_setup
-from player.player_enums import MovementState as MS, DirectionState as DS, ActionState as AS
+from enums.entity_enums import MovementState as MS, DirectionState as DS, ActionState as AS
 from attack.weapon_data import WeaponData
 
 class AnimationData():

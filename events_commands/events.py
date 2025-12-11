@@ -1,4 +1,4 @@
-from player.player_enums import DirectionState as DS, MovementState as MS, InputEnums as IE
+from enums.entity_enums import DirectionState as DS, MovementState as MS, InputEnums as IE
 
 class Event():
     def __init__(self, name: str = "GenericEvent"):

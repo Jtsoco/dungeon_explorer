@@ -1,4 +1,4 @@
-from player.player_enums import MovementState as MS
+from enums.entity_enums import MovementState as MS
 from events_commands.events import StateChangedEvent
 
 class AnimationManager():

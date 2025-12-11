@@ -1,4 +1,4 @@
-from player.player_enums import AttackType as AT, WeaponActionState as WS
+from enums.entity_enums import AttackType as AT, WeaponActionState as WS
 
 
 def default_hitbox():

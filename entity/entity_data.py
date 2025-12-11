@@ -23,8 +23,11 @@ class EntityData():
 
         self.jump_strength = 3
 
+
+
         # for now, just a simple thing to keep track of how long it has been in a decision state, for simple AI
         self.state_timer = 0
         self.frame_rate = 30  # default frame rate, can be changed later
+        self.state_timer_limit = 60  # default time to wait before changing state, can be changed later
 
         self.cell_pos = cell_pos  # (cell_x_min, cell_y_min, cell_x_max, cell_y_max)

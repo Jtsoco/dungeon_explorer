@@ -10,6 +10,7 @@ class SkullController():
     # a barebones controller for a skull enemy
 
     def update(self, entity, context=None):
+        entity.state_timer += 1
         if context:
             return self.context_update(entity, context)
         else:
@@ -18,7 +19,6 @@ class SkullController():
     def context_update(self, entity, context):
         tile_context = context.tile_context
         events = []
-        entity.state_timer += 1
 
         if entity.movement_state == MS.WALKING:
             if self.check_ledge(entity, context, direction=entity.direction_state) or self.check_edge_of_cell(entity, context, direction=entity.direction_state):
@@ -29,6 +29,7 @@ class SkullController():
                     case DS.RIGHT:
                         events.append(InputEvent(IE.MOVE, direction=DS.LEFT))
                 entity.state_timer = 0
+                entity.state_timer_limit = random.randint(30, 90)
                 return events
         # if no ledge, just do regular contextless update
         events = self.contextless_update(entity)
@@ -50,8 +51,7 @@ class SkullController():
         selection = [MS.IDLE, MS.WALKING, MS.WALKING]
         events = []
         time = entity.state_timer
-        entity.state_timer += 1
-        if time >= 60:
+        if time >= entity.state_timer_limit:
             # get random from selection
             choice = random.choice(selection)
             match choice:
@@ -61,6 +61,7 @@ class SkullController():
                     direction = random.choice([DS.LEFT, DS.RIGHT])
                     events.append(InputEvent(IE.MOVE, direction=direction))
             entity.state_timer = 0
+            entity.state_timer_limit = random.randint(30, 90)
         return events
 
     # def update(self, entity, context):

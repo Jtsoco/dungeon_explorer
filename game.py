@@ -31,11 +31,18 @@ class Game():
         types = self.cell_manager.current_state.active_cell.entity_types
         self.entity_manager.setup_entities(types)
         # just this quick one for now on setting up entities, refactor later when redoing cell loading system
+        self.collision_manager = self.entity_manager.collision_manager
 
     def update(self):
+        main_events = []
         for enemy in self.cell_manager.current_state.get_enemies():
-            self.entity_manager.update(enemy)
-        self.player.update()
+            events = self.entity_manager.update(enemy)
+            main_events.extend(events)
+        events = self.player.update()
+        main_events.extend(events)
+        # after main events, need a last check to see if any state changes happend that need to be handled for respective entities
+        # possibly consider breaking down entity manager into subparts or having it like this for now where it contains a full 'sub process' for each entity
+        # for now all main events are collision, refactor for sound later
 
     def draw(self):
         self.scene_manager.draw()

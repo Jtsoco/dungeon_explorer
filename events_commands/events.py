@@ -1,4 +1,4 @@
-from enums.entity_enums import DirectionState as DS, MovementState as MS, InputEnums as IE
+from enums.entity_enums import DirectionState as DS, MovementState as MS, InputEnums as IE, CollisionEntityTarget as CET
 
 class Event():
     def __init__(self, name: str = "GenericEvent"):
@@ -42,3 +42,31 @@ class StartedFallingEvent(MovementEvent):
 class AttackFinishedEvent(Event):
     def __init__(self, name="AttackFinishedEvent"):
         super().__init__(name)
+
+class PossibleCollisionEvent(Event):
+    def __init__(self, origin=None, target_type = CET.ENTITY):
+        super().__init__(name="PossibleCollisionEvent")
+        self.origin = origin
+        self.target_type = target_type
+
+class PossibleAttackCollisionEvent(PossibleCollisionEvent):
+    def __init__(self, attack, target_type = CET.ENTITY):
+        # in this instance, the attack is the origin, instance of a weapon data class
+        # attack will carry an active hitbox
+        super().__init__(attack, target_type)
+        self.name = "PossibleAttackCollisionEvent"
+
+class PossibleEntityCollisionEvent(PossibleCollisionEvent):
+    def __init__(self, entity, target_type = CET.ENTITY):
+        # in this instance, the entity is the origin
+        # instance of an entity data class
+        super().__init__(entity, target_type)
+        self.name = "PossibleEntityCollisionEvent"
+
+class PossibleEntityDamageCollisionEvent(PossibleCollisionEvent):
+    def __init__(self, entity, target_type = CET.ENTITY):
+        # in this instance, the entity is the origin
+        # instance of an entity data class
+        # simply touching this entity causes damage
+        super().__init__(entity, target_type)
+        self.name = "PossibleEntityDamageCollisionEvent"

@@ -1,5 +1,5 @@
-from enums.entity_enums import WeaponActionState as WAS
-from events_commands.events import AttackFinishedEvent as AFE
+from enums.entity_enums import WeaponActionState as WAS, CollisionEntityTarget as CET
+from events_commands.events import AttackFinishedEvent as AFE, PossibleAttackCollisionEvent as PACE
 from events_commands.commands import AttackCommand
 
 class AttackManager():
@@ -21,6 +21,7 @@ class AttackManager():
                 self.finish_attack(weapon)
 
                 return AFE()
+            return PACE(weapon)
         return None
 
     def finish_attack(self, weapon):

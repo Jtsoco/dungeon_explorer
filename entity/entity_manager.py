@@ -1,11 +1,12 @@
 from animations.animation_manager import AnimationManager
 from attack.attack_manager import AttackManager
 from events_commands.commands import MovementCommand, AttackCommand
-from events_commands.events import StateChangedEvent
+from events_commands.events import StateChangedEvent, PossibleCollisionEvent as PCE
 from enums.entity_enums import EntityType as ET, EntityCategory as EC
 from player.player_state_machine import PlayerStateMachine
 from player.player_physics import PlayerPhysics
 from entity.controllers.skull_controller import SkullController
+from collisions.collision_manager import CollisionManager
 
 class EntityManager():
     def __init__(self, animation_manager=AnimationManager(), attack_manager=AttackManager(), context=None):
@@ -23,6 +24,7 @@ class EntityManager():
         self.animation_manager = animation_manager
         self.attack_manager = attack_manager
         self.context = context
+        self.main_return_events = []
 
 
 
@@ -64,11 +66,19 @@ class EntityManager():
         if state_change:
             self.delegate_event(state_change, entity)
 
+        events = self.main_return_events.copy()
+        self.main_return_events.clear()
+        # expand to sound later
+        return events
+
     def delegate_event(self, event, entity):
         match event:
             case StateChangedEvent():
                 # only animation manager needs it for now, but later it might be useful to have it delegated to all other systems too
                 self.animation_manager.handle_event(event, entity)
+            case PCE():
+                self.main_return_events.append(event)
+
         return [], []  # Return empty lists if no new events/commands
 
     def delegate_command(self, command, entity):

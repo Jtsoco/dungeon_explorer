@@ -1,4 +1,4 @@
-from enums.entity_enums import AttackType as AT, WeaponActionState as WS
+from enums.entity_enums import AttackType as AT, CollisionEntityTarget as CET, WeaponActionState as WS
 
 
 def default_hitbox():
@@ -13,7 +13,7 @@ from animations.animation_setup import default_attack_animation
 
 
 class WeaponData():
-    def __init__(self, animations=default_attack_animation(), weapon_type=AT.MELEE, damage=8, hitboxes=default_hitbox()):
+    def __init__(self, animations=default_attack_animation(), weapon_type=AT.MELEE, damage=8, hitboxes=default_hitbox(), target_type=CET.ENEMY):
         self.state = WS.SHEATHED
         self.active = False
         self.type = weapon_type

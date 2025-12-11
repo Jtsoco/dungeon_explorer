@@ -44,3 +44,6 @@ if args.r:
     recursive_replace(path, args.find, args.replace)
 else:
     replace_in_file(path, args.find, args.replace)
+
+# example case:
+# python replacement_script.py -fp . -r True -find player.player_enums -replace enums.entity_enums

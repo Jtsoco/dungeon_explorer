@@ -74,7 +74,7 @@ class EntityManager():
     def delegate_command(self, command, entity):
         match command:
             case MovementCommand():
-                return self.physics[entity.category].handle_command(command, entity)
+                return self.physics[entity.entity_category].handle_command(command, entity)
             case AttackCommand():
                 return self.attack_manager.handle_command(command, entity)
 

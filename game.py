@@ -66,6 +66,12 @@ class Game():
             print("Collision Event:", event)
         # for now all main events are collision, refactor for sound later
 
+        # then, do damage manager,
+        # get events from damage manager,
+        # for now if death event remove from entities, make death animation later
+        # for physics pass to entity physics manager through event handler and it will handle add momentum event, and add momentum, which will update position on next physics update (next frame then), but update entities momentum now.
+        # also edit physics manager, so that if momentum is above/below current speed based on direction, change by 1 until it matches that speed. revist eventually later for more robust acceleration/deceleration system
+
     def draw(self):
         self.scene_manager.draw()
         # for now this, but change it later when i have time

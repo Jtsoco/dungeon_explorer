@@ -19,7 +19,9 @@ class WeaponData():
         self.type = weapon_type
         self.damage = damage
         self.hitboxes = hitboxes
-        self.current_hitbox = None
+        self.target_type = target_type
+        # self.current_hitbox = None
+        # revisit hitbox code later
         # for now the animations are tied to the hitboxes and such, will separate later if desired
         self.animations = animations
 
@@ -31,3 +33,9 @@ class WeaponData():
     def get_current_frame(self):
         return self.current_animation[self.current_frame]
         # when rolled into two separate classes, just use animationData for the animation part. for now, current frame is used across so just using this. Eventually will separate to hitboxes data, animation data, and regular weapon data
+
+    def get_current_hitbox(self):
+        if self.active:
+            return self.hitboxes.get(self.current_frame, (0,0))
+        # if not active, just give empty hitbox, no collision there
+        return (0,0)

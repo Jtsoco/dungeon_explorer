@@ -1,4 +1,4 @@
-from enums.entity_enums import WeaponActionState as WAS, CollisionEntityTarget as CET
+from enums.entity_enums import WeaponActionState as WAS, CollisionEntityTarget as CET, DirectionState as DS
 from events_commands.events import AttackFinishedEvent as AFE, PossibleAttackCollisionEvent as PACE
 from events_commands.commands import AttackCommand
 
@@ -10,19 +10,30 @@ class AttackManager():
         if not player_data.weapon:
             return None
         # will create a dummy weapon data later, but also will in general will revisit how this is handled and if i will create a cleaner system that doesn't make calls to things that won't do anything, but for now this is fine
-        weapon = player_data.weapon
-        if weapon.active:
-            return self.update_weapon(weapon)
+        if player_data.weapon.active:
+            return self.update_weapon(player_data)
 
-    def update_weapon(self, weapon):
-        if self.update_frame_index(weapon):
-            if weapon.current_frame == 0:
+    def update_weapon(self, entity_data):
+        if self.update_frame_index(entity_data.weapon):
+            if entity_data.weapon.current_frame == 0:
                 # finished attack animation
-                self.finish_attack(weapon)
+                self.finish_attack(entity_data.weapon)
 
                 return AFE()
-            return PACE(weapon)
-        return None
+        pos = self.get_position(entity_data)
+        return PACE(entity_data, attack_position=pos, target_type=entity_data.weapon.target_type)
+
+
+    def get_position(self, entity_data):
+        weapon = entity_data.weapon
+        hitbox = weapon.get_current_hitbox()
+        if entity_data.direction_state == DS.RIGHT:
+            attack_x = entity_data.position[0] + entity_data.w_h[0]
+        else:
+            attack_x = entity_data.position[0] - hitbox[0]
+        attack_y = entity_data.position[1]
+        # super simple that doesn't take into account any offsets or anything, revisit later
+        return (attack_x, attack_y)
 
     def finish_attack(self, weapon):
         weapon.active = False

@@ -44,29 +44,38 @@ class AttackFinishedEvent(Event):
         super().__init__(name)
 
 class PossibleCollisionEvent(Event):
-    def __init__(self, origin=None, target_type = CET.ENTITY):
+    def __init__(self, origin=None, target_type = CET.ENEMY):
         super().__init__(name="PossibleCollisionEvent")
         self.origin = origin
         self.target_type = target_type
 
 class PossibleAttackCollisionEvent(PossibleCollisionEvent):
-    def __init__(self, attack, target_type = CET.ENTITY):
+    def __init__(self, origin, target_type = CET.ENEMY, attack_position= (0,0),):
         # in this instance, the attack is the origin, instance of a weapon data class
         # attack will carry an active hitbox
-        super().__init__(attack, target_type)
+        super().__init__(origin, target_type)
+        self.attack_position = attack_position
         self.name = "PossibleAttackCollisionEvent"
 
 class PossibleEntityCollisionEvent(PossibleCollisionEvent):
-    def __init__(self, entity, target_type = CET.ENTITY):
+    def __init__(self, entity, target_type = CET.ENEMY):
         # in this instance, the entity is the origin
         # instance of an entity data class
         super().__init__(entity, target_type)
         self.name = "PossibleEntityCollisionEvent"
 
 class PossibleEntityDamageCollisionEvent(PossibleCollisionEvent):
-    def __init__(self, entity, target_type = CET.ENTITY):
+    def __init__(self, entity, target_type = CET.ENEMY):
         # in this instance, the entity is the origin
         # instance of an entity data class
         # simply touching this entity causes damage
         super().__init__(entity, target_type)
         self.name = "PossibleEntityDamageCollisionEvent"
+
+class DamageEvent(Event):
+    def __init__(self, origin, target, damage_amount):
+        # will possibly add knockback later, and origin will move from reference to id
+        super().__init__(name="DamageEvent")
+        self.origin = origin
+        self.target = target
+        self.damage_amount = damage_amount

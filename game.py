@@ -6,6 +6,9 @@ from scene_manager import SceneManager
 from player.player_entity import PlayerEntity
 from debug.quick_debug import display_info, quick_point, outline_entity
 from entity.entity_manager import EntityManager
+from collisions.collision_manager import CollisionManager
+
+from events_commands.events import PossibleEntityCollisionEvent as PECE, PossibleAttackCollisionEvent as PACE
 class Game():
     def __init__(self):
     # need bus for communication between game systems
@@ -31,7 +34,7 @@ class Game():
         types = self.cell_manager.current_state.active_cell.entity_types
         self.entity_manager.setup_entities(types)
         # just this quick one for now on setting up entities, refactor later when redoing cell loading system
-        self.collision_manager = self.entity_manager.collision_manager
+        self.collision_manager = CollisionManager()
 
     def update(self):
         main_events = []
@@ -42,6 +45,16 @@ class Game():
         main_events.extend(events)
         # after main events, need a last check to see if any state changes happend that need to be handled for respective entities
         # possibly consider breaking down entity manager into subparts or having it like this for now where it contains a full 'sub process' for each entity
+
+        # take these main event filter logic type code sections and put them into a deticated filter module/class later, to clean this logic up
+        for event in main_events:
+            match event:
+                case PECE() | PACE():
+                    self.collision_manager.register_collision(event)
+        collision_events = self.collision_manager.update(self.player.data, self.cell_manager.current_state.get_enemies())
+
+        for event in collision_events:
+            print("Collision Event:", event)
         # for now all main events are collision, refactor for sound later
 
     def draw(self):

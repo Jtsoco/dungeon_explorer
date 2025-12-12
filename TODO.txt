@@ -1,0 +1,7 @@
+Swap out use of entities as their own identifier for an id for each entity, weapon or such, and make an entity look up system possibly if needed
+
+
+look up collision optimization things like quadtree
+probably overkill given the simple cell system as of now but whatever, fun to research later even if i don't implement it, but might implement for fun/learning
+
+hurry up and consolidate entity manager and player manager

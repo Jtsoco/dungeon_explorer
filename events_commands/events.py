@@ -73,9 +73,21 @@ class PossibleEntityDamageCollisionEvent(PossibleCollisionEvent):
         self.name = "PossibleEntityDamageCollisionEvent"
 
 class DamageEvent(Event):
-    def __init__(self, origin, target, damage_amount):
+    def __init__(self, origin, target, damage_amount, knockback=8):
         # will possibly add knockback later, and origin will move from reference to id
         super().__init__(name="DamageEvent")
         self.origin = origin
         self.target = target
         self.damage_amount = damage_amount
+        self.knockback = knockback
+
+
+class PhysicsEvent(Event):
+    def __init__(self, name="PhysicsEvent"):
+        super().__init__(name)
+
+class EntitySeparatedEvent(PhysicsEvent):
+    def __init__(self, entity_a, entity_b):
+        super().__init__(name="EntitySeparatedEvent")
+        self.entity_a = entity_a
+        self.entity_b = entity_b

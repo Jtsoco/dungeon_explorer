@@ -76,6 +76,7 @@ class EntityManager():
 
         events = self.main_return_events.copy()
         self.main_return_events.clear()
+
         # expand to sound later
         return events
 

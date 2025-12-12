@@ -1,8 +1,11 @@
-from events_commands.events import PossibleAttackCollisionEvent as PACE, PossibleEntityCollisionEvent as PECE, DamageEvent as DE
+from events_commands.events import PossibleAttackCollisionEvent as PACE, PossibleEntityCollisionEvent as PECE, DamageEvent as DE, EntitySeparatedEvent as ESE
 from enums.entity_enums import EntityType as ET, CollisionEntityTarget as CET, DirectionState as DS
 
 class CollisionManager():
     def __init__(self):
+
+        # NOTE eventually refactor this to poll through active entities in the game world instead of using events to check things, but fine for now. going in depth on making a collision manager system could be a lot of fun
+
         self.recent_collisions = []
         self.recent_attack_collisions = []
         # so the recent collisions will work like player controller checking for new inputs for now
@@ -33,9 +36,19 @@ class CollisionManager():
                 case PACE():
                     new = self.handle_attack_collision(event, player, entities)
                     new_events.extend(new)
-                # case PECE():
-                #     new = self.handle_entity_collision(event, player, entities)
-                #     new_events.extend(new)
+        for entity in entities:
+            # if an entity touches another, return damage touch event if touch damage, regular entity separation event otherwise, maybe a command to separate entities that's passed to physics
+
+            # for now only check against player, don't care about other entities colliding with each other
+            if self.check_collision(entity.position, entity.w_h, player.position, player.w_h):
+                if entity.touch_damage:
+                    damage_event = DE(entity, player, entity.touch_damage)
+                    new_events.append(damage_event)
+                else:
+                    separation_event = ESE(entity, player)
+                    new_events.append(separation_event)
+
+
         self.collision_queue.clear()
         return new_events
 
@@ -77,6 +90,12 @@ class CollisionManager():
         for entity in entities:
             pos_b = entity.position
             b_w_h = entity.w_h
-            if (pos_a[0] < pos_b[0] + b_w_h[0] and pos_b[0] < pos_a[0] + w_h[0] and pos_a[1] < pos_b[1] + b_w_h[1] and pos_b[1] < pos_a[1] + w_h[1]):
+            if self.check_collision(pos_a, w_h, pos_b, b_w_h):
                 hits.append(entity)
         return hits
+
+    def check_collision(self, pos_a, w_h_a: tuple, pos_b, w_h_b: tuple):
+        # AABB collision check
+        if (pos_a[0] < pos_b[0] + w_h_b[0] and pos_b[0] < pos_a[0] + w_h_a[0] and pos_a[1] < pos_b[1] + w_h_b[1] and pos_b[1] < pos_a[1] + w_h_a[1]):
+            return True
+        return False

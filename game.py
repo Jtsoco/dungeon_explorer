@@ -4,11 +4,13 @@ from startup_context import StartupContext
 from cell_manager import CellManager
 from scene_manager import SceneManager
 from player.player_entity import PlayerEntity
-from debug.quick_debug import display_info, quick_point, outline_entity
+from debug.quick_debug import display_info, quick_point, outline_entity, calculate_fps
 from entity.entity_manager import EntityManager
 from collisions.collision_manager import CollisionManager
 
-from events_commands.events import PossibleEntityCollisionEvent as PECE, PossibleAttackCollisionEvent as PACE
+from events_commands.events import PossibleAttackCollisionEvent as PACE
+
+from datetime import datetime
 class Game():
     def __init__(self):
     # need bus for communication between game systems
@@ -36,6 +38,13 @@ class Game():
         # just this quick one for now on setting up entities, refactor later when redoing cell loading system
         self.collision_manager = CollisionManager()
 
+
+        # debug for framerate
+        self.last_time = datetime.now()
+        self.current_time = datetime.now()
+        self.last_frame_count = 0
+        self.current_frame_count = 0
+
     def update(self):
         main_events = []
         for enemy in self.cell_manager.current_state.get_enemies():
@@ -49,7 +58,7 @@ class Game():
         # take these main event filter logic type code sections and put them into a deticated filter module/class later, to clean this logic up
         for event in main_events:
             match event:
-                case PECE() | PACE():
+                case PACE():
                     self.collision_manager.register_collision(event)
         collision_events = self.collision_manager.update(self.player.data, self.cell_manager.current_state.get_enemies())
 
@@ -65,13 +74,19 @@ class Game():
             self.player.renderer.render(enemy)
         self.player.draw()
         camera_pos = self.scene_manager.camera.current_camera
-        display_info(f"Player Pos: {self.player.data.position}", pos_x=camera_pos[0]+2, pos_y=camera_pos[1]+2)
+        # display_info(f"Player Pos: {self.player.data.position}", pos_x=camera_pos[0]+2, pos_y=camera_pos[1]+2)
         # outline_entity(self.player.data)
 
         # player animation
-        a_d = self.player.data.animation_data
+        # a_d = self.player.data.animation_data
         # display_info(f"Anim State: M-{self.player.data.movement_state.name} D-{self.player.data.direction_state.name}", pos_x=camera_pos[0]+2, pos_y=camera_pos[1]+12)
         # display_info(f"Attack State: {self.player.data.action_state.name}", pos_x=camera_pos[0]+2, pos_y=camera_pos[1]+17)
         # display_info(f"Attack frame: {self.player.data.weapon.current_frame}", pos_x=camera_pos[0]+2, pos_y=camera_pos[1]+22)
         # display_info(f"Anim Frame: {a_d.current_frame}", pos_x=camera_pos[0]+2, pos_y=camera_pos[1]+27)
         # display_info(f"Frame Pos: {a_d.get_current_frame().pos}", pos_x=camera_pos[0]+2, pos_y=camera_pos[1]+32)
+        self.current_time = datetime.now()
+        self.current_frame_count = pyxel.frame_count
+        fps = calculate_fps(self.last_time, self.current_time, self.last_frame_count, self.current_frame_count)
+        self.last_time = self.current_time
+        self.last_frame_count = self.current_frame_count
+        display_info(fps, pos_x=camera_pos[0]+2, pos_y=camera_pos[1]+2)

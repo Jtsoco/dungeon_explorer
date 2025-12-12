@@ -57,20 +57,7 @@ class PossibleAttackCollisionEvent(PossibleCollisionEvent):
         self.attack_position = attack_position
         self.name = "PossibleAttackCollisionEvent"
 
-class PossibleEntityCollisionEvent(PossibleCollisionEvent):
-    def __init__(self, entity, target_type = CET.ENEMY):
-        # in this instance, the entity is the origin
-        # instance of an entity data class
-        super().__init__(entity, target_type)
-        self.name = "PossibleEntityCollisionEvent"
 
-class PossibleEntityDamageCollisionEvent(PossibleCollisionEvent):
-    def __init__(self, entity, target_type = CET.ENEMY):
-        # in this instance, the entity is the origin
-        # instance of an entity data class
-        # simply touching this entity causes damage
-        super().__init__(entity, target_type)
-        self.name = "PossibleEntityDamageCollisionEvent"
 
 class DamageEvent(Event):
     def __init__(self, origin, target, damage_amount, knockback=8):

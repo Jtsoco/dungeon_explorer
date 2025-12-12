@@ -1,4 +1,4 @@
-from events_commands.events import PossibleAttackCollisionEvent as PACE, PossibleEntityCollisionEvent as PECE, DamageEvent as DE, EntitySeparatedEvent as ESE
+from events_commands.events import PossibleAttackCollisionEvent as PACE, DamageEvent as DE, EntitySeparatedEvent as ESE
 from enums.entity_enums import EntityType as ET, CollisionEntityTarget as CET, DirectionState as DS
 
 class CollisionManager():

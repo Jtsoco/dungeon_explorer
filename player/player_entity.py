@@ -4,7 +4,7 @@ from player.player_renderer import PlayerRenderer
 from player.player_state_machine import PlayerStateMachine as StateMachine
 from player.player_physics import PlayerPhysics
 from events_commands.commands import MovementCommand, AttackCommand
-from events_commands.events import StateChangedEvent
+from events_commands.events import StateChangedEvent, PossibleCollisionEvent as PCE,  AttackFinishedEvent as AFE
 from attack.attack_manager import AttackManager
 from animations.animation_manager import AnimationManager
 class PlayerEntity:
@@ -27,6 +27,8 @@ class PlayerEntity:
         if self.context:
             x, y = self.context.player_start
             self.data.position = [x * self.context.BRICK_SIZE, y * self.context.BRICK_SIZE]
+
+        self.main_return_events = []
 
 
     def update(self):
@@ -62,8 +64,13 @@ class PlayerEntity:
         # should just return events as of now
         attack_event = self.attack_manager.update(self.data)
         if attack_event:
-            state_updates.append(attack_event)
-
+            match attack_event:
+                case AFE():
+                    state_updates.append(attack_event)
+                case PCE():
+                    # collision events are main events
+                    # consider dividing events into main and sub, or lvl1 lvl2 event types later to inherit from for easier filtering
+                    self.main_return_events.append(attack_event)
         # update physics after all events and commands have been processed
         # state_updates can be events or commands to process after physics update
         # just keeping it events for now
@@ -71,12 +78,18 @@ class PlayerEntity:
         if state_changed:
             self.delegate_event(state_changed)
 
+        events = self.main_return_events.copy()
+        self.main_return_events.clear()
+        # expand to sound later
+        return events
 
     def delegate_event(self, event):
         match event:
             case StateChangedEvent():
                 # only animation manager needs it for now, but later it might be useful to have it delegated to all other systems too
                 self.animation_manager.handle_event(event, self.data)
+            case PCE():
+                self.main_return_events.append(event)
         return [], []  # Return empty lists if no new events/commands
 
     def delegate_command(self, command):

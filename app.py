@@ -13,6 +13,7 @@
 import pyxel
 TRANSPARENT_COLOR = 2
 from game import Game
+from datetime import datetime
 
 class App():
     def __init__(self):
@@ -28,6 +29,7 @@ class App():
         # for an actual game, the menu would select the game (dungeon) to play
         self.running = False
 
+
     def run(self):
         self.running = True
         self.game = Game()
@@ -42,6 +44,7 @@ class App():
         # would actually draw the current active state, game for now
         pyxel.cls(0)
         self.game.draw()
+
 
 app = App()
 app.run()

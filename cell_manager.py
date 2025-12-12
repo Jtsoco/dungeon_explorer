@@ -59,7 +59,7 @@ class SingleCellManager():
                         case ET.SKULL.value:
                             animation_data = AnimationData(skull_animation())
                             # honestly could probably share the animation frames between all entities, this is fine for now but maybe change later
-                            enemy_data = EntityData(entity_type=ET.SKULL, position=[brick_x * 8, brick_y * 8], animation_data=animation_data, cell_pos=(cell_data.cell_x, cell_data.cell_y))
+                            enemy_data = EntityData(entity_type=ET.SKULL, position=[brick_x * 8, brick_y * 8], animation_data=animation_data, cell_pos=(cell_data.cell_x, cell_data.cell_y), touch_damage=10)
                             enemies.append(enemy_data)
                             if ET.SKULL not in entity_types:
                                 entity_types.append(ET.SKULL)

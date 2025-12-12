@@ -1,4 +1,4 @@
-from enums.entity_enums import DirectionState as DS, MovementState as MS, InputEnums as IE
+from enums.entity_enums import DirectionState as DS, MovementState as MS, InputEnums as IE, CollisionEntityTarget as CET
 
 class Event():
     def __init__(self, name: str = "GenericEvent"):
@@ -42,3 +42,39 @@ class StartedFallingEvent(MovementEvent):
 class AttackFinishedEvent(Event):
     def __init__(self, name="AttackFinishedEvent"):
         super().__init__(name)
+
+class PossibleCollisionEvent(Event):
+    def __init__(self, origin=None, target_type = CET.ENEMY):
+        super().__init__(name="PossibleCollisionEvent")
+        self.origin = origin
+        self.target_type = target_type
+
+class PossibleAttackCollisionEvent(PossibleCollisionEvent):
+    def __init__(self, origin, target_type = CET.ENEMY, attack_position= (0,0),):
+        # in this instance, the attack is the origin, instance of a weapon data class
+        # attack will carry an active hitbox
+        super().__init__(origin, target_type)
+        self.attack_position = attack_position
+        self.name = "PossibleAttackCollisionEvent"
+
+
+
+class DamageEvent(Event):
+    def __init__(self, origin, target, damage_amount, knockback=8):
+        # will possibly add knockback later, and origin will move from reference to id
+        super().__init__(name="DamageEvent")
+        self.origin = origin
+        self.target = target
+        self.damage_amount = damage_amount
+        self.knockback = knockback
+
+
+class PhysicsEvent(Event):
+    def __init__(self, name="PhysicsEvent"):
+        super().__init__(name)
+
+class EntitySeparatedEvent(PhysicsEvent):
+    def __init__(self, entity_a, entity_b):
+        super().__init__(name="EntitySeparatedEvent")
+        self.entity_a = entity_a
+        self.entity_b = entity_b

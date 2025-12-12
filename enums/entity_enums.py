@@ -45,3 +45,13 @@ class EntityType(Enum):
 class EntityCategory(Enum):
     FLYING = auto()
     GROUND = auto()
+
+class CollisionEnums(Enum):
+    ENTITY = auto()
+    PROJECTILE = auto()
+    ENVIRONMENT = auto()
+
+class CollisionEntityTarget(Enum):
+    PLAYER = auto()
+    ENEMY = auto()
+    ALL = auto()

@@ -1,11 +1,12 @@
 from animations.animation_manager import AnimationManager
 from attack.attack_manager import AttackManager
 from events_commands.commands import MovementCommand, AttackCommand
-from events_commands.events import StateChangedEvent
+from events_commands.events import StateChangedEvent, PossibleCollisionEvent as PCE, AttackFinishedEvent as AFE
 from enums.entity_enums import EntityType as ET, EntityCategory as EC
 from player.player_state_machine import PlayerStateMachine
 from player.player_physics import PlayerPhysics
 from entity.controllers.skull_controller import SkullController
+from collisions.collision_manager import CollisionManager
 
 class EntityManager():
     def __init__(self, animation_manager=AnimationManager(), attack_manager=AttackManager(), context=None):
@@ -23,6 +24,7 @@ class EntityManager():
         self.animation_manager = animation_manager
         self.attack_manager = attack_manager
         self.context = context
+        self.main_return_events = []
 
 
 
@@ -57,18 +59,35 @@ class EntityManager():
         state_updates = self.physics[entity.entity_category].update(entity)
         # should just return events as of now
         attack_event = self.attack_manager.update(entity)
+
+        # clean this up later, make it more readable and consider organizing based match events to be drawn from a module or such, but for now fine, maybe make main events not a class attribute later
         if attack_event:
-            state_updates.append(attack_event)
+            match attack_event:
+                case AFE():
+                    state_updates.append(attack_event)
+                case PCE():
+                    # collision events are main events
+                    # consider dividing events into main and sub, or lvl1 lvl2 event types later to inherit from for easier filtering
+                    self.main_return_events.append(attack_event)
 
         state_change = self.state_machine.state_updates(entity, state_updates)
         if state_change:
             self.delegate_event(state_change, entity)
+
+        events = self.main_return_events.copy()
+        self.main_return_events.clear()
+
+        # expand to sound later
+        return events
 
     def delegate_event(self, event, entity):
         match event:
             case StateChangedEvent():
                 # only animation manager needs it for now, but later it might be useful to have it delegated to all other systems too
                 self.animation_manager.handle_event(event, entity)
+            case PCE():
+                self.main_return_events.append(event)
+
         return [], []  # Return empty lists if no new events/commands
 
     def delegate_command(self, command, entity):

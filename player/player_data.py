@@ -15,6 +15,8 @@ class AnimationData():
 
 class PlayerData():
     def __init__(self):
+        # refactor this to be derived from entity data later
+        self.health = 100
         self.position = [0, 0]
         self.w_h = (8, 8)
         # width and height for now, revisit values later
@@ -24,6 +26,7 @@ class PlayerData():
         self.last_movement_input = None
         self.direction_state = DS.RIGHT
         self.action_state = AS.NONE
+        self.player=True
 
 
         self.move_speed = 2

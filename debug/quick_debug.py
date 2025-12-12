@@ -1,4 +1,20 @@
 import pyxel
+
+
+def calculate_fps(previous_time, current_time, previous_frame_count, current_frame_count):
+    """Calculate frames per second (FPS)."""
+    time_diff = (current_time - previous_time).total_seconds()
+    frame_diff = current_frame_count - previous_frame_count
+    if time_diff > 0:
+        fps = frame_diff / time_diff
+    else:
+        fps = 0
+    # round fps and return
+    return round(fps)
+
+
+
+
 def display_info(string, pos_x=0, pos_y=0):
     """Display debug info on screen at specified position."""
     pyxel.text(pos_x, pos_y, f"DI: {string}", 7)

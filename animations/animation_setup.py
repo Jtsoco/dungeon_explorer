@@ -1,4 +1,4 @@
-from enums.entity_enums import MovementState as MS, DirectionState as DS, ActionState as AS, WeaponActionState as WAS
+from enums.entity_enums import HorizontalMovementState as HMS, VerticalMovementState as VMS, DirectionState as DS, ActionState as AS, WeaponActionState as WAS
 from animations.animation_enums import PlayerAnimationEnums as PAE
 
 class AnimationFrame():
@@ -11,16 +11,16 @@ def animation_setup():
     # for regular offset, it will refer to where the hands are drawn relative to the top left of its brick tile
     animations = {}
     offset = (7,5)
-    animations[MS.IDLE] = [AnimationFrame(PAE.PLAYER_IDLE_1.value, duration=12, offset=offset),]
+    animations[HMS.IDLE] = [AnimationFrame(PAE.PLAYER_IDLE_1.value, duration=12, offset=offset),]
 
-    animations[MS.WALKING] = [
+    animations[HMS.WALKING] = [
         AnimationFrame(PAE.PLAYER_WALK_1.value, duration=6, offset=offset),
         AnimationFrame(PAE.PLAYER_WALK_2.value, duration=6, offset=offset)
     ]
     offset = (7, 5)
-    animations[MS.JUMPING] = [AnimationFrame(PAE.PLAYER_JUMP.value, duration=12, offset=offset),]
+    animations[VMS.JUMPING] = [AnimationFrame(PAE.PLAYER_JUMP.value, duration=12, offset=offset),]
     offset = (7,5)
-    animations[MS.FALLING] = [AnimationFrame(PAE.PLAYER_FALL.value, duration=12, offset=offset),]
+    animations[VMS.FALLING] = [AnimationFrame(PAE.PLAYER_FALL.value, duration=12, offset=offset),]
 
     return animations
 # return a dict of animations using some predefined setup
@@ -47,8 +47,8 @@ def default_attack_animation():
 
 def skull_animation():
     animations = {}
-    animations[MS.IDLE] = [AnimationFrame((0, 15), duration=12)]
-    animations[MS.WALKING] = [
+    animations[HMS.IDLE] = [AnimationFrame((0, 15), duration=12)]
+    animations[HMS.WALKING] = [
         AnimationFrame((0, 15), duration=6),
         AnimationFrame((1, 15), duration=6)
     ]

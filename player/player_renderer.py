@@ -1,5 +1,5 @@
 import pyxel
-from enums.entity_enums import MovementState as MS, DirectionState as DS, ActionState as AS
+from enums.entity_enums import DirectionState as DS, ActionState as AS
 from debug.quick_debug import display_info
 class PlayerRenderer():
     def __init__(self):

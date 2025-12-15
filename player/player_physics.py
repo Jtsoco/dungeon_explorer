@@ -1,6 +1,6 @@
 from events_commands.commands import Command, MovementCommand, MoveCommand, JumpCommand
 from events_commands.events import LandedEvent, StartedFallingEvent, AddMomentumEvent as AME
-from enums.entity_enums import MovementState as MS
+from enums.entity_enums import HorizontalMovementState as HMS, VerticalMovementState as VMS
 from enums.entity_enums import DirectionState as DS
 
 
@@ -69,7 +69,7 @@ class PlayerPhysics:
         # this adjusts speed horizontally, so if an entity is launched beyond its speed it can gradually return to normal speed. come up with something to handle lots of momentum later possibly, if it matters
         # don't need horizontal, as gravity already handles that
 
-        if data.movement_state == MS.WALKING:
+        if data.h_movement_state == HMS.WALKING:
             speed = -1 * data.move_speed if data.direction_state == DS.LEFT else data.move_speed
         else:
             speed = 0
@@ -97,8 +97,8 @@ class PlayerPhysics:
 
 
 
-        match data.movement_state:
-            case MS.JUMPING | MS.FALLING:
+        match data.v_movement_state:
+            case VMS.JUMPING | VMS.FALLING:
                 if self.check_tile_collisions(data, context):
                     self.stepback(data, data.velocity[1], context, axis=1)
                     if self.updward_momentum(data):

@@ -1,4 +1,4 @@
-from enums.entity_enums import DirectionState as DS, MovementState as MS, InputEnums as IE, CollisionEntityTarget as CET
+from enums.entity_enums import DirectionState as DS, HorizontalMovementState as HMs, VerticalMovementState as VMS, InputEnums as IE, CollisionEntityTarget as CET
 
 class Event():
     def __init__(self, name: str = "GenericEvent"):

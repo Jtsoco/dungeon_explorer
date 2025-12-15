@@ -41,10 +41,10 @@ class AnimationManager():
         animation_data.current_animation = animation
 
     def get_next_animation(self, player_data):
-        if player_data.vertical_movement_state != VMS.STANDING:
-            frame_movement = player_data.vertical_movement_state
+        if player_data.v_movement_state != VMS.STANDING:
+            frame_movement = player_data.v_movement_state
         else:
-            frame_movement = player_data.horizontal_movement_state
+            frame_movement = player_data.h_movement_state
         return player_data.animation_data.animations.get(frame_movement, player_data.animation_data.animations[HMS.IDLE])
 
     def reset(self, player_data):

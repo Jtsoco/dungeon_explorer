@@ -1,5 +1,5 @@
 from events_commands.events import InputEvent
-from enums.entity_enums import MovementState as MS, InputEnums as IE, DirectionState as DS
+from enums.entity_enums import HorizontalMovementState as HMS, InputEnums as IE, DirectionState as DS
 import random
 from debug.quick_debug import display_info
 
@@ -20,7 +20,7 @@ class SkullController():
         tile_context = context.tile_context
         events = []
 
-        if entity.movement_state == MS.WALKING:
+        if entity.h_movement_state == HMS.WALKING:
             if self.check_ledge(entity, context, direction=entity.direction_state) or self.check_edge_of_cell(entity, context, direction=entity.direction_state):
                 # reverse direction
                 match entity.direction_state:
@@ -48,16 +48,16 @@ class SkullController():
 
     def contextless_update(self, entity):
         # with this it may technically be able to fall of a ledge if it starts from idle right in front of it, but eh rework later when i dedicate more time to ai
-        selection = [MS.IDLE, MS.WALKING, MS.WALKING]
+        selection = [HMS.IDLE, HMS.WALKING, HMS.WALKING]
         events = []
         time = entity.state_timer
         if time >= entity.state_timer_limit:
             # get random from selection
             choice = random.choice(selection)
             match choice:
-                case MS.IDLE:
+                case HMS.IDLE:
                     events.append(InputEvent(IE.STOP_MOVE))
-                case MS.WALKING:
+                case HMS.WALKING:
                     direction = random.choice([DS.LEFT, DS.RIGHT])
                     events.append(InputEvent(IE.MOVE, direction=direction))
             entity.state_timer = 0

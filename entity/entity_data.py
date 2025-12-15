@@ -1,5 +1,5 @@
 # basic entity data
-from enums.entity_enums import HorizontalMovementState as MS, VerticalMovementState as VMS, DirectionState as DS, ActionState as AS, EntityType as ET, EntityCategory as EC
+from enums.entity_enums import HorizontalMovementState as HMS, VerticalMovementState as VMS, DirectionState as DS, ActionState as AS, EntityType as ET, EntityCategory as EC
 # make an enemy type enum, and use composition for enemy behaviors/ things later
 from entity.animation_data import AnimationData
 
@@ -13,8 +13,8 @@ class EntityData():
         self.entity_category = entity_category  # whether the entity is affected by gravity or not
 
         self.animation_data = animation_data
-        self.h_movement_state = MS.IDLE
-        self.v_movement_state = MS.STANDING
+        self.h_movement_state = HMS.IDLE
+        self.v_movement_state = VMS.STANDING
         self.direction_state = DS.RIGHT
         self.action_state = AS.NONE
 

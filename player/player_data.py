@@ -28,6 +28,7 @@ class PlayerData():
         self.action_state = AS.NONE
         self.player=True
 
+        self.secondary_momentum = [0,0]
 
         self.move_speed = 2
         self.jump_strength = 3

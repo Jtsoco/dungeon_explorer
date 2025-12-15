@@ -1,5 +1,5 @@
 from events_commands.commands import Command, MovementCommand, MoveCommand, JumpCommand
-from events_commands.events import LandedEvent, StartedFallingEvent
+from events_commands.events import LandedEvent, StartedFallingEvent, AddMomentumEvent as AME
 from enums.entity_enums import MovementState as MS
 from enums.entity_enums import DirectionState as DS
 
@@ -25,6 +25,7 @@ class PlayerPhysics:
         returned_events = self.horizontal_motion(data, context)
         events.extend(returned_events)
         returned_event = self.vertical_motion(data, context)
+        self.secondary_momentum_update(data, context)
         if returned_event:
             events.append(returned_event)
         # if there are any events after this, added here. might not actually be any, but jump will have some state change events probably
@@ -45,6 +46,18 @@ class PlayerPhysics:
             self.stepback(data, -movement, context)
         return []
         # for now just check collision with all, no need to make it only check the sides it could move into based on direction
+
+    def secondary_momentum_update(self, data, context):
+        # apply secondary momentum like knockback
+        data.position[0] += data.secondary_momentum[0]
+        if self.check_tile_collisions(data, context):
+            self.stepback(data, data.secondary_momentum[0], context, axis=0)
+        data.position[1] += data.secondary_momentum[1]
+
+        if self.check_tile_collisions(data, context):
+            self.stepback(data, data.secondary_momentum[1], context, axis=1)
+
+
 
     def check_tile_collisions(self, data, context):
         x, y = int(data.position[0]), int(data.position[1])
@@ -120,8 +133,15 @@ class PlayerPhysics:
         while self.check_tile_collisions(data, context):
             data.position[axis] += sign
 
-    def handle_event(self, event, data):
-        pass
+    def handle_event(self, event):
+        match event:
+            case AME():
+                self.apply_momentum_event(event)
+
+    def apply_momentum(self, event):
+        event.entity.secondary_momentum[0] += event.momentum_vector[0]
+        event.entity.secondary_momentum[1] += event.momentum_vector[1]
+
 
     def handle_command(self, command, data):
 

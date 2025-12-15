@@ -12,6 +12,8 @@ class EntityData():
         self.entity_type = entity_type
         self.entity_category = entity_category  # whether the entity is affected by gravity or not
 
+        self.secondary_momentum = [0,0]
+
         self.animation_data = animation_data
         self.movement_state = MS.IDLE
         self.direction_state = DS.RIGHT

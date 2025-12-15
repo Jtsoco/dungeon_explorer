@@ -78,6 +78,7 @@ class Game():
         match event:
             case DE():
                 events = self.damage_manager.handle_event(event)
+                new_events.extend(events)
             case PE():
                 self.entity_manager.handle_event(event)
         return new_events, new_commands

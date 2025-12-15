@@ -41,11 +41,13 @@ class PlayerPhysics:
         # need to create code to handle a sprites position overlapping tiles, grabbing those tiles it's not overlapping with. for that, will need to edit tile context to allow that.
 
         #
+        initial_pos = data.position[0]
         movement = data.velocity[0]
+        sign = -1 if movement < 0 else 1
         # data.position[0] += movement
         movement_increments = abs(movement) // 8
-        initial_movement = data.velocity[0] % 8
-        data.position[0] += initial_movement
+        initial_movement = abs(data.velocity[0]) % 8
+        data.position[0] += initial_movement * sign
         if self.check_tile_collisions(data, context):
             self.stepback(data, -movement, context)
             self.check_horizontal_momentum(data)
@@ -163,7 +165,7 @@ class PlayerPhysics:
 
     def add_momentum_event(self, event):
         entity = event.entity
-        momentum = event.momentum  # tuple (x_momentum, y_momentum)
+        momentum = event.momentum_vector  # tuple (x_momentum, y_momentum)
         entity.velocity[0] += momentum[0]
         entity.velocity[1] += momentum[1]
 
@@ -192,6 +194,16 @@ class PlayerPhysics:
             case DS.RIGHT:
                 data.velocity[0] = data.move_speed
             case DS.HALT:
-                data.velocity[0] = 0
+                if data.velocity[0] > 0:
+                    if data.velocity[0] <= data.move_speed:
+                        data.velocity[0] = 0
+                    else:
+                        data.velocity[0] -= data.move_speed
+                elif data.velocity[0] < 0:
+                    if data.velocity[0] >= -data.move_speed:
+                        data.velocity[0] = 0
+                    else:
+                        data.velocity[0] += data.move_speed
+                    #
         return ([], [])  # no events or commands to return for now
     # possibly remove return from here if no events or commands are generated at all in the future

@@ -22,10 +22,10 @@ class DamageManager():
             print(f"{target.entity_type} has died.")
         if knockback:
             # calculate knockback direction here, turn into vector, then send out to give to physics manager. for now, just basic based on direction of entity from target
-            if target.direction_state == DS.LEFT:
-                kb_vector = [-3, 3]
-            else:
-                kb_vector = (3, 3)
+            # if target.direction_state == DS.LEFT:
+            #     kb_vector = [-3, 3]
+            # else:
+            kb_vector = (3, 3)
             momentum_event = AddMomentumEvent(target, kb_vector)
             events.append(momentum_event)
         return events

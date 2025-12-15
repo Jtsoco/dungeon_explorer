@@ -1,4 +1,4 @@
-from enums.entity_enums import HorizontalMovementState as HMS, VerticalMovementState as VMS, DirectionState as DS, ActionState as AS
+from enums.entity_enums import HorizontalMovementState as HMS, VerticalMovementState as VMS, DirectionState as DS, ActionState as AS, EntityCategory as EC, EntityType as ET
 
 
 from animations.animation_setup import animation_setup
@@ -28,6 +28,8 @@ class PlayerData():
         self.direction_state = DS.RIGHT
         self.action_state = AS.NONE
         self.player=True
+        self.entity_category = EC.GROUND
+        self.entity_type = ET.KNIGHT
 
 
         self.move_speed = 2

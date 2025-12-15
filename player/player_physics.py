@@ -25,7 +25,7 @@ class PlayerPhysics:
         returned_events = self.horizontal_motion(data, context)
         events.extend(returned_events)
         returned_event = self.vertical_motion(data, context)
-        self.secondary_momentum_update(data, context)
+        # self.secondary_momentum_update(data, context)
         if returned_event:
             events.append(returned_event)
         # if there are any events after this, added here. might not actually be any, but jump will have some state change events probably
@@ -40,22 +40,32 @@ class PlayerPhysics:
         # will eventually implement collision detection here so that
         # if the speed is greater than brick size, it will divide the movement into many smaller movements and check each for collision, ending movement if collision detected
         # need to create code to handle a sprites position overlapping tiles, grabbing those tiles it's not overlapping with. for that, will need to edit tile context to allow that.
-        movement = data.velocity[0]
+        movement = data.velocity[0] + data.secondary_momentum[0]
         data.position[0] += movement
         if self.check_tile_collisions(data, context):
             self.stepback(data, -movement, context)
+            data.secondary_momentum[0] = 0
         return []
         # for now just check collision with all, no need to make it only check the sides it could move into based on direction
 
-    def secondary_momentum_update(self, data, context):
-        # apply secondary momentum like knockback
-        data.position[0] += data.secondary_momentum[0]
-        if self.check_tile_collisions(data, context):
-            self.stepback(data, data.secondary_momentum[0], context, axis=0)
-        data.position[1] += data.secondary_momentum[1]
+    def chunk_movement(self, data, context, axis=0):
+        # for handling movement in chunks if speed is greater than brick size
+        pass
 
-        if self.check_tile_collisions(data, context):
-            self.stepback(data, data.secondary_momentum[1], context, axis=1)
+    # def secondary_momentum_update(self, data, context):
+        # apply secondary momentum like knockback
+        # data.position[0] += data.secondary_momentum[0]
+        # if self.check_tile_collisions(data, context):
+        #     self.stepback(data, -data.secondary_momentum[0], context, axis=0)
+        #     data.secondary_momentum[0] = 0
+
+        # data.position[1] -= data.secondary_momentum[1]
+
+        # if self.check_tile_collisions(data, context):
+        #     self.stepback(data, data.secondary_momentum[1], context, axis=1)
+        #     data.secondary_momentum[1] = 0
+        # data.secondary_momentum[0] = data.secondary_momentum[0]*0.8
+        # data.secondary_momentum[1] = data.secondary_momentum[1]*0.8
 
 
 
@@ -72,7 +82,8 @@ class PlayerPhysics:
 
     def vertical_motion(self, data, context):
         event = None
-        data.position[1] = int(data.position[1] - data.velocity[1])
+        movement = data.velocity[1] + data.secondary_momentum[1]
+        data.position[1] = int(data.position[1] - movement)
 
 
 
@@ -84,14 +95,21 @@ class PlayerPhysics:
 
                         event = StartedFallingEvent()
                         data.velocity[1] = 0
+                        data.secondary_momentum[1] = 0
                     else:
                         # hit head/ceiling
                         # return swap to falling event
                         event = LandedEvent()
                         data.velocity[1] = 0
+                        data.secondary_momentum[1] = 0
                         return event
 
             case _:
+                if self.check_tile_collisions(data, context):
+                    self.stepback(data, data.velocity[1], context, axis=1)
+                    data.velocity[1] = 0
+                    data.secondary_momentum[1] = 0
+                    return event
                 ground_beneath = self.ground_beneath_player(data, context)
                 if ground_beneath:
                     data.velocity[1] = 0
@@ -137,8 +155,9 @@ class PlayerPhysics:
         match event:
             case AME():
                 self.apply_momentum_event(event)
+        return []
 
-    def apply_momentum(self, event):
+    def apply_momentum_event(self, event):
         event.entity.secondary_momentum[0] += event.momentum_vector[0]
         event.entity.secondary_momentum[1] += event.momentum_vector[1]
 

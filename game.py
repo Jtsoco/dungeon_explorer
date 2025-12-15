@@ -67,7 +67,8 @@ class Game():
         events = collision_events
         while events:
             event = events.pop(0)
-            self.delegate_event(event)
+            new_events = self.delegate_event(event)
+            events.extend(new_events)
 
 
 

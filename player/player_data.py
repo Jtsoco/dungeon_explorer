@@ -1,4 +1,4 @@
-from enums.entity_enums import MovementState as MS, DirectionState as DS, ActionState as AS
+from enums.entity_enums import MovementState as MS, DirectionState as DS, ActionState as AS, EntityCategory as EC, EntityType as ET
 
 
 from animations.animation_setup import animation_setup
@@ -27,6 +27,8 @@ class PlayerData():
         self.direction_state = DS.RIGHT
         self.action_state = AS.NONE
         self.player=True
+        self.entity_type = ET.KNIGHT
+        self.entity_category = EC.GROUND
 
         self.secondary_momentum = [0,0]
 

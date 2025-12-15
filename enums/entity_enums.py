@@ -1,8 +1,11 @@
 from enum import Enum, auto
 
-class MovementState(Enum):
+class HorizontalMovementState(Enum):
     IDLE = auto()
     WALKING = auto()
+
+class VerticalMovementState(Enum):
+    STANDING = auto()
     JUMPING = auto()
     FALLING = auto()
 

@@ -1,4 +1,4 @@
-from enums.entity_enums import MovementState as MS
+from enums.entity_enums import HorizontalMovementState as HMS, VerticalMovementState as VMS
 from events_commands.events import StateChangedEvent
 
 class AnimationManager():
@@ -41,7 +41,11 @@ class AnimationManager():
         animation_data.current_animation = animation
 
     def get_next_animation(self, player_data):
-        return player_data.animation_data.animations.get(player_data.movement_state, player_data.animation_data.animations[MS.IDLE])
+        if player_data.vertical_movement_state != VMS.STANDING:
+            frame_movement = player_data.vertical_movement_state
+        else:
+            frame_movement = player_data.horizontal_movement_state
+        return player_data.animation_data.animations.get(frame_movement, player_data.animation_data.animations[HMS.IDLE])
 
     def reset(self, player_data):
         data = player_data.animation_data

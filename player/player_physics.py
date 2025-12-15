@@ -1,5 +1,5 @@
 from events_commands.commands import Command, MovementCommand, MoveCommand, JumpCommand
-from events_commands.events import LandedEvent, StartedFallingEvent
+from events_commands.events import LandedEvent, StartedFallingEvent, AddMomentumEvent as AME
 from enums.entity_enums import MovementState as MS
 from enums.entity_enums import DirectionState as DS
 
@@ -39,12 +39,46 @@ class PlayerPhysics:
         # will eventually implement collision detection here so that
         # if the speed is greater than brick size, it will divide the movement into many smaller movements and check each for collision, ending movement if collision detected
         # need to create code to handle a sprites position overlapping tiles, grabbing those tiles it's not overlapping with. for that, will need to edit tile context to allow that.
+
+        #
         movement = data.velocity[0]
-        data.position[0] += movement
+        # data.position[0] += movement
+        movement_increments = abs(movement) // 8
+        initial_movement = data.velocity[0] % 8
+        data.position[0] += initial_movement
         if self.check_tile_collisions(data, context):
             self.stepback(data, -movement, context)
+            self.check_horizontal_momentum(data)
+            # check horizontal momentum, then return ending movement because collision detected
+            return []
+
+        chunk_movement = 8 if movement > 0 else -8
+        for _ in range(movement_increments):
+            data.position[0] += chunk_movement
+            if self.check_tile_collisions(data, context):
+                self.stepback(data, -movement, context)
+                break
+            # end movement if tile collision detected
+
+        self.check_horizontal_momentum(data)
+
         return []
         # for now just check collision with all, no need to make it only check the sides it could move into based on direction
+
+    def check_horizontal_momentum(self, data):
+        # this adjusts speed horizontally, so if an entity is launched beyond its speed it can gradually return to normal speed. come up with something to handle lots of momentum later possibly, if it matters
+        # don't need horizontal, as gravity already handles that
+
+        if data.movement_state == MS.WALKING:
+            speed = -1 * data.move_speed if data.direction_state == DS.LEFT else data.move_speed
+        else:
+            speed = 0
+
+        if data.velocity[0] != speed:
+            if data.velocity[0] < speed:
+                data.velocity[0] += 1
+            elif data.velocity[0] > speed:
+                data.velocity[0] -= 1
 
     def check_tile_collisions(self, data, context):
         x, y = int(data.position[0]), int(data.position[1])
@@ -120,8 +154,19 @@ class PlayerPhysics:
         while self.check_tile_collisions(data, context):
             data.position[axis] += sign
 
-    def handle_event(self, event, data):
-        pass
+    def handle_event(self, event, data = None):
+        match event:
+            case AME():
+                self.add_momentum_event(event)
+
+        return []
+
+    def add_momentum_event(self, event):
+        entity = event.entity
+        momentum = event.momentum  # tuple (x_momentum, y_momentum)
+        entity.velocity[0] += momentum[0]
+        entity.velocity[1] += momentum[1]
+
 
     def handle_command(self, command, data):
 

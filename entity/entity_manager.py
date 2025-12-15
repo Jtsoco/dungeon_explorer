@@ -1,7 +1,7 @@
 from animations.animation_manager import AnimationManager
 from attack.attack_manager import AttackManager
 from events_commands.commands import MovementCommand, AttackCommand
-from events_commands.events import StateChangedEvent, PossibleCollisionEvent as PCE, AttackFinishedEvent as AFE
+from events_commands.events import StateChangedEvent, PossibleCollisionEvent as PCE, AttackFinishedEvent as AFE, PhysicsEvent as PE
 from enums.entity_enums import EntityType as ET, EntityCategory as EC
 from player.player_state_machine import PlayerStateMachine
 from player.player_physics import PlayerPhysics
@@ -90,6 +90,20 @@ class EntityManager():
 
         return [], []  # Return empty lists if no new events/commands
 
+    # handle event for outside events that need to be handled by entity manager
+    def handle_event(self, event):
+        events = []
+        match event:
+            case PE():
+                # at this point the entity should absolutely be in the event, as it was passed to entity manager
+                entity = event.entity
+                returned_events = self.physics[entity.entity_category].handle_event(event, entity)
+                events.extend(returned_events)
+            case _:
+                pass
+
+        return events # Return empty list if no new events
+
     def delegate_command(self, command, entity):
         match command:
             case MovementCommand():
@@ -108,9 +122,11 @@ class EntityManager():
             # separate this out later when i have time to think of how to best structure accessing a myriad of different entity types, for now just import directly and use
             case ET.SKULL:
                 # edit this so it only adds if doesn't exist
-                self.controllers[ET.SKULL] = SkullController()
+                if entity_type not in self.controllers:
+                    self.controllers[ET.SKULL] = SkullController()
                 # for now, just default physics, not flying
-                self.physics[EC.GROUND] = PlayerPhysics(self.context)
+                if EC.GROUND not in self.physics:
+                    self.physics[EC.GROUND] = PlayerPhysics(self.context)
                 # just using default player physics for now
                 # self.state_machines[] = SkullStateMachine()
                 # just use a default state machine for now

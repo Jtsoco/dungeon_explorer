@@ -7,8 +7,9 @@ from player.player_entity import PlayerEntity
 from debug.quick_debug import display_info, quick_point, outline_entity, calculate_fps
 from entity.entity_manager import EntityManager
 from collisions.collision_manager import CollisionManager
+from combat.damage_manager import DamageManager
 
-from events_commands.events import PossibleAttackCollisionEvent as PACE
+from events_commands.events import PossibleAttackCollisionEvent as PACE, DamageEvent as DE, PhysicsEvent as PE
 
 from datetime import datetime
 class Game():
@@ -37,7 +38,7 @@ class Game():
         self.entity_manager.setup_entities(types)
         # just this quick one for now on setting up entities, refactor later when redoing cell loading system
         self.collision_manager = CollisionManager()
-
+        self.damage_manager = DamageManager()
 
         # debug for framerate
         self.last_time = datetime.now()
@@ -62,8 +63,24 @@ class Game():
                     self.collision_manager.register_collision(event)
         collision_events = self.collision_manager.update(self.player.data, self.cell_manager.current_state.get_enemies())
 
-        for event in collision_events:
-            print("Collision Event:", event)
+        events, commands = [], []
+        events.extend(collision_events)
+        while events:
+            event = events.pop(0)
+            new_events, new_commands = self.delegate_event(event)
+            # for now, no commands being returned
+            events.extend(new_events)
+            commands.extend(new_commands)
+
+
+    def delegate_event(self, event):
+        new_events, new_commands = [], []
+        match event:
+            case DE():
+                events = self.damage_manager.handle_event(event)
+            case PE():
+                self.entity_manager.handle_event(event)
+        return new_events, new_commands
         # for now all main events are collision, refactor for sound later
 
         # then, do damage manager,

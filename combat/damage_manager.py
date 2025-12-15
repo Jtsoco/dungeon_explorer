@@ -15,10 +15,11 @@ class DamageManager():
         damage_amount = event.damage_amount
         knockback = event.knockback
         origin = event.origin
-        target.current_health -= damage_amount
-        if target.current_health <= 0:
+        target.health -= damage_amount
+        if target.health <= 0:
             death_event = DeathEvent(target)
             events.append(death_event)
+            print(f"{target.entity_type} has died.")
         if knockback:
             # calculate knockback direction here, turn into vector, then send out to give to physics manager. for now, just basic based on direction of entity from target
             if target.direction_state == DS.LEFT:

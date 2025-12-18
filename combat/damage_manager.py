@@ -24,7 +24,7 @@ class DamageManager():
             # if target.direction_state == DS.LEFT:
             #     kb_vector = [-3, 3]
             # else:
-            kb_vector = (3, 3)
+            kb_vector = (1.5, 1)
             momentum_event = AddMomentumEvent(target, kb_vector)
             events.append(momentum_event)
         return events

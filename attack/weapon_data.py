@@ -13,7 +13,7 @@ from animations.animation_setup import default_attack_animation
 
 
 class WeaponData():
-    def __init__(self, animations=default_attack_animation(), weapon_type=AT.MELEE, damage=8, hitboxes=default_hitbox(), target_type=CET.ENEMY):
+    def __init__(self, animations=default_attack_animation(), weapon_type=AT.MELEE, damage=8, hitboxes=default_hitbox(), target_type=CET.ENEMY, knockback=(1.5, 1)):
         self.state = WS.SHEATHED
         self.active = False
         self.type = weapon_type
@@ -29,6 +29,7 @@ class WeaponData():
         self.frame_timer = 0
         self.current_animation = animations[WS.SHEATHED]
         # should all have a sheathed animation
+        self.knockback = knockback
 
     def get_current_frame(self):
         return self.current_animation[self.current_frame]

@@ -13,7 +13,7 @@ from animations.animation_setup import default_attack_animation
 
 
 class WeaponData():
-    def __init__(self, animations=default_attack_animation(), weapon_type=AT.MELEE, damage=8, hitboxes=default_hitbox(), target_type=CET.ENEMY, knockback=(1.5, 1)):
+    def __init__(self, animations=default_attack_animation(), weapon_type=AT.MELEE, damage=50, hitboxes=default_hitbox(), target_type=CET.ENEMY, knockback=(1.5, 1)):
         self.state = WS.SHEATHED
         self.active = False
         self.type = weapon_type

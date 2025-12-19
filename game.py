@@ -8,8 +8,9 @@ from debug.quick_debug import display_info, quick_point, outline_entity, calcula
 from entity.entity_manager import EntityManager
 from collisions.collision_manager import CollisionManager
 from combat.damage_manager import DamageManager
+from enums.entity_enums import CollisionEntityTarget as CET
 
-from events_commands.events import PossibleAttackCollisionEvent as PACE, DamageEvent as DE, PhysicsEvent as PE
+from events_commands.events import PossibleAttackCollisionEvent as PACE, DamageEvent as DE, PhysicsEvent as PE, DeathEvent as Death
 
 from datetime import datetime
 class Game():
@@ -62,7 +63,9 @@ class Game():
             match event:
                 case PACE():
                     self.collision_manager.register_collision(event)
-        collision_events = self.collision_manager.update(self.player.data, self.cell_manager.current_state.get_enemies())
+
+        collision_events = self.collision_manager.update(self.player.data, self.
+        cell_manager.current_state.get_enemies())
 
         events = collision_events
         while events:
@@ -90,7 +93,14 @@ class Game():
             case PE():
                 new_events = self.entity_manager.handle_event(event)
                 events.extend(new_events)
+            case Death():
+                self.death_event(event)
         return events
+
+    def death_event(self, event):
+        entity = event.entity
+        if not entity.player:
+            self.cell_manager.current_state.remove_entity(entity)
 
     def draw(self):
         self.scene_manager.draw()

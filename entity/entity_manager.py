@@ -6,6 +6,7 @@ from enums.entity_enums import EntityType as ET, EntityCategory as EC
 from player.player_state_machine import PlayerStateMachine
 from player.player_physics import PlayerPhysics
 from entity.controllers.skull_controller import SkullController
+from entity.controllers.player_controller import PlayerController
 from collisions.collision_manager import CollisionManager
 
 class EntityManager():
@@ -117,15 +118,26 @@ class EntityManager():
             # separate this out later when i have time to think of how to best structure accessing a myriad of different entity types, for now just import directly and use
             case ET.SKULL:
                 # edit this so it only adds if doesn't exist
-                self.controllers[ET.SKULL] = SkullController()
+                self.setup_controller(ET.SKULL, SkullController)
                 # for now, just default physics, not flying
-                self.physics[EC.GROUND] = PlayerPhysics(self.context)
+                self.setup_physics(EC.GROUND, PlayerPhysics(self.context))
                 # just using default player physics for now
                 # self.state_machines[] = SkullStateMachine()
                 # just use a default state machine for now
+            case ET.PLAYER:
+                self.setup_controller(ET.PLAYER, PlayerController)
+
 
     def setup_entities(self, entity_types):
         for entity_type in entity_types:
             if entity_type not in self.entities_setup:
                 self.setup_entity(entity_type)
                 self.entities_setup.append(entity_type)
+
+    def setup_physics(self, entity_category, physics_module):
+        if not entity_category in self.physics:
+            self.physics[entity_category] = physics_module(self.context)
+
+    def setup_controller(self, entity_type, controller):
+        if not entity_type in self.controllers:
+            self.controllers[entity_type] = controller()

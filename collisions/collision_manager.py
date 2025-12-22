@@ -77,7 +77,6 @@ class CollisionManager():
 
         for hit in hits:
             new_recent_attacks.append((weapon, hit))
-            new_recent_attacks.append((weapon, hit))
             if (weapon, hit) in self.recent_attack_collisions:
                 continue  # already registered this collision recently
             damage_event = DE(entity, hit, weapon.damage, knockback=weapon.knockback)

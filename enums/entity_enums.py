@@ -38,7 +38,6 @@ class WeaponActionState(Enum):
     DEFAULT = auto()
 
 class EntityType(Enum):
-    # not including player for now
     PLAYER = (3, 10)
     SKULL = (3, 15)
     KNIGHT = (3, 16)

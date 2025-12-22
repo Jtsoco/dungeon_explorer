@@ -1,4 +1,4 @@
-from enums.entity_enums import DirectionState as DS, ActionState as AS, MovementState as MS, EntityType as ET
+from enums.entity_enums import MovementState as MS, EntityType as ET
 from animations.animation_enums import PlayerAnimationEnums as PAE, SkullAnimationEnums as SAE
 from animations.animation_frame import AnimationFrame as AF
 

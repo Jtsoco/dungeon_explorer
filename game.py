@@ -8,7 +8,7 @@ from debug.quick_debug import display_info, quick_point, outline_entity, calcula
 from entity.entity_manager import EntityManager
 from collisions.collision_manager import CollisionManager
 from combat.damage_manager import DamageManager
-from enums.entity_enums import CollisionEntityTarget as CET
+
 
 from events_commands.events import PossibleAttackCollisionEvent as PACE, DamageEvent as DE, PhysicsEvent as PE, DeathEvent as Death
 

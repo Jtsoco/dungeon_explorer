@@ -78,3 +78,14 @@ class EntitySeparatedEvent(PhysicsEvent):
         super().__init__(name="EntitySeparatedEvent")
         self.entity_a = entity_a
         self.entity_b = entity_b
+
+class DeathEvent(Event):
+    def __init__(self, entity):
+        super().__init__(name="DeathEvent")
+        self.entity = entity
+
+class AddMomentumEvent(PhysicsEvent):
+    def __init__(self, entity, momentum_vector: list):
+        super().__init__(name="AddMomentumEvent")
+        self.entity = entity
+        self.momentum_vector = momentum_vector

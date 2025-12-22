@@ -1,8 +1,5 @@
-<<<<<<< HEAD
-from enums.entity_enums import MovementState as MS, DirectionState as DS, ActionState as AS, EntityType as ET
-=======
+
 from enums.entity_enums import MovementState as MS, DirectionState as DS, ActionState as AS, EntityCategory as EC, EntityType as ET
->>>>>>> 88eca789cef2b1a2824fc2578f94d3eff062af28
 
 
 from animations.sprite_registry import SPRITES

@@ -56,3 +56,9 @@ class CollisionEntityTarget(Enum):
     PLAYER = auto()
     ENEMY = auto()
     ALL = auto()
+
+class WeaponCategory(Enum):
+    SHORTSWORD = auto()
+    BOW = auto()
+    STAFF = auto()
+    AXE = auto()

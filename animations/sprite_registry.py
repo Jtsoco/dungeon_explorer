@@ -8,6 +8,7 @@ from animations.animation_frame import AnimationFrame as AF
         # but for a weapon it represents where the handle is drawn relative to the top left of its brick tile
 player_offset = (7, 5)
 
+# possibly refactor later so players and enemies have their own sprite registries, and if it expands to other dungeons separate enemy registries by dungeons so not all loaded at once, or maybe types of enemies for separation criteria
 SPRITES = {
 
     ET.PLAYER: {
@@ -21,10 +22,10 @@ SPRITES = {
     },
 
     ET.SKULL: {
-        MS.IDLE: [AF(pos=SAE.SKULL_IDLE_1, duration=12)],
+        MS.IDLE: [AF(pos=SAE.SKULL_IDLE_1.value, duration=12)],
         MS.WALKING: [
-            AF(pos=SAE.SKULL_WALK_1, duration=6),
-            AF(pos=SAE.SKULL_WALK_2, duration=6)
+            AF(pos=SAE.SKULL_WALK_1.value, duration=6),
+            AF(pos=SAE.SKULL_WALK_2.value, duration=6)
         ]
     }
 

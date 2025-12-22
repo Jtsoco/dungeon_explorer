@@ -1,5 +1,4 @@
-from enums.entity_enums import AttackType as AT, CollisionEntityTarget as CET, WeaponActionState as WS
-
+from enums.entity_enums import AttackType as AT, CollisionEntityTarget as CET, WeaponActionState as WS, WeaponCategory as WC
 
 def default_hitbox():
     dict = {}
@@ -8,15 +7,21 @@ def default_hitbox():
     dict[2] = (8, 8)
     # note, need to add x, y offsets later. for now just width, height
     return dict
-from animations.animation_setup import default_attack_animation
-
+from animations.attack_registry import WEAPONS_ANIMATIONS, WEAPONS_HITBOXES
 
 
 class WeaponData():
-    def __init__(self, animations=default_attack_animation(), weapon_type=AT.MELEE, damage=8, hitboxes=default_hitbox(), target_type=CET.ENEMY):
+    def __init__(self,
+                 weapon_type=AT.MELEE,
+                 animations=WEAPONS_ANIMATIONS[WC.SHORTSWORD],
+                 hitboxes=WEAPONS_HITBOXES[WC.SHORTSWORD][WS.DEFAULT],
+                 damage=8,
+                 target_type=CET.ENEMY,
+                 weapon_category=WC.SHORTSWORD):
         self.state = WS.SHEATHED
         self.active = False
         self.type = weapon_type
+        self.category = weapon_category
         self.damage = damage
         self.hitboxes = hitboxes
         self.target_type = target_type

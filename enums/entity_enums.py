@@ -38,7 +38,7 @@ class WeaponActionState(Enum):
     DEFAULT = auto()
 
 class EntityType(Enum):
-    # not including player for now
+    PLAYER = (3, 10)
     SKULL = (3, 15)
     KNIGHT = (3, 16)
 
@@ -55,3 +55,9 @@ class CollisionEntityTarget(Enum):
     PLAYER = auto()
     ENEMY = auto()
     ALL = auto()
+
+class WeaponCategory(Enum):
+    SHORTSWORD = auto()
+    BOW = auto()
+    STAFF = auto()
+    AXE = auto()

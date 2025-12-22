@@ -6,7 +6,7 @@ class DamageManager():
         pass
 
     # goal of this class as of now:
-    # receive damage events, apply damage to entities, handle sending out any resulting events like dead events
+    # receive damage events, apply damage to entities, handle sending out any resulting events like death events
 
     def handle_event(self, event):
         # for now just damage event

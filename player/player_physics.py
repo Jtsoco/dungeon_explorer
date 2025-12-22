@@ -173,7 +173,6 @@ class PlayerPhysics:
         event.entity.secondary_momentum[0] += event.momentum_vector[0]
         event.entity.secondary_momentum[1] += event.momentum_vector[1]
 
-
     def handle_command(self, command, data):
 
         # returns a tuple of events and commands

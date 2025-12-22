@@ -103,7 +103,7 @@ class PlayerPhysics:
             case MS.JUMPING | MS.FALLING:
                 if collided:
 
-                    if self.updward_momentum(data):
+                    if self.upward_momentum(data):
                         # landed
                         event = LandedEvent()
                         data.velocity[1] = 0
@@ -140,7 +140,7 @@ class PlayerPhysics:
         return self.has_tile_collision(bricks, context)
 
 
-    def updward_momentum(self, data):
+    def upward_momentum(self, data):
         if data.velocity[1] + data.secondary_momentum[1] < 0:
             return True
         return False

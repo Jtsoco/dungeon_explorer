@@ -1,5 +1,5 @@
 from player.player_controller import PlayerController
-from player.player_data import PlayerData
+from entity.entity_setup import spawn_player
 from player.player_renderer import PlayerRenderer
 from player.player_state_machine import PlayerStateMachine as StateMachine
 from player.player_physics import PlayerPhysics
@@ -12,7 +12,7 @@ class PlayerEntity:
         self.events = []
         self.commands = []
         self.controller = PlayerController()
-        self.data = PlayerData()
+        self.data = spawn_player()
         self.renderer = PlayerRenderer()
         self.state_machine = StateMachine()
         self.player_physics = PlayerPhysics(context)

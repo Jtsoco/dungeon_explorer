@@ -46,6 +46,11 @@ class SingleCellManager():
         cell_data.enemies = enemies
         cell_data.entity_types = entity_types
 
+    def remove_entity(self, entity):
+        if entity in self.active_cell.enemies:
+            self.active_cell.enemies.remove(entity)
+            # for now just remove enemy, they're only referenced here and will be garbage collected
+
     def load_enemies(self, cell_data):
         enemies = []
         start_x, start_y = cell_data.cell_x * 16, cell_data.cell_y * 16

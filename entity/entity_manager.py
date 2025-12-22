@@ -1,7 +1,7 @@
 from animations.animation_manager import AnimationManager
 from attack.attack_manager import AttackManager
 from events_commands.commands import MovementCommand, AttackCommand
-from events_commands.events import StateChangedEvent, PossibleCollisionEvent as PCE, AttackFinishedEvent as AFE
+from events_commands.events import StateChangedEvent, PossibleCollisionEvent as PCE, AttackFinishedEvent as AFE, PhysicsEvent as PE
 from enums.entity_enums import EntityType as ET, EntityCategory as EC
 from player.player_state_machine import PlayerStateMachine
 from player.player_physics import PlayerPhysics
@@ -80,6 +80,14 @@ class EntityManager():
         # expand to sound later
         return events
 
+    def handle_event(self, event):
+        # this is for when external systems want to pass events to entity manager to be delegated to respective systems
+        match event:
+            case PE():
+                self.physics[event.entity.entity_category].handle_event(event)
+        return []
+
+
     def delegate_event(self, event, entity):
         match event:
             case StateChangedEvent():
@@ -96,6 +104,7 @@ class EntityManager():
                 return self.physics[entity.entity_category].handle_command(command, entity)
             case AttackCommand():
                 return self.attack_manager.handle_command(command, entity)
+
 
     def draw(self, entity):
         self.renderer.render(entity)

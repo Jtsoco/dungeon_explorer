@@ -4,13 +4,15 @@ from enums.entity_enums import MovementState as MS, DirectionState as DS, Action
 from entity.animation_data import AnimationData
 
 class EntityData():
-    def __init__(self, position: list = [0, 0], w_h: tuple = (8, 8), animation_data=AnimationData(), weapon_data = None, entity_type=ET.KNIGHT, entity_category=EC.GROUND, speed=1, cell_pos=(0,0), player=False, health=100, touch_damage=0):
+    def __init__(self, position: list = [0, 0], w_h: tuple = (8, 8), animation_data=AnimationData(), weapon_data = None, entity_type=ET.KNIGHT, entity_category=EC.GROUND, speed=1, cell_pos=(0,0), player=False, health=100, touch_damage=0, knockback=(1.5, 1)):
         self.health = health
         self.player = player
         self.position = position  # (x, y)
         self.w_h = w_h  # (width, height)
         self.entity_type = entity_type
         self.entity_category = entity_category  # whether the entity is affected by gravity or not
+
+        self.secondary_momentum = [0,0]
 
         self.animation_data = animation_data
         self.movement_state = MS.IDLE
@@ -35,3 +37,4 @@ class EntityData():
         self.cell_pos = cell_pos  # (cell_x_min, cell_y_min, cell_x_max, cell_y_max)
 
         self.touch_damage = touch_damage
+        self.knockback = knockback

@@ -15,9 +15,11 @@ class WeaponData():
                  weapon_type=AT.MELEE,
                  animations=WEAPONS_ANIMATIONS[WC.SHORTSWORD],
                  hitboxes=WEAPONS_HITBOXES[WC.SHORTSWORD][WS.DEFAULT],
-                 damage=8,
+                 damage=50,
                  target_type=CET.ENEMY,
-                 weapon_category=WC.SHORTSWORD):
+                 weapon_category=WC.SHORTSWORD,
+                 knockback=(1.5, 1)):
+
         self.state = WS.SHEATHED
         self.active = False
         self.type = weapon_type
@@ -34,6 +36,7 @@ class WeaponData():
         self.frame_timer = 0
         self.current_animation = animations[WS.SHEATHED]
         # should all have a sheathed animation
+        self.knockback = knockback
 
     def get_current_frame(self):
         return self.current_animation[self.current_frame]

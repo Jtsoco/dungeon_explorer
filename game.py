@@ -7,8 +7,10 @@ from player.player_entity import PlayerEntity
 from debug.quick_debug import display_info, quick_point, outline_entity, calculate_fps
 from entity.entity_manager import EntityManager
 from collisions.collision_manager import CollisionManager
+from combat.damage_manager import DamageManager
 
-from events_commands.events import PossibleAttackCollisionEvent as PACE
+
+from events_commands.events import PossibleAttackCollisionEvent as PACE, DamageEvent as DE, PhysicsEvent as PE, DeathEvent as Death
 
 from datetime import datetime
 class Game():
@@ -38,6 +40,7 @@ class Game():
         # just this quick one for now on setting up entities, refactor later when redoing cell loading system
         self.collision_manager = CollisionManager()
 
+        self.damage_manager = DamageManager()
 
         # debug for framerate
         self.last_time = datetime.now()
@@ -60,11 +63,44 @@ class Game():
             match event:
                 case PACE():
                     self.collision_manager.register_collision(event)
-        collision_events = self.collision_manager.update(self.player.data, self.cell_manager.current_state.get_enemies())
 
-        for event in collision_events:
-            print("Collision Event:", event)
+        collision_events = self.collision_manager.update(self.player.data, self.
+        cell_manager.current_state.get_enemies())
+
+        events = collision_events
+        while events:
+            event = events.pop(0)
+            new_events = self.delegate_event(event)
+            events.extend(new_events)
+
+
+
+
         # for now all main events are collision, refactor for sound later
+
+        # then, do damage manager,
+        # get events from damage manager,
+        # for now if death event remove from entities, make death animation later
+        # for physics pass to entity physics manager through event handler and it will handle add momentum event, and add momentum, which will update position on next physics update (next frame then), but update entities momentum now.
+        # also edit physics manager, so that if momentum is above/below current speed based on direction, change by 1 until it matches that speed. revist eventually later for more robust acceleration/deceleration system
+
+    def delegate_event(self, event):
+        events = []
+        match event:
+            case DE():
+                new_events = self.damage_manager.handle_event(event)
+                events.extend(new_events)
+            case PE():
+                new_events = self.entity_manager.handle_event(event)
+                events.extend(new_events)
+            case Death():
+                self.death_event(event)
+        return events
+
+    def death_event(self, event):
+        entity = event.entity
+        if not entity.player:
+            self.cell_manager.current_state.remove_entity(entity)
 
     def draw(self):
         self.scene_manager.draw()

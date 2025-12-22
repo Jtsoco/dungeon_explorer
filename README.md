@@ -1,0 +1,3 @@
+Making a game in pyxel, having fun making the architecture of it, and making it with the goal of practicing using code that takes something in, and returns something, editing as little as possible. 
+Only a couple of the systems inside will change the data they receive, but just wanted to try making an event systems wehre a thing like a collision manager is handed possible colliding entities, then returns a collision event that is then handled by either the state or physics manager, rather than having collision manager change things
+basically having areas of authority that will change the data, and everything else just making events that say 'hey, do this'.

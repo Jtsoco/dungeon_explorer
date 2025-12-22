@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 from enums.entity_enums import MovementState as MS, DirectionState as DS, ActionState as AS, EntityType as ET
+=======
+from enums.entity_enums import MovementState as MS, DirectionState as DS, ActionState as AS, EntityCategory as EC, EntityType as ET
+>>>>>>> 88eca789cef2b1a2824fc2578f94d3eff062af28
 
 
 from animations.sprite_registry import SPRITES
@@ -21,13 +25,15 @@ class PlayerData():
         self.w_h = (8, 8)
         # width and height for now, revisit values later
 
-        self.costume = "default"
         self.movement_state = MS.IDLE
         self.last_movement_input = None
         self.direction_state = DS.RIGHT
         self.action_state = AS.NONE
         self.player=True
+        self.entity_type = ET.KNIGHT
+        self.entity_category = EC.GROUND
 
+        self.secondary_momentum = [0,0]
 
         self.move_speed = 2
         self.jump_strength = 3

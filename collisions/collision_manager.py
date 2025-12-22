@@ -46,7 +46,7 @@ class CollisionManager():
                     new_recent_collisions.append((entity, player))
                     if (entity, player) in self.recent_collisions:
                         continue  # already registered this collision recently
-                    damage_event = DE(entity, player, entity.touch_damage)
+                    damage_event = DE(entity, player, entity.touch_damage, knockback=entity.knockback)
                     new_events.append(damage_event)
                 else:
                     separation_event = ESE(entity, player)
@@ -77,10 +77,9 @@ class CollisionManager():
 
         for hit in hits:
             new_recent_attacks.append((weapon, hit))
-            new_recent_attacks.append((weapon, hit))
             if (weapon, hit) in self.recent_attack_collisions:
                 continue  # already registered this collision recently
-            damage_event = DE(weapon, hit, weapon.damage)
+            damage_event = DE(entity, hit, weapon.damage, knockback=weapon.knockback)
             damage_events.append(damage_event)
 
         self.recent_attack_collisions = new_recent_attacks

@@ -13,6 +13,7 @@ class PlayerRenderer():
         height = 8  # hardcoded for now, as its a frame height of 8 in the sprite sheet, revisit later
         x = player_data.position[0]
         y = player_data.position[1]
+        # float positions for y mean sometimes it's int he floor, using int here would make movement more jittery, so physics just requires it to be int for y positions, x doesn't have this limition and just uses floats, as no one cares if it goes in the wall a little
 
         current_frame = player_data.animation_data.get_current_frame()
         u = current_frame.pos[0] * 8

@@ -2,13 +2,17 @@ from events_commands.commands import Command, MovementCommand, MoveCommand, Jump
 from events_commands.events import LandedEvent, StartedFallingEvent, AddMomentumEvent as AME
 from enums.entity_enums import MovementState as MS
 from enums.entity_enums import DirectionState as DS
+from magic_numbers import GRAVITY, TERMINAL_VELOCITY, MIN_SEC_MOMENTUM_THRESHOLD, AIR_RESISTANCE, GROUND_FRICTION
 
 
 class PlayerPhysics:
     # for making this a flying vs other type, maybe just have a swappable grav component or such that is swapped depending on the type of entity in entity category
     def __init__(self, context=None):
         self.context = context
-        self.gravity = -0.4
+        self.gravity = GRAVITY
+        # for now it holds gravity, allowing for custom gravity, but revisit this later and decide whether to use composition for different physics types like a water level or flying level
+        # for now, it's simple enough leave it as is
+        # hell maybe i'll make a gravity magic, and it might affect things differently later
 
     def update(self, data, context=None):
         context = context or self.context
@@ -40,12 +44,12 @@ class PlayerPhysics:
 
     def secondary_update(self, data, context, ground_beneath):
         if ground_beneath:
-            data.secondary_momentum[0] = data.secondary_momentum[0]*0.5
-            if abs(data.secondary_momentum[0]) < 0.5:
+            data.secondary_momentum[0] = data.secondary_momentum[0]*GROUND_FRICTION
+            if abs(data.secondary_momentum[0]) < MIN_SEC_MOMENTUM_THRESHOLD:
                 data.secondary_momentum[0] = 0
             data.secondary_momentum[1] = 0
         else:
-            data.secondary_momentum[0] = data.secondary_momentum[0]*0.98
+            data.secondary_momentum[0] = data.secondary_momentum[0]*AIR_RESISTANCE
             # so the actual secondary momentum will eventually be cancelled out by gravity, and reset when it hits the ground, but secondary will be cancelled out more quickly on the ground
 
     def horizontal_motion(self, data, context):
@@ -53,33 +57,29 @@ class PlayerPhysics:
         # if the speed is greater than brick size, it will divide the movement into many smaller movements and check each for collision, ending movement if collision detected
         # need to create code to handle a sprites position overlapping tiles, grabbing those tiles it's not overlapping with. for that, will need to edit tile context to allow that.
         movement = data.velocity[0] + data.secondary_momentum[0]
-        data.position[0] += movement
-        if self.check_tile_collisions(data, context):
-            self.stepback(data, -movement, context)
+        if self.chunk_movement(movement, data, context, axis=0):
             data.secondary_momentum[0] = 0
         return []
         # for now just check collision with all, no need to make it only check the sides it could move into based on direction
 
-    def chunk_movement(self, data, context, axis=0):
-        # for handling movement in chunks if speed is greater than brick size
-        pass
-
-    # def secondary_momentum_update(self, data, context):
-        # apply secondary momentum like knockback
-        # data.position[0] += data.secondary_momentum[0]
-        # if self.check_tile_collisions(data, context):
-        #     self.stepback(data, -data.secondary_momentum[0], context, axis=0)
-        #     data.secondary_momentum[0] = 0
-
-        # data.position[1] -= data.secondary_momentum[1]
-
-        # if self.check_tile_collisions(data, context):
-        #     self.stepback(data, data.secondary_momentum[1], context, axis=1)
-        #     data.secondary_momentum[1] = 0
-        # data.secondary_momentum[0] = data.secondary_momentum[0]*0.8
-        # data.secondary_momentum[1] = data.secondary_momentum[1]*0.8
-
-
+    def chunk_movement(self, movement, data, context, axis=0, chunk_size=8):
+        # breaks movement into smaller chunks to properly check for collisions with tiles and walls and such, does allow for dashing past enemies at high speeds which is kinda cool so keeping that part for now rather than integrate enemy collisions
+        sign = 1 if movement > 0 else -1
+        remaining_movement = abs(movement)
+        loops = int(remaining_movement // chunk_size)
+        initial_movement = remaining_movement % chunk_size
+        for _ in range(loops):
+            data.position[axis] += sign * chunk_size
+            if self.check_tile_collisions(data, context):
+                self.stepback(data, -sign * chunk_size, context, axis=axis)
+                return True
+        if initial_movement > 0:
+            data.position[axis] += sign * initial_movement
+            if self.check_tile_collisions(data, context):
+                self.stepback(data, -sign * initial_movement, context, axis=axis)
+                return True
+        return False
+        # returns true if tile collision occurred during chunked movement
 
     def check_tile_collisions(self, data, context):
         x, y = int(data.position[0]), int(data.position[1])
@@ -95,30 +95,29 @@ class PlayerPhysics:
     def vertical_motion(self, data, context):
         event = None
         movement = data.velocity[1] + data.secondary_momentum[1]
-        data.position[1] = int(data.position[1] - movement)
-
-
+        collided = self.chunk_movement(-movement, data, context, axis=1)
+        data.position[1] = int(data.position[1])  # so if a float is used renderer sometimes makes the player stand in the floor, and keeping it a float while rendering uses ints means movement gets jittery, just requiring int for y positions makes everything smoother
+        # this does, however, affect how much jump power can make someone go up
 
         match data.movement_state:
             case MS.JUMPING | MS.FALLING:
-                if self.check_tile_collisions(data, context):
-                    self.stepback(data, data.velocity[1], context, axis=1)
-                    if self.updward_momentum(data):
+                if collided:
 
-                        event = StartedFallingEvent()
-                        data.velocity[1] = 0
-                        data.secondary_momentum[1] = 0
-                    else:
-                        # hit head/ceiling
-                        # return swap to falling event
+                    if self.updward_momentum(data):
+                        # landed
                         event = LandedEvent()
                         data.velocity[1] = 0
                         data.secondary_momentum[1] = 0
                         return event
+                    else:
+                        # hit head/ceiling, or started falling
+                        event = StartedFallingEvent()
+                        data.velocity[1] = 0
+                        data.secondary_momentum[1] = 0
 
             case _:
-                if self.check_tile_collisions(data, context):
-                    self.stepback(data, data.velocity[1], context, axis=1)
+                if collided:
+                    # in this instance, they weren't falling but just standing, had momentum applied to them for some reason and were pushed to the ground, but state doesn't actually change they are still standing, so just cancel that downward momentum
                     data.velocity[1] = 0
                     data.secondary_momentum[1] = 0
                     return event
@@ -143,8 +142,8 @@ class PlayerPhysics:
 
     def updward_momentum(self, data):
         if data.velocity[1] + data.secondary_momentum[1] < 0:
-            return False
-        return True
+            return True
+        return False
 
     def update_gravity(self, data, context):
         # simple gravity, add proper gravity later
@@ -153,9 +152,6 @@ class PlayerPhysics:
         data.velocity[1] += gravity
         if data.velocity[1] < terminal_velocity:
             data.velocity[1] = terminal_velocity
-
-
-
 
     def stepback(self, data, reverse, context, axis=0):
         sign = -1 if reverse < 0 else 1

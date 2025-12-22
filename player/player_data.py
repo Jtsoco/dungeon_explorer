@@ -21,7 +21,6 @@ class PlayerData():
         self.w_h = (8, 8)
         # width and height for now, revisit values later
 
-        self.costume = "default"
         self.movement_state = MS.IDLE
         self.last_movement_input = None
         self.direction_state = DS.RIGHT

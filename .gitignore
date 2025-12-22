@@ -1,4 +1,6 @@
-
+**__pycache__**/
+*.pyc
+__pypackages__/
 env/
 venv/
 .DS_Store

@@ -8,6 +8,7 @@ from player.player_physics import PlayerPhysics
 from entity.controllers.skull_controller import SkullController
 from entity.controllers.player_controller import PlayerController
 from collisions.collision_manager import CollisionManager
+from renderers.default_renderer import DefaultRenderer
 
 class EntityManager():
     def __init__(self, animation_manager=AnimationManager(), attack_manager=AttackManager(), context=None):
@@ -26,6 +27,7 @@ class EntityManager():
         self.attack_manager = attack_manager
         self.context = context
         self.main_return_events = []
+        self.renderer = DefaultRenderer()
 
 
 
@@ -120,11 +122,13 @@ class EntityManager():
                 # edit this so it only adds if doesn't exist
                 self.setup_controller(ET.SKULL, SkullController)
                 # for now, just default physics, not flying
-                self.setup_physics(EC.GROUND, PlayerPhysics(self.context))
+                self.setup_physics(EC.GROUND, PlayerPhysics, context=self.context)
                 # just using default player physics for now
                 # self.state_machines[] = SkullStateMachine()
                 # just use a default state machine for now
             case ET.PLAYER:
+                self.entities_setup.append(ET.PLAYER)
+                # refactor later, but for now only player directly added through setup entity, others are from setup_entities
                 self.setup_controller(ET.PLAYER, PlayerController)
 
 
@@ -134,9 +138,11 @@ class EntityManager():
                 self.setup_entity(entity_type)
                 self.entities_setup.append(entity_type)
 
-    def setup_physics(self, entity_category, physics_module):
+    def setup_physics(self, entity_category, physics_module, context=None):
+        if not context:
+            context = self.context
         if not entity_category in self.physics:
-            self.physics[entity_category] = physics_module(self.context)
+            self.physics[entity_category] = physics_module(context)
 
     def setup_controller(self, entity_type, controller):
         if not entity_type in self.controllers:

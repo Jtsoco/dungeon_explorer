@@ -3,12 +3,11 @@ import pyxel
 from startup_context import StartupContext
 from cell_manager import CellManager
 from scene_manager import SceneManager
-from player.player_entity import PlayerEntity
 from debug.quick_debug import display_info, quick_point, outline_entity, calculate_fps
 from entity.entity_manager import EntityManager
 from collisions.collision_manager import CollisionManager
 from combat.damage_manager import DamageManager
-
+from entity.entity_setup import spawn_player
 
 from events_commands.events import PossibleAttackCollisionEvent as PACE, DamageEvent as DE, PhysicsEvent as PE, DeathEvent as Death
 
@@ -30,18 +29,21 @@ class Game():
 
         self.cell_manager = CellManager(self.game_world, self.context.start_cell)
         self.scene_manager = SceneManager(self.context)
-        self.player = PlayerEntity(self.context)
+        self.player_data = spawn_player()
+        self.player_data.postion = [self.context.player_start[0] * self.context.BRICK_SIZE, self.context.player_start[1] * self.context.BRICK_SIZE]
         # for now player is just stored here, later might make a separate player manager if needed
 
         # just have it use players attack and animation manager for now, as they work, restructure later if needed
-        self.entity_manager = EntityManager(self.player.animation_manager, self.player.attack_manager, self.context)
+        self.entity_manager = EntityManager(context=self.context)
         types = self.cell_manager.current_state.active_cell.entity_types
+        self.entity_manager.setup_entity(self.player_data.entity_type)
         self.entity_manager.setup_entities(types)
         # just this quick one for now on setting up entities, refactor later when redoing cell loading system
         self.collision_manager = CollisionManager()
 
         self.damage_manager = DamageManager()
 
+        self.player_data.position = [self.context.player_start[0] * self.context.BRICK_SIZE, self.context.player_start[1] * self.context.BRICK_SIZE]
         # debug for framerate
         self.last_time = datetime.now()
         self.current_time = datetime.now()
@@ -50,11 +52,11 @@ class Game():
 
     def update(self):
         main_events = []
-        for enemy in self.cell_manager.current_state.get_enemies():
-            events = self.entity_manager.update(enemy)
+        all_entities = self.cell_manager.current_state.get_enemies() + [self.player_data]
+        for entity in all_entities:
+            events = self.entity_manager.update(entity)
             main_events.extend(events)
-        events = self.player.update()
-        main_events.extend(events)
+
         # after main events, need a last check to see if any state changes happend that need to be handled for respective entities
         # possibly consider breaking down entity manager into subparts or having it like this for now where it contains a full 'sub process' for each entity
 
@@ -64,9 +66,8 @@ class Game():
                 case PACE():
                     self.collision_manager.register_collision(event)
 
-        collision_events = self.collision_manager.update(self.player.data, self.
+        collision_events = self.collision_manager.update(self.player_data, self.
         cell_manager.current_state.get_enemies())
-
         events = collision_events
         while events:
             event = events.pop(0)
@@ -107,8 +108,8 @@ class Game():
         # for now this, but change it later when i have time
         enemies = self.cell_manager.current_state.get_enemies()
         for enemy in enemies:
-            self.player.renderer.render(enemy)
-        self.player.draw()
+            self.entity_manager.draw(enemy)
+        self.entity_manager.draw(self.player_data)
         camera_pos = self.scene_manager.camera.current_camera
         # display_info(f"Player Pos: {self.player.data.position}", pos_x=camera_pos[0]+2, pos_y=camera_pos[1]+2)
         # outline_entity(self.player.data)

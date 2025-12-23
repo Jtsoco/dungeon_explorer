@@ -3,7 +3,7 @@ import pyxel
 class MapCamera():
     # create a renderer class to handle the drawing of cells, using info from camera which handles transitions and positioning
 
-    def __init__(self, context):
+    def __init__(self, context, target=None):
         self.context = context
         self.state = 'idle'
         # change later to proper state machine, but possible just leave it as enums depending on how complex. So far, just idle and transitioning will be needed
@@ -11,6 +11,11 @@ class MapCamera():
         self.current_camera = (0, 0)
         self.current_size = (context.CELL_SIZE * context.BRICK_SIZE, context.CELL_SIZE * context.BRICK_SIZE)
         self.set_camera_cell(context.start_cell)
+        self._target = target
+        # target must have a position attribute known as position
+        # this will be the center of the camera
+        self.disp_x = (context.CELL_SIZE / 2) * context.BRICK_SIZE
+        self.disp_y = (context.CELL_SIZE / 2) * context.BRICK_SIZE
 
     # set camera will be state specific when further implemented
 
@@ -22,11 +27,26 @@ class MapCamera():
         self.current_size = (self.context.CELL_SIZE * self.context.BRICK_SIZE, self.context.CELL_SIZE * self.context.BRICK_SIZE)
 
 
+
     def set_absolute_position(self, x: int, y: int):
         pyxel.camera(x, y)
 
+    def set_target(self, target):
+        self._target = target
+
+    def get_target_point(self):
+        if self._target:
+            return self._target.position
+        return None
+
     def update(self):
-        pass
+        tx, ty = self.get_target_point()
+        centered_x = tx - self.disp_x
+        centered_y = ty - self.disp_y
+        self.set_absolute_position(centered_x, centered_y)
+        self.current_camera = (centered_x, centered_y)
+        # no displacement for now, nor events just this
+
 
     def space_to_draw(self):
         # if one cell, only active cell. if two, two cells total space

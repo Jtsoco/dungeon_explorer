@@ -3,7 +3,7 @@ from entity.animation_data import AnimationData
 from attack.weapon_data import WeaponData
 from enums.entity_enums import EntityType as ET, EntityCategory as EC
 
-def spawn_player(position: tuple = (0, 0)) -> dict:
+def spawn_player(position: tuple = (0, 0)) -> EntityData:
     player_setup = {
         "health": 100,
         "position": list(position),

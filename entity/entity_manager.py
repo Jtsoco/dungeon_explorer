@@ -140,9 +140,9 @@ class EntityManager():
     def setup_physics(self, entity_category, physics_module, context=None):
         if not context:
             context = self.context
-        if not entity_category in self.physics:
+        if entity_category not in self.physics:
             self.physics[entity_category] = physics_module(context)
 
     def setup_controller(self, entity_type, controller):
-        if not entity_type in self.controllers:
+        if entity_type not in self.controllers:
             self.controllers[entity_type] = controller()

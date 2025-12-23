@@ -1,6 +1,5 @@
 
-from enums.entity_enums import MovementState as MS, DirectionState as DS, ActionState as AS, EntityType as ET
-from attack.weapon_data import WeaponData
+from enums.entity_enums import MovementState as MS, EntityType as ET
 from animations.sprite_registry import SPRITES
 
 class AnimationData():

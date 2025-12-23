@@ -30,8 +30,8 @@ class Game():
         self.cell_manager = CellManager(self.game_world, self.context.start_cell)
         self.scene_manager = SceneManager(self.context)
         self.player_data = spawn_player()
-        self.player_data.postion = [self.context.player_start[0] * self.context.BRICK_SIZE, self.context.player_start[1] * self.context.BRICK_SIZE]
         # for now player is just stored here, later might make a separate player manager if needed
+        self.player_data.position = [self.context.player_start[0] * self.context.BRICK_SIZE, self.context.player_start[1] * self.context.BRICK_SIZE]
 
         # just have it use players attack and animation manager for now, as they work, restructure later if needed
         self.entity_manager = EntityManager(context=self.context)
@@ -43,7 +43,6 @@ class Game():
 
         self.damage_manager = DamageManager()
 
-        self.player_data.position = [self.context.player_start[0] * self.context.BRICK_SIZE, self.context.player_start[1] * self.context.BRICK_SIZE]
         # debug for framerate
         self.last_time = datetime.now()
         self.current_time = datetime.now()

@@ -30,3 +30,8 @@ class PlayerController():
         # then, take all the inputs and indicate it was pressed this frame
         self.recent_movement = new_recents
         return events
+
+    def update(self, entity_data=None, context=None):
+        # this is just for player, so entity data not needed for now, but to be compatible with other controllers needs to accept data and context
+        input_events = self.poll_events()
+        return input_events

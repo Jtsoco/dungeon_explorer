@@ -3,11 +3,12 @@ from attack.attack_manager import AttackManager
 from events_commands.commands import MovementCommand, AttackCommand
 from events_commands.events import StateChangedEvent, PossibleCollisionEvent as PCE, AttackFinishedEvent as AFE, PhysicsEvent as PE
 from enums.entity_enums import EntityType as ET, EntityCategory as EC
-from player.player_state_machine import PlayerStateMachine
-from player.player_physics import PlayerPhysics
+from state_machines.default_state_machine import DefaultStateMachine
 from entity.controllers.skull_controller import SkullController
+from entity.controllers.player_controller import PlayerController
 from collisions.collision_manager import CollisionManager
-
+from renderers.default_renderer import DefaultRenderer
+from physics.ground_physics import GroundPhysics
 class EntityManager():
     def __init__(self, animation_manager=AnimationManager(), attack_manager=AttackManager(), context=None):
         self.controllers = {}
@@ -17,7 +18,7 @@ class EntityManager():
         self.state_machines = {}
         # depends on entity type, different state machines for different entity types
         # but just using default for now
-        self.state_machine = PlayerStateMachine()
+        self.state_machine = DefaultStateMachine()
         self.entities_setup = []
         # types of entities setup already
 
@@ -25,6 +26,7 @@ class EntityManager():
         self.attack_manager = attack_manager
         self.context = context
         self.main_return_events = []
+        self.renderer = DefaultRenderer()
 
 
 
@@ -117,15 +119,30 @@ class EntityManager():
             # separate this out later when i have time to think of how to best structure accessing a myriad of different entity types, for now just import directly and use
             case ET.SKULL:
                 # edit this so it only adds if doesn't exist
-                self.controllers[ET.SKULL] = SkullController()
+                self.setup_controller(ET.SKULL, SkullController)
                 # for now, just default physics, not flying
-                self.physics[EC.GROUND] = PlayerPhysics(self.context)
+                self.setup_physics(EC.GROUND, GroundPhysics, context=self.context)
                 # just using default player physics for now
                 # self.state_machines[] = SkullStateMachine()
                 # just use a default state machine for now
+            case ET.PLAYER:
+                self.entities_setup.append(ET.PLAYER)
+                # refactor later, but for now only player directly added through setup entity, others are from setup_entities
+                self.setup_controller(ET.PLAYER, PlayerController)
+
 
     def setup_entities(self, entity_types):
         for entity_type in entity_types:
             if entity_type not in self.entities_setup:
                 self.setup_entity(entity_type)
                 self.entities_setup.append(entity_type)
+
+    def setup_physics(self, entity_category, physics_module, context=None):
+        if not context:
+            context = self.context
+        if entity_category not in self.physics:
+            self.physics[entity_category] = physics_module(context)
+
+    def setup_controller(self, entity_type, controller):
+        if entity_type not in self.controllers:
+            self.controllers[entity_type] = controller()

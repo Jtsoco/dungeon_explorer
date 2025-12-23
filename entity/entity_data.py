@@ -4,7 +4,9 @@ from enums.entity_enums import MovementState as MS, DirectionState as DS, Action
 from entity.animation_data import AnimationData
 
 class EntityData():
-    def __init__(self, position: list = [0, 0], w_h: tuple = (8, 8), animation_data=AnimationData(), weapon_data = None, entity_type=ET.KNIGHT, entity_category=EC.GROUND, speed=1, cell_pos=(0,0), player=False, health=100, touch_damage=0, knockback=(1.5, 1)):
+    def __init__(self,
+                 position: list = [0, 0],
+                 w_h: tuple = (8, 8), animation_data=AnimationData(), weapon_data = None, entity_type=ET.KNIGHT, entity_category=EC.GROUND, speed=1, cell_pos=(0,0), player=False, health=100, touch_damage=0, knockback=(1.5, 1)):
         self.health = health
         self.player = player
         self.position = position  # (x, y)

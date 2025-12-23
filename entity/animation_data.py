@@ -1,9 +1,9 @@
-from animations.animation_setup import animation_setup
-from enums.entity_enums import MovementState as MS, DirectionState as DS, ActionState as AS
-from attack.weapon_data import WeaponData
+
+from enums.entity_enums import MovementState as MS, EntityType as ET
+from animations.sprite_registry import SPRITES
 
 class AnimationData():
-    def __init__(self, animation_setup=animation_setup()):
+    def __init__(self, animation_setup=SPRITES[ET.PLAYER]):
         self.current_frame = 0
         self.frame_timer = 0
         self.animations = animation_setup

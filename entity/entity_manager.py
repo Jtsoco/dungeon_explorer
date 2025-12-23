@@ -3,13 +3,12 @@ from attack.attack_manager import AttackManager
 from events_commands.commands import MovementCommand, AttackCommand
 from events_commands.events import StateChangedEvent, PossibleCollisionEvent as PCE, AttackFinishedEvent as AFE, PhysicsEvent as PE
 from enums.entity_enums import EntityType as ET, EntityCategory as EC
-from player.player_state_machine import PlayerStateMachine
-from player.player_physics import PlayerPhysics
+from state_machines.default_state_machine import DefaultStateMachine
 from entity.controllers.skull_controller import SkullController
 from entity.controllers.player_controller import PlayerController
 from collisions.collision_manager import CollisionManager
 from renderers.default_renderer import DefaultRenderer
-
+from physics.ground_physics import GroundPhysics
 class EntityManager():
     def __init__(self, animation_manager=AnimationManager(), attack_manager=AttackManager(), context=None):
         self.controllers = {}
@@ -19,7 +18,7 @@ class EntityManager():
         self.state_machines = {}
         # depends on entity type, different state machines for different entity types
         # but just using default for now
-        self.state_machine = PlayerStateMachine()
+        self.state_machine = DefaultStateMachine()
         self.entities_setup = []
         # types of entities setup already
 
@@ -122,7 +121,7 @@ class EntityManager():
                 # edit this so it only adds if doesn't exist
                 self.setup_controller(ET.SKULL, SkullController)
                 # for now, just default physics, not flying
-                self.setup_physics(EC.GROUND, PlayerPhysics, context=self.context)
+                self.setup_physics(EC.GROUND, GroundPhysics, context=self.context)
                 # just using default player physics for now
                 # self.state_machines[] = SkullStateMachine()
                 # just use a default state machine for now

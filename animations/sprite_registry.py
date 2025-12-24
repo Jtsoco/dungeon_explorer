@@ -33,11 +33,11 @@ SPRITES = {
         MS.IDLE:
             [
                 AF(
-                pos=(0,16,), duration=12, offset=player_offset)
+                pos=(0,16), duration=12, offset=player_offset)
             ],
         MS.WALKING: [
             AF(pos=(0,17), duration=6, offset=player_offset),
-            AF(pos=(7,17), duration=6, offset=player_offset)
+            AF(pos=(1,17), duration=6, offset=player_offset)
         ]
     }
 

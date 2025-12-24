@@ -49,6 +49,7 @@ class Game():
         self.current_time = datetime.now()
         self.last_frame_count = 0
         self.current_frame_count = 0
+        self.context.player_data = self.player_data
 
     def update(self):
         main_events = []

@@ -6,6 +6,7 @@ from enums.entity_enums import EntityType as ET, EntityCategory as EC
 from state_machines.default_state_machine import DefaultStateMachine
 from entity.controllers.skull_controller import SkullController
 from entity.controllers.player_controller import PlayerController
+from entity.controllers.knight_controller import KnightController
 from collisions.collision_manager import CollisionManager
 from renderers.default_renderer import DefaultRenderer
 from physics.ground_physics import GroundPhysics
@@ -140,7 +141,7 @@ class EntityManager():
                 self.setup_physics(EC.GROUND, GroundPhysics, context=self.context)
 
             case ET.KNIGHT:
-                self.setup_controller(ET.KNIGHT, SkullController)
+                self.setup_controller(ET.KNIGHT, KnightController)
                 self.setup_physics(EC.GROUND, GroundPhysics, context=self.context)
 
 

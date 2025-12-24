@@ -1,4 +1,4 @@
-from events_commands.events import PossibleAttackCollisionEvent as PACE, DamageEvent as DE, EntitySeparatedEvent as ESE
+from events_commands.events import PossibleAttackCollisionEvent as PACE, DamageEvent as DE, EntitySeparatedEvent as ESE, BoundaryCollisionEvent as BCE
 from enums.entity_enums import EntityType as ET, CollisionEntityTarget as CET, DirectionState as DS
 
 class CollisionManager():
@@ -29,7 +29,7 @@ class CollisionManager():
     def register_collision(self, possible_collision_event):
         self.collision_queue.append(possible_collision_event)
 
-    def update(self, player, entities):
+    def update(self, player, entities, boundaries):
         new_events = []
         for event in self.collision_queue:
             match event:
@@ -51,6 +51,12 @@ class CollisionManager():
                 else:
                     separation_event = ESE(entity, player)
                     new_events.append(separation_event)
+
+        boundary_events = self.check_player_boundaries(entity, boundaries)
+        for boundary_event in boundary_events:
+            if (boundary_event.entity, boundary_event.boundary) not in self.recent_collisions:
+                new_recent_collisions.append((boundary_event.entity, boundary_event.boundary))
+                new_events.append(boundary_event)
 
         self.recent_collisions = new_recent_collisions
         self.collision_queue.clear()
@@ -85,7 +91,13 @@ class CollisionManager():
         self.recent_attack_collisions = new_recent_attacks
         return damage_events
 
-
+    def check_player_boundaries(self, entity, boundaries):
+        hits = []
+        for boundary in boundaries:
+            if self.check_collision(entity.position, entity.w_h, boundary.position, boundary.w_h):
+                hits.append(BCE(entity, boundary))
+                print("Boundary collision detected")
+        return hits
 
     def check_collision_entities(self, entities: list, w_h: tuple, pos_a: tuple):
         hits = []

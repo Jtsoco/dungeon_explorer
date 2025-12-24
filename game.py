@@ -9,7 +9,7 @@ from collisions.collision_manager import CollisionManager
 from combat.damage_manager import DamageManager
 from entity.entity_setup import spawn_player
 
-from events_commands.events import PossibleAttackCollisionEvent as PACE, DamageEvent as DE, PhysicsEvent as PE, DeathEvent as Death
+from events_commands.events import PossibleAttackCollisionEvent as PACE, DamageEvent as DE, PhysicsEvent as PE, DeathEvent as Death, NewlyLoadedCellsEvent as NLCE
 
 from datetime import datetime
 class Game():
@@ -36,7 +36,7 @@ class Game():
 
         # just have it use players attack and animation manager for now, as they work, restructure later if needed
         self.entity_manager = EntityManager(context=self.context)
-        types = self.cell_manager.current_state.active_cell.entity_types
+        types = self.cell_manager.current_state.get_entity_types()
         self.entity_manager.setup_entity(self.player_data.entity_type)
         self.entity_manager.setup_entities(types)
         # just this quick one for now on setting up entities, refactor later when redoing cell loading system
@@ -65,9 +65,8 @@ class Game():
             match event:
                 case PACE():
                     self.collision_manager.register_collision(event)
-
-        collision_events = self.collision_manager.update(self.player_data, self.
-        cell_manager.current_state.get_enemies())
+        boundaries = self.cell_manager.current_state.get_boundaries()
+        collision_events = self.collision_manager.update(self.player_data, self.cell_manager.current_state.get_enemies(), boundaries)
         events = collision_events
         while events:
             event = events.pop(0)
@@ -96,6 +95,9 @@ class Game():
                 events.extend(new_events)
             case Death():
                 self.death_event(event)
+            case NLCE():
+                new_events = self.entity_manager.handle_newly_loaded_cells(event)
+                events.extend(new_events)
         return events
 
     def death_event(self, event):

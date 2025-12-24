@@ -130,6 +130,10 @@ class EntityManager():
                 # refactor later, but for now only player directly added through setup entity, others are from setup_entities
                 self.setup_controller(ET.PLAYER, PlayerController)
 
+            case ET.KNIGHT:
+                self.setup_controller(ET.KNIGHT, SkullController)
+                self.setup_physics(EC.GROUND, GroundPhysics, context=self.context)
+
 
     def setup_entities(self, entity_types):
         for entity_type in entity_types:

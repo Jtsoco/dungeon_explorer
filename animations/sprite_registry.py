@@ -27,6 +27,18 @@ SPRITES = {
             AF(pos=SAE.SKULL_WALK_1.value, duration=6),
             AF(pos=SAE.SKULL_WALK_2.value, duration=6)
         ]
+    },
+
+    ET.KNIGHT: {
+        MS.IDLE:
+            [
+                AF(
+                pos=(0,16,), duration=12, offset=player_offset)
+            ],
+        MS.WALKING: [
+            AF(pos=(0,17), duration=6, offset=player_offset),
+            AF(pos=(7,17), duration=6, offset=player_offset)
+        ]
     }
 
 

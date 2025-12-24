@@ -1,12 +1,14 @@
-from enums.entity_enums import EntityType as ET
+from enums.entity_enums import EntityType as ET, CollisionEntityTarget as CET
 from entity.entity_data import EntityData
 from animations.sprite_registry import SPRITES
 from entity.animation_data import AnimationData
+from attack.weapon_data import WeaponData
+
 import pyxel
 
 class CellManager():
     def __init__(self, cells_data, active_cell: tuple):
-        self.logic_manager = CellLogicManager()
+        # self.logic_manager = CellLogicManager()
         self.cells = cells_data
 
         # wait, what am i doing with single cell manager?? relook at this, change it, its really just a loader for a single cell...
@@ -68,6 +70,11 @@ class SingleCellManager():
                             enemies.append(enemy_data)
                             if ET.SKULL not in entity_types:
                                 entity_types.append(ET.SKULL)
+                        case ET.KNIGHT.value:
+                            animation_data = AnimationData(SPRITES[ET.KNIGHT])
+                            enemy_data = EntityData(entity_type=ET.KNIGHT, position=[brick_x * 8, brick_y * 8], animation_data=animation_data, cell_pos=(cell_data.cell_x, cell_data.cell_y), touch_damage=15)
+                            enemy_data.weapon = WeaponData(target_type=CET.PLAYER)
+                            enemies.append(enemy_data)
 
 
         return enemies, entity_types

@@ -90,7 +90,7 @@ class AddMomentumEvent(PhysicsEvent):
         self.entity = entity
         self.momentum_vector = momentum_vector
 
-class BoundaryCollisionEvent(PhysicsEvent):
+class BoundaryCollisionEvent(Event):
     def __init__(self, entity, boundary):
         super().__init__(name="BoundaryCollisionEvent")
         self.entity = entity

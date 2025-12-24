@@ -52,10 +52,10 @@ class CollisionManager():
                     separation_event = ESE(entity, player)
                     new_events.append(separation_event)
 
-        boundary_events = self.check_player_boundaries(entity, boundaries)
+        boundary_events = self.check_player_boundaries(player, boundaries)
         for boundary_event in boundary_events:
+            new_recent_collisions.append((boundary_event.entity, boundary_event.boundary))
             if (boundary_event.entity, boundary_event.boundary) not in self.recent_collisions:
-                new_recent_collisions.append((boundary_event.entity, boundary_event.boundary))
                 new_events.append(boundary_event)
 
         self.recent_collisions = new_recent_collisions
@@ -96,7 +96,6 @@ class CollisionManager():
         for boundary in boundaries:
             if self.check_collision(entity.position, entity.w_h, boundary.position, boundary.w_h):
                 hits.append(BCE(entity, boundary))
-                print("Boundary collision detected")
         return hits
 
     def check_collision_entities(self, entities: list, w_h: tuple, pos_a: tuple):

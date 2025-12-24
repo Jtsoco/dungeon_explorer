@@ -9,6 +9,7 @@ import pyxel
 class CellManager():
     def __init__(self, cells_data, active_cell: tuple):
         self.logic_manager = CellLogicManager()
+        # cells is just a dict of cell coordinates to cell data, but the data is unloaded until needed
         self.cells = cells_data
 
         # wait, what am i doing with single cell manager?? relook at this, change it, its really just a loader for a single cell...
@@ -21,11 +22,14 @@ class CellManager():
         self.current_state.draw()
 
     def handle_event(self, event):
+        events = []
         match event:
             case BCE():
                 # boundary collision event
                 # for now i'll just switch to purely using multiple cell manager, decide camera stuff later this is to get minimum viable done quick
-                self.current_state.handle_boundary_event(event)
+                event = self.current_state.handle_boundary_event(event)
+                events.extend(event)
+        return events
 
 class SingleCellManager():
     def __init__(self, cell_data):
@@ -140,9 +144,10 @@ class MultipleCellManager(SingleCellManager):
         adjacent_cells = []
         for cell in adjacent:
             if cell not in self.cells:
-                adjacent.remove(cell)
+                continue
             else:
                 adjacent_cells.append(self.cells[cell])
+
 
         return adjacent_cells
 
@@ -182,16 +187,17 @@ class MultipleCellManager(SingleCellManager):
         for cell_coords in new_active_cell_coordinates:
             new_active_cells.append(self.cells[cell_coords])
         events = []
-        if self.set_active_cells(new_active_cells):
+        newly_loaded = self.set_active_cells(new_active_cells)
+        if newly_loaded:
             # if cells were loaded, they were returned here
-            events.append(NLCE(loaded_cells=events))
+            events.append(NLCE(loaded_cells=newly_loaded))
         return events
 
 
 
     def set_active_cells(self, active_cells):
         if set(active_cells) == set(self.central_cells):
-            return False
+            return []
         # we don't change anything, still same cells
         else:
             adjacent, newly_loaded = self.handle_loading(active_cells)
@@ -201,7 +207,7 @@ class MultipleCellManager(SingleCellManager):
             if newly_loaded:
                 return newly_loaded
             # if new cells were loaded, inform whatever called this method
-        return False
+        return []
 
     def get_boundaries(self):
         return self.get_active_boundaries()
@@ -254,8 +260,8 @@ class MultipleCellManager(SingleCellManager):
 
     def determine_cell(self, position):
         x, y = position
-        cell_x = x // (16 * 8)
-        cell_y = y // (16 * 8)
+        cell_x = int(x // (16 * 8))
+        cell_y = int(y // (16 * 8))
         return (cell_x, cell_y)
 
     def get_entity_types(self):

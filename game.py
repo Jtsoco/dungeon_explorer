@@ -9,7 +9,7 @@ from collisions.collision_manager import CollisionManager
 from combat.damage_manager import DamageManager
 from entity.entity_setup import spawn_player
 
-from events_commands.events import PossibleAttackCollisionEvent as PACE, DamageEvent as DE, PhysicsEvent as PE, DeathEvent as Death, NewlyLoadedCellsEvent as NLCE
+from events_commands.events import PossibleAttackCollisionEvent as PACE, DamageEvent as DE, PhysicsEvent as PE, DeathEvent as Death, NewlyLoadedCellsEvent as NLCE, BoundaryCollisionEvent as BCE
 
 from datetime import datetime
 class Game():
@@ -86,6 +86,7 @@ class Game():
 
     def delegate_event(self, event):
         events = []
+        # here it may be useful to have an observer pattern later, as a consideration for refactoring, but for now just this
         match event:
             case DE():
                 new_events = self.damage_manager.handle_event(event)
@@ -95,6 +96,9 @@ class Game():
                 events.extend(new_events)
             case Death():
                 self.death_event(event)
+            case BCE():
+                new_events = self.cell_manager.handle_event(event)
+                events.extend(new_events)
             case NLCE():
                 new_events = self.entity_manager.handle_newly_loaded_cells(event)
                 events.extend(new_events)
@@ -113,7 +117,7 @@ class Game():
             self.entity_manager.draw(enemy)
         self.entity_manager.draw(self.player_data)
         camera_pos = self.scene_manager.camera.current_camera
-        # display_info(f"Player Pos: {self.player.data.position}", pos_x=camera_pos[0]+2, pos_y=camera_pos[1]+2)
+        display_info(f"Player Pos: {self.player_data.position[1]}", pos_x=camera_pos[0]+2, pos_y=camera_pos[1]+8)
         # outline_entity(self.player.data)
 
         # player animation

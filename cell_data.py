@@ -4,13 +4,15 @@ class CellData():
         # might not actually need to pass context
         self.cell_x = cell_x
         self.cell_y = cell_y
-        self.border_x = []
-        self.border_y = []
+        self.x_boundaries = []
+        self.y_boundaries = []
         self.enemies = []
         self.entity_types = []
         # think of a better way of telling what entities are in the cell later rather than saving all types in here, but for now is fine rather than checking all enemies every time
         self.loaded = False
 
+    def get_boundaries(self):
+        return self.x_boundaries + self.y_boundaries
 
     def update(self):
         pass
@@ -25,6 +27,9 @@ class CellData():
         x = self.cell_x * 16 * 8
         y = self.cell_y * 16 * 8
         return (x, y)
+
+    def get_enemies(self):
+        return self.enemies
 
     # methods to allow cells to message things when events happen?
     # or maybe just make cells primarily old data, and have some other manager do the updates through a cells respective things, like going through enemies in each cell and updating them.

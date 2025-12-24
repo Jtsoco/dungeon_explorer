@@ -9,7 +9,7 @@ from collisions.collision_manager import CollisionManager
 from combat.damage_manager import DamageManager
 from entity.entity_setup import spawn_player
 
-from events_commands.events import PossibleAttackCollisionEvent as PACE, DamageEvent as DE, PhysicsEvent as PE, DeathEvent as Death
+from events_commands.events import PossibleAttackCollisionEvent as PACE, DamageEvent as DE, PhysicsEvent as PE, DeathEvent as Death, NewlyLoadedCellsEvent as NLCE, BoundaryCollisionEvent as BCE
 
 from datetime import datetime
 class Game():
@@ -32,10 +32,11 @@ class Game():
         self.player_data = spawn_player()
         # for now player is just stored here, later might make a separate player manager if needed
         self.player_data.position = [self.context.player_start[0] * self.context.BRICK_SIZE, self.context.player_start[1] * self.context.BRICK_SIZE]
+        self.scene_manager.camera.set_target(self.player_data)
 
         # just have it use players attack and animation manager for now, as they work, restructure later if needed
         self.entity_manager = EntityManager(context=self.context)
-        types = self.cell_manager.current_state.active_cell.entity_types
+        types = self.cell_manager.current_state.get_entity_types()
         self.entity_manager.setup_entity(self.player_data.entity_type)
         self.entity_manager.setup_entities(types)
         # just this quick one for now on setting up entities, refactor later when redoing cell loading system
@@ -64,15 +65,14 @@ class Game():
             match event:
                 case PACE():
                     self.collision_manager.register_collision(event)
-
-        collision_events = self.collision_manager.update(self.player_data, self.
-        cell_manager.current_state.get_enemies())
+        boundaries = self.cell_manager.current_state.get_boundaries()
+        collision_events = self.collision_manager.update(self.player_data, self.cell_manager.current_state.get_enemies(), boundaries)
         events = collision_events
         while events:
             event = events.pop(0)
             new_events = self.delegate_event(event)
             events.extend(new_events)
-
+        self.scene_manager.camera.update()
 
 
 
@@ -86,6 +86,7 @@ class Game():
 
     def delegate_event(self, event):
         events = []
+        # here it may be useful to have an observer pattern later, as a consideration for refactoring, but for now just this
         match event:
             case DE():
                 new_events = self.damage_manager.handle_event(event)
@@ -95,6 +96,12 @@ class Game():
                 events.extend(new_events)
             case Death():
                 self.death_event(event)
+            case BCE():
+                new_events = self.cell_manager.handle_event(event)
+                events.extend(new_events)
+            case NLCE():
+                new_events = self.entity_manager.handle_newly_loaded_cells(event)
+                events.extend(new_events)
         return events
 
     def death_event(self, event):
@@ -110,7 +117,7 @@ class Game():
             self.entity_manager.draw(enemy)
         self.entity_manager.draw(self.player_data)
         camera_pos = self.scene_manager.camera.current_camera
-        # display_info(f"Player Pos: {self.player.data.position}", pos_x=camera_pos[0]+2, pos_y=camera_pos[1]+2)
+        display_info(f"Player Pos: {self.player_data.position[1]}", pos_x=camera_pos[0]+2, pos_y=camera_pos[1]+8)
         # outline_entity(self.player.data)
 
         # player animation

@@ -27,6 +27,7 @@ class StartupContext():
         # anything greater than or equal to this tile number is collideable
 
         # can be more than one active cell at a time for transitions
+        self.player_data = None
 
     def get_context(self):
         self.check_cells()

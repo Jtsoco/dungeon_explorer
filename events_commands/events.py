@@ -89,3 +89,18 @@ class AddMomentumEvent(PhysicsEvent):
         super().__init__(name="AddMomentumEvent")
         self.entity = entity
         self.momentum_vector = momentum_vector
+
+class BoundaryCollisionEvent(Event):
+    def __init__(self, entity, boundary):
+        super().__init__(name="BoundaryCollisionEvent")
+        self.entity = entity
+        self.boundary = boundary
+
+class CellEvent(Event):
+    def __init__(self, name="CellEvent"):
+        super().__init__(name)
+
+class NewlyLoadedCellsEvent(CellEvent):
+    def __init__(self, loaded_cells: list):
+        super().__init__(name="NewlyLoadedCellsEvent")
+        self.loaded_cells = loaded_cells

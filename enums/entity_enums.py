@@ -61,3 +61,13 @@ class WeaponCategory(Enum):
     BOW = auto()
     STAFF = auto()
     AXE = auto()
+
+class BoundaryType(Enum):
+    X = (3, 8)
+    Y = (3, 9)
+
+class SimpleAIState(Enum):
+    PATROL = auto()
+    CHASE = auto()
+    ATTACK = auto()
+    FLEE = auto()

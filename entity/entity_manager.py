@@ -1,11 +1,12 @@
 from animations.animation_manager import AnimationManager
 from attack.attack_manager import AttackManager
 from events_commands.commands import MovementCommand, AttackCommand
-from events_commands.events import StateChangedEvent, PossibleCollisionEvent as PCE, AttackFinishedEvent as AFE, PhysicsEvent as PE
+from events_commands.events import StateChangedEvent, PossibleCollisionEvent as PCE, AttackFinishedEvent as AFE, PhysicsEvent as PE, NewlyLoadedCellsEvent as NLCE
 from enums.entity_enums import EntityType as ET, EntityCategory as EC
 from state_machines.default_state_machine import DefaultStateMachine
 from entity.controllers.skull_controller import SkullController
 from entity.controllers.player_controller import PlayerController
+from entity.controllers.knight_controller import KnightController
 from collisions.collision_manager import CollisionManager
 from renderers.default_renderer import DefaultRenderer
 from physics.ground_physics import GroundPhysics
@@ -87,8 +88,16 @@ class EntityManager():
         match event:
             case PE():
                 self.physics[event.entity.entity_category].handle_event(event)
+            case NLCE():
+                self.handle_newly_loaded_cells(event)
+
         return []
 
+    def handle_newly_loaded_cells(self, event: NLCE):
+        # when new cells are loaded, setup entities in those cells
+        for cell in event.loaded_cells:
+            self.setup_entities(cell.entity_types)
+        return []
 
     def delegate_event(self, event, entity):
         match event:
@@ -129,6 +138,11 @@ class EntityManager():
                 self.entities_setup.append(ET.PLAYER)
                 # refactor later, but for now only player directly added through setup entity, others are from setup_entities
                 self.setup_controller(ET.PLAYER, PlayerController)
+                self.setup_physics(EC.GROUND, GroundPhysics, context=self.context)
+
+            case ET.KNIGHT:
+                self.setup_controller(ET.KNIGHT, KnightController)
+                self.setup_physics(EC.GROUND, GroundPhysics, context=self.context)
 
 
     def setup_entities(self, entity_types):

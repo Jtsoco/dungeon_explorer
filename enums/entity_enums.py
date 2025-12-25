@@ -41,6 +41,7 @@ class EntityType(Enum):
     PLAYER = (3, 10)
     SKULL = (3, 15)
     KNIGHT = (3, 16)
+    WINGED_KNIGHT = (3, 23)
 
 class EntityCategory(Enum):
     FLYING = auto()
@@ -61,6 +62,7 @@ class WeaponCategory(Enum):
     BOW = auto()
     STAFF = auto()
     AXE = auto()
+    GLAIVE = auto()
 
 class BoundaryType(Enum):
     X = (3, 8)

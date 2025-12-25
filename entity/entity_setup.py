@@ -1,7 +1,8 @@
 from entity.entity_data import EntityData
 from entity.animation_data import AnimationData
 from attack.weapon_data import WeaponData
-from enums.entity_enums import EntityType as ET, EntityCategory as EC
+from enums.entity_enums import EntityType as ET, EntityCategory as EC, WeaponCategory as WC, CollisionEntityTarget as CET
+from animations.attack_registry import WEAPON_STATS, WEAPONS_ANIMATIONS, WEAPONS_HITBOXES
 
 def spawn_player(position: tuple = (0, 0)) -> EntityData:
     player_setup = {
@@ -18,3 +19,18 @@ def spawn_player(position: tuple = (0, 0)) -> EntityData:
     }
     player_data = EntityData(**player_setup)
     return player_data
+
+# honestly could change weapon category to entity type, and apply weapon based on a mapping later, and consolidate loading into one function
+def spawn_weapon(weapon_category: WC = WC.SHORTSWORD, target=CET.PLAYER) -> WeaponData:
+    animations = WEAPONS_ANIMATIONS[weapon_category]
+    hitboxes = WEAPONS_HITBOXES[weapon_category]
+    stats = WEAPON_STATS[weapon_category]
+    weapon_data = WeaponData(
+        animations=animations,
+        hitboxes=hitboxes,
+        damage=stats["damage"],
+        knockback=stats["knockback"],
+        weapon_category=weapon_category,
+        target_type=target
+    )
+    return weapon_data

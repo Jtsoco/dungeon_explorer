@@ -41,3 +41,4 @@ class EntityData():
 
         self.touch_damage = touch_damage
         self.knockback = knockback
+        self.boss = False

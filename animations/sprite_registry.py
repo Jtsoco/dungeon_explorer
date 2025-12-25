@@ -43,3 +43,23 @@ SPRITES = {
 
 
 }
+
+BOSS_SPRITES = {
+    ET.WINGED_KNIGHT: {
+        MS.IDLE:
+        [
+            AF(
+            pos=(0,23), duration=12, offset=player_offset)
+        ],
+        MS.WALKING: [
+            AF(pos=(0,24), duration=6, offset=player_offset),
+            AF(pos=(1,24), duration=6, offset=player_offset)
+        ],
+        MS.JUMPING: [
+            AF(pos=(0,25), duration=12, offset=player_offset)
+        ],
+        MS.FALLING: [
+            AF(pos=(0,25), duration=12, offset=player_offset)
+        ]
+    }
+}

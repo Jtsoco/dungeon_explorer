@@ -12,8 +12,7 @@ class DefaultRenderer():
         """
         Renders an entity, and if they have a weapon that weapon too, using the weapons offset and the entity offset. Entity offset determines where they hold the weapon, weapon offset determines where the weapon handle is relative to upperleft of a frame
         """
-        width = 8  # hardcoded for now, as its a frame width of 8 in the sprite sheet, revisit later
-        height = 8  # hardcoded for now, as its a frame height of 8 in the sprite sheet, revisit later
+
         x = entity_data.position[0]
         y = entity_data.position[1]
         # float positions for y mean sometimes it's in the floor, using int here would make movement more jittery, so physics just requires it to be int for y positions, x doesn't have this limition and just uses floats, as no one cares if it goes in the wall a little
@@ -22,12 +21,15 @@ class DefaultRenderer():
         u = current_frame.pos[0] * 8
         v = current_frame.pos[1] * 8
         # have to multiply by 8 because each 'tile' in the sprite sheet is 8x8 pixels
+        width = current_frame.w_h[0]
+        height = current_frame.w_h[1]
+        rotation = current_frame.rotation
         image_bank = 0
         # just a default because i'm only using this for now
         width = width if entity_data.direction_state == DS.RIGHT else -width
 
         # pyxel.rect(entity_data.position[0], entity_data.position[1], entity_data.w_h[0], entity_data.w_h[1], 8)
-        pyxel.blt(x, y, image_bank, u, v, width, height, color_key)
+        pyxel.blt(x, y, image_bank, u, v, width, height, color_key, rotate=rotation)
         if entity_data.weapon:
             weapon_frame = entity_data.weapon.get_current_frame()
             w_width = 8

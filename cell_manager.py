@@ -2,7 +2,7 @@ from enums.entity_enums import EntityType as ET, BoundaryType as BT, CollisionEn
 from events_commands.events import BoundaryCollisionEvent as BCE, NewlyLoadedCellsEvent as NLCE
 from boundaries.boundary import Boundary
 from entity.entity_data import EntityData
-from animations.sprite_registry import SPRITES
+from animations.sprite_registry import SPRITES, BOSS_SPRITES
 from entity.animation_data import AnimationData
 from attack.weapon_data import WeaponData
 
@@ -97,6 +97,8 @@ class SingleCellManager():
                             enemies.append(enemy_data)
                             if ET.KNIGHT not in entity_types:
                                 entity_types.append(ET.KNIGHT)
+                        case ET.WINGED_KNIGHT.value:
+                            animation_data = AnimationData(BOSS_SPRITES[ET.WINGED_KNIGHT])
                 if tile in BT:
                     match tile:
                         case BT.X.value:

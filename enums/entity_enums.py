@@ -41,6 +41,7 @@ class EntityType(Enum):
     PLAYER = (3, 10)
     SKULL = (3, 15)
     KNIGHT = (3, 16)
+    WINGED_KNIGHT = (2, 23)
 
 class EntityCategory(Enum):
     FLYING = auto()

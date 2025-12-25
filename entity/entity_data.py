@@ -1,5 +1,5 @@
 # basic entity data
-from enums.entity_enums import MovementState as MS, DirectionState as DS, ActionState as AS, EntityType as ET, EntityCategory as EC
+from enums.entity_enums import MovementState as MS, DirectionState as DS, ActionState as AS, EntityType as ET, EntityCategory as EC, SimpleAIState as SAIS
 # make an enemy type enum, and use composition for enemy behaviors/ things later
 from entity.animation_data import AnimationData
 
@@ -28,6 +28,7 @@ class EntityData():
         self.move_speed = speed
 
         self.jump_strength = 3
+        self.ai = SAIS.PATROL  # simple ai state
 
 
 

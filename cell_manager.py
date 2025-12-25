@@ -1,10 +1,11 @@
-from enums.entity_enums import EntityType as ET, BoundaryType as BT, CollisionEntityTarget as CET
+from enums.entity_enums import EntityType as ET, BoundaryType as BT, CollisionEntityTarget as CET, WeaponCategory as WC
 from events_commands.events import BoundaryCollisionEvent as BCE, NewlyLoadedCellsEvent as NLCE
 from boundaries.boundary import Boundary
 from entity.entity_data import EntityData
 from animations.sprite_registry import SPRITES, BOSS_SPRITES
 from entity.animation_data import AnimationData
 from attack.weapon_data import WeaponData
+from entity.entity_setup import spawn_weapon
 
 import pyxel
 
@@ -83,6 +84,7 @@ class SingleCellManager():
                 tile = pyxel.tilemaps[0].pget(brick_x, brick_y)
                 if tile in ET:
                     match tile:
+                        # TODO consolidate all of this into an easier to manage  method/module/mapping later
                         case ET.SKULL.value:
                             animation_data = AnimationData(SPRITES[ET.SKULL])
                             # honestly could probably share the animation frames between all entities, this is fine for now but maybe change later
@@ -99,6 +101,11 @@ class SingleCellManager():
                                 entity_types.append(ET.KNIGHT)
                         case ET.WINGED_KNIGHT.value:
                             animation_data = AnimationData(BOSS_SPRITES[ET.WINGED_KNIGHT])
+                            weapon_data = spawn_weapon(WC.GLAIVE)
+                            enemy_data = EntityData(entity_type=ET.WINGED_KNIGHT, position=[brick_x * 8, brick_y * 8], animation_data=animation_data, weapon_data=weapon_data, cell_pos=(cell_data.cell_x, cell_data.cell_y), touch_damage=20, health=300)
+                            enemies.append(enemy_data)
+                            if ET.WINGED_KNIGHT not in entity_types:
+                                entity_types.append(ET.WINGED_KNIGHT)
                 if tile in BT:
                     match tile:
                         case BT.X.value:

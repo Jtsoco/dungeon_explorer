@@ -32,7 +32,8 @@ class DefaultRenderer():
         pyxel.blt(x, y, image_bank, u, v, width, height, color_key, rotate=rotation)
         if entity_data.weapon:
             weapon_frame = entity_data.weapon.get_current_frame()
-            w_width = 8
+            w_width = weapon_frame.w_h[0]
+            w_height= weapon_frame.w_h[1]
             weapon_x = x
             weapon_y = y
             if entity_data.direction_state == DS.RIGHT:
@@ -47,13 +48,13 @@ class DefaultRenderer():
                 weapon_x = x - x_offset
                 y_offset = abs(current_frame.offset[1] - weapon_frame.offset[1])
                 weapon_y -= y_offset
-                w_width = -8
+                w_width = -w_width
             # display_info(f"X offset: {x_offset}", pos_x=x, pos_y=y-40)
 
             wu = weapon_frame.pos[0] * 8
             wv = weapon_frame.pos[1] * 8
-            # for now just hardcoding weapon width and height, revisit later
-            pyxel.blt(weapon_x, weapon_y, image_bank, wu, wv, w_width, 8, color_key)
+            # for now just hardcoding weapon width and w_height, revisit later
+            pyxel.blt(weapon_x, weapon_y, image_bank, wu, wv, w_width, w_height, color_key, rotate=weapon_frame.rotation)
 
 
 

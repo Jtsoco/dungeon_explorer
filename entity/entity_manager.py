@@ -145,7 +145,7 @@ class EntityManager():
                 self.setup_physics(EC.GROUND, GroundPhysics, context=self.context)
             case ET.WINGED_KNIGHT:
                 self.setup_controller(ET.WINGED_KNIGHT, KnightController)
-                self.setup_physics(EC.FLYING, GroundPhysics, context=self.context)
+                self.setup_physics(EC.GROUND, GroundPhysics, context=self.context)
                 # for now just use ground physics, revisit later to make a flying physics module
 
 

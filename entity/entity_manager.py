@@ -2,7 +2,7 @@ from animations.animation_manager import AnimationManager
 from attack.attack_manager import AttackManager
 from events_commands.commands import MovementCommand, AttackCommand
 from events_commands.events import StateChangedEvent, PossibleCollisionEvent as PCE, AttackFinishedEvent as AFE, PhysicsEvent as PE, NewlyLoadedCellsEvent as NLCE
-from enums.entity_enums import EntityType as ET, EntityCategory as EC
+from enums.entity_enums import EntityType as ET, EntityCategory as EC, InputEnums as IE, PowerUpStates as PUS
 from state_machines.default_state_machine import DefaultStateMachine
 from entity.controllers.skull_controller import SkullController
 from entity.controllers.player_controller import PlayerController
@@ -37,6 +37,15 @@ class EntityManager():
         input_events = []
         input_events = input_events + self.controllers[entity.entity_type].update(entity, self.context)
         events, commands = self.state_machine.input_events(entity, input_events)
+
+        # if entity.entity_type == ET.PLAYER:
+        #     jumped = False
+        #     for event in input_events:
+        #         if event.input_type == IE.JUMP:
+        #             print("Player Jumped!")
+        #             jumped = True
+        #     if not jumped:
+        #         print("Player did not jump this frame.")
 
         animation_event = self.animation_manager.update(entity)
         if animation_event:

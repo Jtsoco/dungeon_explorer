@@ -1,8 +1,9 @@
 from entity.entity_data import EntityData
 from entity.animation_data import AnimationData
 from attack.weapon_data import WeaponData
-from enums.entity_enums import EntityType as ET, EntityCategory as EC, WeaponCategory as WC, CollisionEntityTarget as CET
+from enums.entity_enums import EntityType as ET, EntityCategory as EC, WeaponCategory as WC, CollisionEntityTarget as CET, PowerUpStates as PUS
 from animations.attack_registry import WEAPON_STATS, WEAPONS_ANIMATIONS, WEAPONS_HITBOXES
+
 
 def spawn_player(position: tuple = (0, 0)) -> EntityData:
     player_setup = {
@@ -18,6 +19,7 @@ def spawn_player(position: tuple = (0, 0)) -> EntityData:
 
     }
     player_data = EntityData(**player_setup)
+    player_data.power_ups[PUS.DOUBLE_JUMP] = True  # give player double jump powerup for testing
     return player_data
 
 # honestly could change weapon category to entity type, and apply weapon based on a mapping later, and consolidate loading into one function

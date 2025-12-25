@@ -1,4 +1,4 @@
-from enums.entity_enums import MovementState as MS, ActionState as AS, DirectionState as DS, InputEnums as IE
+from enums.entity_enums import MovementState as MS, ActionState as AS, DirectionState as DS, InputEnums as IE, PowerUpStates as PUS
 from events_commands.events import InputEvent, StartedFallingEvent, LandedEvent, StateChangedEvent, AttackFinishedEvent
 from events_commands.commands import MoveCommand, JumpCommand, AttackCommand
 class DefaultStateMachine():
@@ -52,8 +52,18 @@ class DefaultStateMachine():
                 data.movement_state = MS.JUMPING
                 return JumpCommand()
             case MS.JUMPING | MS.FALLING:
-                # already jumping or falling, can't jump again
+                if self.can_double_jump(data):
+                    data.movement_state = MS.JUMPING
+                    return JumpCommand()
                 return None
+
+    def can_double_jump(self, data):
+        if PUS.DOUBLE_JUMP in data.power_ups:
+            if data.power_ups[PUS.DOUBLE_JUMP]:
+                data.power_ups[PUS.DOUBLE_JUMP] = False  # mark as used
+                return True
+
+        return False
 
     def set_walking(self, data, event_type):
         # this will eventually decide
@@ -78,6 +88,8 @@ class DefaultStateMachine():
                     data.movement_state = MS.FALLING
                 case LandedEvent():
                     data.movement_state = MS.IDLE
+                    if PUS.DOUBLE_JUMP in data.power_ups:
+                        data.power_ups[PUS.DOUBLE_JUMP] = True  # reset double jump on land
                 case AttackFinishedEvent():
                     data.action_state = AS.NONE
         new_states = [data.movement_state, data.action_state, data.direction_state]

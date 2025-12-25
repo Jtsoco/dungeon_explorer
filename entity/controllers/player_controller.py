@@ -20,15 +20,23 @@ class PlayerController():
         if pyxel.btn(pyxel.KEY_D):
             new_recents.append(InputEvent(IE.ATTACK))
 
+        # for now, polling for rl movement as a quick bug fix
         if not rl_movement or (len(rl_movement) == 2):
-            new_recents.append(InputEvent(IE.STOP_MOVE))
+            events.append(InputEvent(IE.STOP_MOVE))
         else:
-            new_recents.extend(rl_movement)
+            events.extend(rl_movement)
         # this checks if there are any new events since last time
         # only turning new events into events to return
-        events = [event for event in new_recents if event not in self.recent_movement]
+        # events = [event for event in new_recents if event not in self.recent_movement]
+        new_recent_movements = []
+        for event in new_recents:
+            new_recent_movements.append((event.input_type, event.direction))
+            if (event.input_type, event.direction) not in self.recent_movement:
+                events.append(event)
+
+        # print(f"New Input Events: {[str(event) for event in events]}")
         # then, take all the inputs and indicate it was pressed this frame
-        self.recent_movement = new_recents
+        self.recent_movement = new_recent_movements
         return events
 
     def update(self, entity_data=None, context=None):

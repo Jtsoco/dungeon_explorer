@@ -152,6 +152,9 @@ class PlayerPhysics:
         data.velocity[1] += gravity
         if data.velocity[1] < terminal_velocity:
             data.velocity[1] = terminal_velocity
+            if data.secondary_momentum[1] > 0:
+                # so if secondary momentum is pushing up, but velocity down is max, start applying to secondary momentum. not doing so creates a bug where if secondary momentum is exactly 5, player floats forever
+                data.secondary_momentum += gravity
 
     def stepback(self, data, reverse, context, axis=0):
         sign = -1 if reverse < 0 else 1

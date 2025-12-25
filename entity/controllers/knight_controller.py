@@ -31,9 +31,11 @@ class KnightController(DefaultController):
             return new_events
         else:
             if entity.ai != SAIS.PATROL:
-                self.back_to_patrol(entity)
+                if entity.state_timer >= entity.state_timer_limit:
+                    self.back_to_patrol(entity)
 
-        if entity.movement_state == MS.WALKING:
+        if entity.ai == SAIS.PATROL and entity.movement_state == MS.WALKING:
+            # checking for patrol means that if chasing or attacking, it won't try to turn at ledges
             new_events = self.walking_to_ledge(entity, context)
             if new_events:
                 return new_events

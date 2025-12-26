@@ -10,7 +10,7 @@ class WingedKnightController(KnightController):
         self.long_wait = 90
         self.short_wait = 30
         self.medium_wait = 60
-        self.max_notice_distance = (80, 40)  # x, y distances
+        self.max_notice_distance = (50, 40)  # x, y distances
         # for now, just inherit default controller behavior
 
     def contextless_update(self, entity):
@@ -177,7 +177,7 @@ class WingedKnightController(KnightController):
             entity.state_timer = 0
             entity.state_timer_limit = self.random_wait_time()
             entity.ai = SAIS.ATTACK
-        elif distance_x < 20 and distance_y < 20:
+        elif distance_x < 20 and distance_y < 15:
             # move toward player
             events = self.set_chase(entity, player_data)
         else:

@@ -73,6 +73,7 @@ class SimpleAIState(Enum):
     CHASE = auto()
     ATTACK = auto()
     FLEE = auto()
+    JUMP_ATTACK = auto()
 
 class PowerUpStates(Enum):
     DOUBLE_JUMP = auto()

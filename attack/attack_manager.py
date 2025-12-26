@@ -1,6 +1,7 @@
-from enums.entity_enums import WeaponActionState as WAS, CollisionEntityTarget as CET, DirectionState as DS
+from enums.entity_enums import WeaponActionState as WAS, MovementState as MS, CollisionEntityTarget as CET, DirectionState as DS
 from events_commands.events import AttackFinishedEvent as AFE, PossibleAttackCollisionEvent as PACE
 from events_commands.commands import AttackCommand
+
 
 class AttackManager():
     def __init__(self):
@@ -53,11 +54,22 @@ class AttackManager():
         # for now, just default. it will decide what attack to set otherwise, but for now there is only one
         weapon = player_data.weapon
         if not weapon.active:
+            player_state = player_data.movement_state
             weapon.active = True
-            weapon.state = WAS.DEFAULT
-            weapon.current_animation = weapon.animations[WAS.DEFAULT]
+            match player_state:
+                case MS.FALLING | MS.JUMPING:
+                    state = self.get_jump_attack(weapon)
+                case _:
+                    state = WAS.DEFAULT
+            weapon.current_animation = weapon.animations[state]
+            weapon.state = state
             weapon.current_frame = 0
             weapon.frame_timer = 0
+
+    def get_jump_attack(self, weapon_data):
+        if WAS.AIRATTACK in weapon_data.animations:
+            return WAS.AIRATTACK
+        return WAS.DEFAULT
 
     def update_frame_index(self, weapon):
         if weapon.frame_timer >= weapon.current_animation[weapon.current_frame].duration:

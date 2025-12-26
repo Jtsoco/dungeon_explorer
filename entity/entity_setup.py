@@ -36,3 +36,12 @@ def spawn_weapon(weapon_category: WC = WC.SHORTSWORD, target=CET.PLAYER) -> Weap
         target_type=target
     )
     return weapon_data
+
+def spawn_winged_boss(cell_position, brick_x, brick_y, BOSS_SPRITES):
+    animation_data = AnimationData(BOSS_SPRITES[ET.WINGED_KNIGHT])
+    weapon_data = spawn_weapon(WC.GLAIVE)
+    enemy_data = EntityData(entity_type=ET.WINGED_KNIGHT, position=[brick_x * 8, brick_y * 8], animation_data=animation_data, weapon_data=weapon_data, cell_pos=(cell_position[0], cell_position[1]), touch_damage=20, health=300)
+    enemy_data.boss = True
+    enemy_data.power_ups[PUS.DOUBLE_JUMP] = True
+    # give boss double jump ability
+    return enemy_data

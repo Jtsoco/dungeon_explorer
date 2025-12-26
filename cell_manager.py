@@ -5,7 +5,7 @@ from entity.entity_data import EntityData
 from animations.sprite_registry import SPRITES, BOSS_SPRITES
 from entity.animation_data import AnimationData
 from attack.weapon_data import WeaponData
-from entity.entity_setup import spawn_weapon
+from entity.entity_setup import spawn_weapon, spawn_winged_boss
 
 import pyxel
 
@@ -100,10 +100,8 @@ class SingleCellManager():
                             if ET.KNIGHT not in entity_types:
                                 entity_types.append(ET.KNIGHT)
                         case ET.WINGED_KNIGHT.value:
-                            animation_data = AnimationData(BOSS_SPRITES[ET.WINGED_KNIGHT])
-                            weapon_data = spawn_weapon(WC.GLAIVE)
-                            enemy_data = EntityData(entity_type=ET.WINGED_KNIGHT, position=[brick_x * 8, brick_y * 8], animation_data=animation_data, weapon_data=weapon_data, cell_pos=(cell_data.cell_x, cell_data.cell_y), touch_damage=20, health=300)
-                            enemies.append(enemy_data)
+                            enemy = spawn_winged_boss((cell_data.cell_x, cell_data.cell_y), brick_x, brick_y, BOSS_SPRITES)
+                            enemies.append(enemy)
                             if ET.WINGED_KNIGHT not in entity_types:
                                 entity_types.append(ET.WINGED_KNIGHT)
                 if tile in BT:

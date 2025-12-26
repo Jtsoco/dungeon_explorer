@@ -42,7 +42,7 @@ class AttackManager():
         weapon.current_animation = weapon.animations[WAS.SHEATHED]
         weapon.current_frame = 0
         weapon.frame_timer = 0
-        weapon.current_hitbox = None
+        weapon.set_current_hitboxes(WAS.SHEATHED)
 
     def handle_command(self, command, player_data):
         match command:
@@ -65,6 +65,7 @@ class AttackManager():
             weapon.state = state
             weapon.current_frame = 0
             weapon.frame_timer = 0
+            weapon.set_current_hitboxes(state)
 
     def get_jump_attack(self, weapon_data):
         if WAS.AIRATTACK in weapon_data.animations:

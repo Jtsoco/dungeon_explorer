@@ -35,6 +35,7 @@ class WeaponData():
         self.current_frame = 0
         self.frame_timer = 0
         self.current_animation = animations[WS.SHEATHED]
+        self.current_hitbox = self.hitboxes.get(WS.DEFAULT, (0,0))
         # should all have a sheathed animation
         self.knockback = knockback
 
@@ -44,6 +45,13 @@ class WeaponData():
 
     def get_current_hitbox(self):
         if self.active:
-            return self.hitboxes.get(self.current_frame, (0,0))
+            return self.current_hitbox.get(self.current_frame, (0,0))
         # if not active, just give empty hitbox, no collision there
         return (0,0)
+
+    def set_current_hitbox(self, state=WS.SHEATHED):
+        pass
+        # if self.active:
+        #     self.current_hitbox = self.hitboxes.get(self.state, {})
+        # else:
+        #     self.current_hitbox = {}

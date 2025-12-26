@@ -87,7 +87,7 @@ class DefaultStateMachine():
                 case StartedFallingEvent():
                     data.movement_state = MS.FALLING
                 case LandedEvent():
-                    data.movement_state = MS.IDLE
+                    self.landed_update(data)
                     if PUS.DOUBLE_JUMP in data.power_ups:
                         data.power_ups[PUS.DOUBLE_JUMP] = True  # reset double jump on land
                 case AttackFinishedEvent():
@@ -95,3 +95,10 @@ class DefaultStateMachine():
         new_states = [data.movement_state, data.action_state, data.direction_state]
         if new_states != last_states:
             return StateChangedEvent()
+
+    def landed_update(self, data):
+        # if it's not 0, then they're walking
+        if not data.velocity[0]:
+            data.movement_state = MS.IDLE
+        else:
+            data.movement_state = MS.WALKING

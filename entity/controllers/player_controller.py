@@ -22,9 +22,9 @@ class PlayerController():
 
         # for now, polling for rl movement as a quick bug fix
         if not rl_movement or (len(rl_movement) == 2):
-            events.append(InputEvent(IE.STOP_MOVE))
+            new_recents.append(InputEvent(IE.STOP_MOVE))
         else:
-            events.extend(rl_movement)
+            new_recents.extend(rl_movement)
         # this checks if there are any new events since last time
         # only turning new events into events to return
         # events = [event for event in new_recents if event not in self.recent_movement]

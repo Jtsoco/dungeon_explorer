@@ -7,6 +7,7 @@ from state_machines.default_state_machine import DefaultStateMachine
 from entity.controllers.skull_controller import SkullController
 from entity.controllers.player_controller import PlayerController
 from entity.controllers.knight_controller import KnightController
+from entity.controllers.winged_knight_controller import WingedKnightController
 from collisions.collision_manager import CollisionManager
 from renderers.default_renderer import DefaultRenderer
 from physics.ground_physics import GroundPhysics
@@ -153,7 +154,7 @@ class EntityManager():
                 self.setup_controller(ET.KNIGHT, KnightController)
                 self.setup_physics(EC.GROUND, GroundPhysics, context=self.context)
             case ET.WINGED_KNIGHT:
-                self.setup_controller(ET.WINGED_KNIGHT, KnightController)
+                self.setup_controller(ET.WINGED_KNIGHT, WingedKnightController)
                 self.setup_physics(EC.GROUND, GroundPhysics, context=self.context)
                 # for now just use ground physics, revisit later to make a flying physics module
 

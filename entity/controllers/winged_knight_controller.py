@@ -116,8 +116,9 @@ class WingedKnightController(KnightController):
             # move toward player
             events = self.set_chase(entity, player_data)
         else:
-            self.set_chase(entity, player_data)
-            events = self.jump_attack(entity)
+            new_events = self.set_chase(entity, player_data)
+            new_events.extend(self.jump_attack(entity))
+            events.extend(new_events)
         return events
 
     def set_chase(self, entity, player_data):

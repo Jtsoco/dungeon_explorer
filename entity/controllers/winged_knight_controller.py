@@ -10,50 +10,8 @@ class WingedKnightController(KnightController):
         self.long_wait = 90
         self.short_wait = 30
         self.medium_wait = 60
-        self.max_notice_distance = (50, 40)  # x, y distances
+        self.max_notice_distance = (70, 30)  # x, y distances
         # for now, just inherit default controller behavior
-
-    def contextless_update(self, entity):
-        return super().contextless_update(entity)
-
-    def update(self, entity, context=None):
-        entity.state_timer += 1
-        if context:
-            return self.context_update(entity, context)
-        else:
-            return self.contextless_update(entity)
-
-    def context_update(self, entity, context):
-        tile_context = context.tile_context
-        events = []
-        distance = self.distance_to_player(entity, context)
-        if self.is_target_close(distance):
-            new_events = self.player_close(entity, context, distance)
-            return new_events
-        else:
-            if entity.ai != SAIS.PATROL:
-                if entity.state_timer >= entity.state_timer_limit:
-                    self.back_to_patrol(entity)
-
-        if entity.ai == SAIS.PATROL and entity.movement_state == MS.WALKING:
-            # checking for patrol means that if chasing or attacking, it won't try to turn at ledges
-            new_events = self.walking_to_ledge(entity, context)
-            if new_events:
-                return new_events
-        # if no ledge, just do regular contextless update
-        events = self.contextless_update(entity)
-        return events
-
-    def back_to_patrol(self, entity):
-        entity.ai = SAIS.PATROL
-        entity.state_timer = 0
-        entity.state_timer_limit = random.randint(30, 90)
-
-    def distance_to_player(self, entity, context):
-        player_data = context.player_data
-        distance_x = abs((entity.position[0] + entity.w_h[0] / 2) - (player_data.position[0] + player_data.w_h[0] / 2))
-        distance_y = abs((entity.position[1] + entity.w_h[1] / 2) - (player_data.position[1] + player_data.w_h[1] / 2))
-        return (distance_x, distance_y)
 
 
     def jump(self, entity):
@@ -73,12 +31,6 @@ class WingedKnightController(KnightController):
         # close enough to zero
         return False
 
-    def is_target_close(self, distance):
-        distance_x = distance[0]
-        distance_y = distance[1]
-        if distance_x < self.max_notice_distance[0] and distance_y < self.max_notice_distance[1]:
-            return True
-        return False
 
     def player_close(self, entity, context, distance):
         player_data = context.player_data
@@ -150,23 +102,6 @@ class WingedKnightController(KnightController):
 
         return events
 
-    def swap_directions(self, entity):
-        match entity.direction_state:
-            case DS.LEFT:
-                return InputEvent(IE.MOVE, direction=DS.RIGHT)
-            case DS.RIGHT:
-                return InputEvent(IE.MOVE, direction=DS.LEFT)
-
-    def following_target(self, entity, player_data):
-        player_to_left = (entity.position[0] + entity.w_h[0] / 2) >= (player_data.position[0] + player_data.w_h[0] / 2)
-        match entity.direction_state:
-            case DS.LEFT:
-                if player_to_left:
-                    return True
-            case DS.RIGHT:
-                if not player_to_left:
-                    return True
-        return False
 
     def select_active_action(self, entity, context, distance_x, distance_y):
         events = []
@@ -195,9 +130,6 @@ class WingedKnightController(KnightController):
         entity.state_timer = 0
         entity.state_timer_limit = self.short_wait
         return events
-
-    def random_wait_time(self, short=30, long=90):
-        return random.randint(short, long)
 
     def jump_attack(self, entity):
         events = []

@@ -1,6 +1,7 @@
 from enums.entity_enums import MovementState as MS, ActionState as AS, DirectionState as DS, InputEnums as IE, PowerUpStates as PUS
 from events_commands.events import InputEvent, StartedFallingEvent, LandedEvent, StateChangedEvent, AttackFinishedEvent
-from events_commands.commands import MoveCommand, JumpCommand, AttackCommand
+from events_commands.commands import MoveCommand, JumpCommand, AttackCommand, EffectCommand
+from enums.effects_enums import ParticleEffectType as PET, EffectType
 class DefaultStateMachine():
     def __init__(self):
         self.events = []
@@ -25,9 +26,9 @@ class DefaultStateMachine():
                     command = self.stop_move(data)
                     return_commands.append(command)
                 case IE.JUMP:
-                    command = self.jump_input(data)
-                    if command:
-                        return_commands.append(command)
+                    commands = self.jump_input(data)
+                    if commands:
+                        return_commands.extend(commands)
                 case IE.ATTACK:
                     command = self.attack_input(data)
                     if command:
@@ -47,15 +48,17 @@ class DefaultStateMachine():
                 return None
 
     def jump_input(self, data):
+        commands = []
         match data.movement_state:
             case MS.IDLE | MS.WALKING:
                 data.movement_state = MS.JUMPING
-                return JumpCommand()
+                commands.append(JumpCommand())
             case MS.JUMPING | MS.FALLING:
                 if self.can_double_jump(data):
                     data.movement_state = MS.JUMPING
-                    return JumpCommand()
-                return None
+                    commands.append(JumpCommand())
+                    commands.append(EffectCommand(pos=data.position))
+        return commands
 
     def can_double_jump(self, data):
         if PUS.DOUBLE_JUMP in data.power_ups:
@@ -82,6 +85,7 @@ class DefaultStateMachine():
 
     def state_updates(self, data, updates):
         last_states = [data.movement_state, data.action_state, data.direction_state]
+        events, commands = [], []
         for event in updates:
             match event:
                 case StartedFallingEvent():
@@ -90,11 +94,14 @@ class DefaultStateMachine():
                     self.landed_update(data)
                     if PUS.DOUBLE_JUMP in data.power_ups:
                         data.power_ups[PUS.DOUBLE_JUMP] = True  # reset double jump on land
+                    commands.append(EffectCommand(pos=data.position, sub_type=PET.LAND_DUST, effect_type=EffectType.PARTICLE))
                 case AttackFinishedEvent():
                     data.action_state = AS.NONE
         new_states = [data.movement_state, data.action_state, data.direction_state]
+        # events, commands = [], []
         if new_states != last_states:
-            return StateChangedEvent()
+            events.append(StateChangedEvent())
+        return (events, commands)
 
     def landed_update(self, data):
         # if it's not 0, then they're walking

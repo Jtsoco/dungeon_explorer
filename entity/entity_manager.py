@@ -1,6 +1,6 @@
 from animations.animation_manager import AnimationManager
 from attack.attack_manager import AttackManager
-from events_commands.commands import MovementCommand, AttackCommand
+from events_commands.commands import MovementCommand, AttackCommand, EffectCommand
 from events_commands.events import StateChangedEvent, PossibleCollisionEvent as PCE, AttackFinishedEvent as AFE, PhysicsEvent as PE, NewlyLoadedCellsEvent as NLCE
 from enums.entity_enums import EntityType as ET, EntityCategory as EC, InputEnums as IE, PowerUpStates as PUS
 from state_machines.default_state_machine import DefaultStateMachine
@@ -28,6 +28,7 @@ class EntityManager():
         self.attack_manager = attack_manager
         self.context = context
         self.main_return_events = []
+        self.main_return_commands = []
         self.renderer = DefaultRenderer()
 
 
@@ -83,15 +84,21 @@ class EntityManager():
                     # consider dividing events into main and sub, or lvl1 lvl2 event types later to inherit from for easier filtering
                     self.main_return_events.append(attack_event)
 
-        state_change = self.state_machine.state_updates(entity, state_updates)
-        if state_change:
-            self.delegate_event(state_change, entity)
+        events, commands = self.state_machine.state_updates(entity, state_updates)
+        if events or commands:
+            for event in events:
+                self.delegate_event(event, entity)
+            for command in commands:
+                self.delegate_command(command, entity)
+
 
         events = self.main_return_events.copy()
+        commands = self.main_return_commands.copy()
+        self.main_return_commands.clear()
         self.main_return_events.clear()
 
         # expand to sound later
-        return events
+        return events, commands
 
     def handle_event(self, event):
         # this is for when external systems want to pass events to entity manager to be delegated to respective systems
@@ -125,6 +132,9 @@ class EntityManager():
                 return self.physics[entity.entity_category].handle_command(command, entity)
             case AttackCommand():
                 return self.attack_manager.handle_command(command, entity)
+            case EffectCommand():
+                self.main_return_commands.append(command)
+        return [], []  # Return empty lists if no new events/commands
 
 
     def draw(self, entity):

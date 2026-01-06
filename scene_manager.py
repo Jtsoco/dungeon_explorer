@@ -21,19 +21,10 @@ class SceneManager():
         height = self.context.CELL_SIZE * self.context.BRICK_SIZE
         self.renderer.draw_one(cam_x, cam_y, width, height)
 
+    def render_effects(self, effects):
+        self.renderer.render_effects(effects)
+
+
     def notify(self, event):
         # event will be a custom event class later
         pass
-
-class Effect:
-    # a class for scene effects, like little animations for deaths and such
-    def __init__(self, effect_type, position, animation_frames):
-        self.effect_type = effect_type
-        self.position = position
-        self.animation_frames = animation_frames
-        self.current_frame = 0
-        self.finished = False
-
-    def update(self):
-        pass
-    # base on animation_manager methods, probably consolidate things into a module later

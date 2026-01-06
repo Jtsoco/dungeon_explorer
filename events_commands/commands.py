@@ -1,4 +1,5 @@
 from enums.entity_enums import DirectionState as DS
+from enums.effects_enums import ParticleEffectType as PET, EffectType
 
 class Command():
     def __init__(self, name: str = "GenericCommand"):
@@ -30,3 +31,11 @@ class JumpCommand(MovementCommand):
 class AttackCommand(Command):
     def __init__(self):
         super().__init__(name="AttackCommand")
+
+
+class EffectCommand(Command):
+    def __init__(self, pos=(0,0), sub_type=PET.JUMP_DUST, effect_type=EffectType.PARTICLE):
+        super().__init__(name="EffectCommand")
+        self.position = pos
+        self.sub_type = sub_type
+        self.effect_type = effect_type

@@ -10,6 +10,9 @@ from combat.damage_manager import DamageManager
 from entity.entity_setup import spawn_player
 
 from events_commands.events import PossibleAttackCollisionEvent as PACE, DamageEvent as DE, PhysicsEvent as PE, DeathEvent as Death, NewlyLoadedCellsEvent as NLCE, BoundaryCollisionEvent as BCE
+from events_commands.commands import EffectCommand
+
+from effects.effects_manager import EffectsManager
 
 from datetime import datetime
 class Game():
@@ -51,12 +54,17 @@ class Game():
         self.current_frame_count = 0
         self.context.player_data = self.player_data
 
+        self.effects_manager = EffectsManager()
+
+
     def update(self):
         main_events = []
         all_entities = self.cell_manager.current_state.get_enemies() + [self.player_data]
+        main_commands = []
         for entity in all_entities:
-            events = self.entity_manager.update(entity)
+            events, commands = self.entity_manager.update(entity)
             main_events.extend(events)
+            main_commands.extend(commands)
 
         # after main events, need a last check to see if any state changes happend that need to be handled for respective entities
         # possibly consider breaking down entity manager into subparts or having it like this for now where it contains a full 'sub process' for each entity
@@ -66,9 +74,17 @@ class Game():
             match event:
                 case PACE():
                     self.collision_manager.register_collision(event)
+        for command in main_commands:
+            match command:
+                case EffectCommand():
+                    self.effects_manager.handle_command(command)
+
+
         boundaries = self.cell_manager.current_state.get_boundaries()
         collision_events = self.collision_manager.update(self.player_data, self.cell_manager.current_state.get_enemies(), boundaries)
-        events = collision_events
+        effects_events = self.effects_manager.update()
+
+        events = collision_events + effects_events
         while events:
             event = events.pop(0)
             new_events = self.delegate_event(event)
@@ -109,9 +125,12 @@ class Game():
         entity = event.entity
         if not entity.player:
             self.cell_manager.current_state.remove_entity(entity)
+            self.effects_manager.handle_event(event)
 
     def draw(self):
         self.scene_manager.draw()
+        effects = self.effects_manager.get_effects()
+        self.scene_manager.render_effects(effects)
         # for now this, but change it later when i have time
         enemies = self.cell_manager.current_state.get_enemies()
         for enemy in enemies:

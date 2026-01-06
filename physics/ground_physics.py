@@ -150,7 +150,7 @@ class GroundPhysics:
         gravity = self.gravity
         terminal_velocity = -5
         data.velocity[1] += gravity
-        if data.velocity[1] < terminal_velocity:
+        if (data.velocity[1] + data.secondary_momentum[1]) < terminal_velocity:
             data.velocity[1] = terminal_velocity
 
     def stepback(self, data, reverse, context, axis=0):

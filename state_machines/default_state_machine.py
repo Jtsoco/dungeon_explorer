@@ -1,6 +1,7 @@
 from enums.entity_enums import MovementState as MS, ActionState as AS, DirectionState as DS, InputEnums as IE, PowerUpStates as PUS
 from events_commands.events import InputEvent, StartedFallingEvent, LandedEvent, StateChangedEvent, AttackFinishedEvent
 from events_commands.commands import MoveCommand, JumpCommand, AttackCommand, EffectCommand, SoundCommand
+from audio.sound_enums import SoundEnum
 from enums.effects_enums import ParticleEffectType as PET, EffectType
 class DefaultStateMachine():
     def __init__(self):
@@ -53,13 +54,13 @@ class DefaultStateMachine():
             case MS.IDLE | MS.WALKING:
                 data.movement_state = MS.JUMPING
                 commands.append(JumpCommand())
-                commands.append(SoundCommand(sound_enum=1))  # JUMP sound
+                commands.append(SoundCommand(sound_enum=SoundEnum.JUMP))  # JUMP sound
             case MS.JUMPING | MS.FALLING:
                 if self.can_double_jump(data):
                     data.movement_state = MS.JUMPING
                     commands.append(JumpCommand())
                     commands.append(EffectCommand(pos=data.position))
-                    commands.append(SoundCommand(sound_enum=1))  # LAND sound on double jump
+                    commands.append(SoundCommand(sound_enum=SoundEnum.JUMP))  # LAND sound on double jump
         return commands
 
     def can_double_jump(self, data):
@@ -97,7 +98,7 @@ class DefaultStateMachine():
                     if PUS.DOUBLE_JUMP in data.power_ups:
                         data.power_ups[PUS.DOUBLE_JUMP] = True  # reset double jump on land
                     commands.append(EffectCommand(pos=data.position, sub_type=PET.LAND_DUST, effect_type=EffectType.PARTICLE))
-                    commands.append(SoundCommand(sound_enum=2))  # LAND sound
+                    commands.append(SoundCommand(sound_enum=SoundEnum.LAND))  # LAND sound
                 case AttackFinishedEvent():
                     data.action_state = AS.NONE
         new_states = [data.movement_state, data.action_state, data.direction_state]

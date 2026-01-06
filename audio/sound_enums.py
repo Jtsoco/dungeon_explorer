@@ -6,4 +6,10 @@ class SoundEnum(Enum):
     ATTACK = 0
     JUMP = 1
     LAND = 2
+    DAMAGE = 3
+    DEATH = 4
     # EXPLOSION = auto()
+
+class MusicEnum(Enum):
+    BACKGROUND_MUSIC = 0
+    BOSS_MUSIC = 1

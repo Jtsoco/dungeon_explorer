@@ -40,8 +40,19 @@ class EffectCommand(Command):
         self.sub_type = sub_type
         self.effect_type = effect_type
 
-class SoundCommand(Command):
+class AudioCommand(Command):
+    def __init__(self, name="AudioCommand"):
+        super().__init__(name=name)
+
+class SoundCommand(AudioCommand):
     def __init__(self, sound_enum, loop=False):
         super().__init__(name="SoundCommand")
         self.sound_enum = sound_enum
         self.loop = loop
+
+class MusicCommand(AudioCommand):
+    def __init__(self, music_enum, loop=True, priority=0):
+        super().__init__(name="MusicCommand")
+        self.music_enum = music_enum
+        self.loop = loop
+        self.priority = priority

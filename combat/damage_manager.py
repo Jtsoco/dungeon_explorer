@@ -1,6 +1,7 @@
 from enums.entity_enums import DirectionState as DS
 from events_commands.events import DeathEvent, AddMomentumEvent
-
+from events_commands.commands import SoundCommand
+from audio.sound_enums import SoundEnum
 class DamageManager():
     def __init__(self):
         pass
@@ -11,6 +12,8 @@ class DamageManager():
     def handle_event(self, event):
         # for now just damage event
         events = []
+        commands = []
+
         target = event.target
         damage_amount = event.damage_amount
         knockback = event.knockback
@@ -20,6 +23,9 @@ class DamageManager():
         if target.health <= 0:
             death_event = DeathEvent(target)
             events.append(death_event)
+            commands.append(SoundCommand(sound_enum=SoundEnum.DEATH))  # DEATH sound
+        else:
+            commands.append(SoundCommand(sound_enum=SoundEnum.DAMAGE))  # HIT sound
         if knockback != (0, 0):
             # calculate knockback direction here, turn into vector, then send out to give to physics manager. for now, just basic based on direction of entity from target
             # if target.direction_state == DS.LEFT:
@@ -31,7 +37,8 @@ class DamageManager():
                 kb_vector = [knockback[0], knockback[1]]
             momentum_event = AddMomentumEvent(target, kb_vector)
             events.append(momentum_event)
-        return events
+
+        return events, commands
 
 def determine_relative_direction(origin, target):
     # simple implementation for now

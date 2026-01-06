@@ -10,7 +10,7 @@ from combat.damage_manager import DamageManager
 from entity.entity_setup import spawn_player
 
 from events_commands.events import PossibleAttackCollisionEvent as PACE, DamageEvent as DE, PhysicsEvent as PE, DeathEvent as Death, NewlyLoadedCellsEvent as NLCE, BoundaryCollisionEvent as BCE
-from events_commands.commands import EffectCommand, SoundCommand
+from events_commands.commands import EffectCommand, SoundCommand, MusicCommand, AudioCommand
 
 from effects.effects_manager import EffectsManager
 from audio.sound_effects_manager import SoundEffectsManager
@@ -57,6 +57,10 @@ class Game():
 
         self.effects_manager = EffectsManager()
         self.sound_effects_manager = SoundEffectsManager()
+        self.sound_effects_manager.handle_command(MusicCommand(music_enum=0))  # Start background music
+
+
+
 
 
     def update(self):
@@ -77,11 +81,7 @@ class Game():
                 case PACE():
                     self.collision_manager.register_collision(event)
         for command in main_commands:
-            match command:
-                case EffectCommand():
-                    self.effects_manager.handle_command(command)
-                case SoundCommand():
-                    self.sound_effects_manager.handle_command(command)
+            self.delegate_command(command)
 
 
         boundaries = self.cell_manager.current_state.get_boundaries()
@@ -89,10 +89,14 @@ class Game():
         effects_events = self.effects_manager.update()
 
         events = collision_events + effects_events
+        commands = []
         while events:
             event = events.pop(0)
-            new_events = self.delegate_event(event)
+            new_events, new_commands = self.delegate_event(event)
             events.extend(new_events)
+            commands.extend(new_commands)
+        for command in commands:
+            self.delegate_command(command)
         self.sound_effects_manager.update()
         self.scene_manager.camera.update()
 
@@ -106,13 +110,23 @@ class Game():
         # for physics pass to entity physics manager through event handler and it will handle add momentum event, and add momentum, which will update position on next physics update (next frame then), but update entities momentum now.
         # also edit physics manager, so that if momentum is above/below current speed based on direction, change by 1 until it matches that speed. revist eventually later for more robust acceleration/deceleration system
 
+    def delegate_command(self, command):
+        # for now commands probably shouldn't return new events or commands, but if they do in the future can handle that here
+        match command:
+            case EffectCommand():
+                self.effects_manager.handle_command(command)
+            case AudioCommand():
+                self.sound_effects_manager.handle_command(command)
+
     def delegate_event(self, event):
         events = []
         # here it may be useful to have an observer pattern later, as a consideration for refactoring, but for now just this
+        commands = []
         match event:
             case DE():
-                new_events = self.damage_manager.handle_event(event)
+                new_events, new_commands = self.damage_manager.handle_event(event)
                 events.extend(new_events)
+                commands.extend(new_commands)
             case PE():
                 new_events = self.entity_manager.handle_event(event)
                 events.extend(new_events)
@@ -124,7 +138,7 @@ class Game():
             case NLCE():
                 new_events = self.entity_manager.handle_newly_loaded_cells(event)
                 events.extend(new_events)
-        return events
+        return events, commands
 
     def death_event(self, event):
         entity = event.entity

@@ -1,4 +1,5 @@
 from enums.entity_enums import AttackType as AT, CollisionEntityTarget as CET, WeaponActionState as WS, WeaponCategory as WC
+from audio.sound_enums import SoundEnum
 
 def default_hitbox():
     dict = {}
@@ -18,7 +19,7 @@ class WeaponData():
                  damage=50,
                  target_type=CET.ENEMY,
                  weapon_category=WC.SHORTSWORD,
-                 knockback=(1.5, 1)):
+                 knockback=(1.5, 1), attack_sound=SoundEnum.ATTACK):
 
         self.state = WS.SHEATHED
         self.active = False
@@ -31,6 +32,7 @@ class WeaponData():
         # revisit hitbox code later
         # for now the animations are tied to the hitboxes and such, will separate later if desired
         self.animations = animations
+        self.attack_sound = attack_sound
 
         self.current_frame = 0
         self.frame_timer = 0

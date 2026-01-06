@@ -1,6 +1,7 @@
 from enums.entity_enums import WeaponActionState as WAS, MovementState as MS, CollisionEntityTarget as CET, DirectionState as DS
 from events_commands.events import AttackFinishedEvent as AFE, PossibleAttackCollisionEvent as PACE
-from events_commands.commands import AttackCommand
+from events_commands.commands import AttackCommand, SoundCommand
+from audio.sound_enums import SoundEnum
 
 
 class AttackManager():
@@ -47,11 +48,12 @@ class AttackManager():
     def handle_command(self, command, player_data):
         match command:
             case AttackCommand():
-                self.start_attack(player_data)
-        return [], []  # No new events or commands
+                commands = self.start_attack(player_data)
+        return [], commands  # No new events or commands
 
     def start_attack(self, player_data):
         # for now, just default. it will decide what attack to set otherwise, but for now there is only one
+        commands = []
         weapon = player_data.weapon
         if not weapon.active:
             player_state = player_data.movement_state
@@ -66,6 +68,9 @@ class AttackManager():
             weapon.current_frame = 0
             weapon.frame_timer = 0
             weapon.set_current_hitboxes(state)
+            commands.append(SoundCommand(sound_enum=weapon.attack_sound))
+        return commands
+
 
     def get_jump_attack(self, weapon_data):
         if WAS.AIRATTACK in weapon_data.animations:

@@ -11,17 +11,30 @@ class SoundEffectsManager:
     # this uses pyxel sounds, so already has access to audio files loaded in pyxel
         self.channels = [0, 1, 2, 3]  # pyxel has 4 sound channels 0-3
 
+        self.effects_channels = (1, 2, 3)
+        self.currently_used_channels = []
 
     def update(self):
         # play any queued sounds
         for sound_enum in self.sounds_to_play:
-            pyxel.play(1, sound_enum[0].value, loop=sound_enum[1])
+            self.play_sound(sound_enum[0], sound_enum[1])
+
         if self.music_to_play:
             music = self.get_max_priority_music(self.music_to_play)
             pyxel.playm(music[0], loop=music[1])
 
         self.sounds_to_play.clear()
         self.music_to_play.clear()
+        self.currently_used_channels.clear()
+
+    def play_sound(self, sound_enum, loop=False):
+        for channel in self.effects_channels:
+            if channel not in self.currently_used_channels:
+                self.currently_used_channels.append(channel)
+                pyxel.play(channel, sound_enum.value, loop=loop)
+                return
+        # if all channels are used, just play on channel 1, will cut off whatever
+        pyxel.play(1, sound_enum.value, loop=loop)
 
     def get_max_priority_music(self, music_set):
         music = max(music_set, key=lambda song: song[2])

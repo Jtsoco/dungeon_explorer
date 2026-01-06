@@ -1,5 +1,6 @@
 import pyxel
-
+from events_commands.commands import SoundCommand
+from audio.sound_enums import SoundEnum
 class SoundEffectsManager:
     def __init__(self, context= None):
         self.context = context
@@ -11,8 +12,22 @@ class SoundEffectsManager:
 
     def update(self):
         # play any queued sounds
-        pass
+        for sound_enum in self.sounds_to_play:
+            pyxel.play(0, sound_enum[0], loop=sound_enum[1])
+        self.sounds_to_play.clear()
 
     def handle_event(self, event):
         # determines what sound to qeue
         pass
+
+    def handle_command(self, command):
+        match command:
+            case SoundCommand():
+                self.queue_sound(command.sound_enum, command.loop)
+        return []  # No new events
+
+    def queue_sound(self, sound_enum, loop=False):
+        self.sounds_to_play.add((sound_enum, loop))
+
+
+# possibly use context of player location to edit volume based on distance later

@@ -10,9 +10,10 @@ from combat.damage_manager import DamageManager
 from entity.entity_setup import spawn_player
 
 from events_commands.events import PossibleAttackCollisionEvent as PACE, DamageEvent as DE, PhysicsEvent as PE, DeathEvent as Death, NewlyLoadedCellsEvent as NLCE, BoundaryCollisionEvent as BCE
-from events_commands.commands import EffectCommand
+from events_commands.commands import EffectCommand, SoundCommand
 
 from effects.effects_manager import EffectsManager
+from audio.sound_effects_manager import SoundEffectsManager
 
 from datetime import datetime
 class Game():
@@ -55,6 +56,7 @@ class Game():
         self.context.player_data = self.player_data
 
         self.effects_manager = EffectsManager()
+        self.sound_effects_manager = SoundEffectsManager()
 
 
     def update(self):
@@ -78,6 +80,8 @@ class Game():
             match command:
                 case EffectCommand():
                     self.effects_manager.handle_command(command)
+                case SoundCommand():
+                    self.sound_effects_manager.handle_command(command)
 
 
         boundaries = self.cell_manager.current_state.get_boundaries()
@@ -89,6 +93,7 @@ class Game():
             event = events.pop(0)
             new_events = self.delegate_event(event)
             events.extend(new_events)
+        self.sound_effects_manager.update()
         self.scene_manager.camera.update()
 
 

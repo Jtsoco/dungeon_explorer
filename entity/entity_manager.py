@@ -1,6 +1,6 @@
 from animations.animation_manager import AnimationManager
 from attack.attack_manager import AttackManager
-from events_commands.commands import MovementCommand, AttackCommand, EffectCommand
+from events_commands.commands import MovementCommand, AttackCommand, EffectCommand, SoundCommand
 from events_commands.events import StateChangedEvent, PossibleCollisionEvent as PCE, AttackFinishedEvent as AFE, PhysicsEvent as PE, NewlyLoadedCellsEvent as NLCE
 from enums.entity_enums import EntityType as ET, EntityCategory as EC, InputEnums as IE, PowerUpStates as PUS
 from state_machines.default_state_machine import DefaultStateMachine
@@ -133,6 +133,8 @@ class EntityManager():
             case AttackCommand():
                 return self.attack_manager.handle_command(command, entity)
             case EffectCommand():
+                self.main_return_commands.append(command)
+            case SoundCommand():
                 self.main_return_commands.append(command)
         return [], []  # Return empty lists if no new events/commands
 

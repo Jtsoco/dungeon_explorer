@@ -2,11 +2,12 @@ from animations.animation_manager import AnimationManager
 from attack.attack_manager import AttackManager
 from events_commands.commands import MovementCommand, AttackCommand
 from events_commands.events import StateChangedEvent, PossibleCollisionEvent as PCE, AttackFinishedEvent as AFE, PhysicsEvent as PE, NewlyLoadedCellsEvent as NLCE
-from enums.entity_enums import EntityType as ET, EntityCategory as EC
+from enums.entity_enums import EntityType as ET, EntityCategory as EC, InputEnums as IE, PowerUpStates as PUS
 from state_machines.default_state_machine import DefaultStateMachine
 from entity.controllers.skull_controller import SkullController
 from entity.controllers.player_controller import PlayerController
 from entity.controllers.knight_controller import KnightController
+from entity.controllers.winged_knight_controller import WingedKnightController
 from collisions.collision_manager import CollisionManager
 from renderers.default_renderer import DefaultRenderer
 from physics.ground_physics import GroundPhysics
@@ -37,6 +38,15 @@ class EntityManager():
         input_events = []
         input_events = input_events + self.controllers[entity.entity_type].update(entity, self.context)
         events, commands = self.state_machine.input_events(entity, input_events)
+
+        # if entity.entity_type == ET.PLAYER:
+        #     jumped = False
+        #     for event in input_events:
+        #         if event.input_type == IE.JUMP:
+        #             print("Player Jumped!")
+        #             jumped = True
+        #     if not jumped:
+        #         print("Player did not jump this frame.")
 
         animation_event = self.animation_manager.update(entity)
         if animation_event:
@@ -144,7 +154,7 @@ class EntityManager():
                 self.setup_controller(ET.KNIGHT, KnightController)
                 self.setup_physics(EC.GROUND, GroundPhysics, context=self.context)
             case ET.WINGED_KNIGHT:
-                self.setup_controller(ET.WINGED_KNIGHT, KnightController)
+                self.setup_controller(ET.WINGED_KNIGHT, WingedKnightController)
                 self.setup_physics(EC.GROUND, GroundPhysics, context=self.context)
                 # for now just use ground physics, revisit later to make a flying physics module
 

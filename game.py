@@ -137,7 +137,7 @@ class Game():
             self.entity_manager.draw(enemy)
         self.entity_manager.draw(self.player_data)
         camera_pos = self.scene_manager.camera.current_camera
-        display_info(f"Player Pos: {self.player_data.position[1]}", pos_x=camera_pos[0]+2, pos_y=camera_pos[1]+8)
+        display_info(f"Player Pos: {self.player_data.position[0]}", pos_x=camera_pos[0]+2, pos_y=camera_pos[1]+8)
         # outline_entity(self.player.data)
 
         # player animation

@@ -33,6 +33,7 @@ class SoundEffectsManager:
                 self.currently_used_channels.append(channel)
                 pyxel.play(channel, sound_enum.value, loop=loop)
                 return
+        # need to add priority and decide what channel is dedicated to what later
         # if all channels are used, just play on channel 1, will cut off whatever
         pyxel.play(1, sound_enum.value, loop=loop)
 

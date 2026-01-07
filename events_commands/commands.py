@@ -56,3 +56,9 @@ class MusicCommand(AudioCommand):
         self.music_enum = music_enum
         self.loop = loop
         self.priority = priority
+
+# Need:
+# commands will typically be issued to one manager
+# CollisionLoad Commands, with load/unload, cell positions not needed
+# Physics Commands, Add Momentum, Separate Momentum
+# Damage Command (to tell damage manager to apply damage)

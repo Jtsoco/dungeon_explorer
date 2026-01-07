@@ -104,3 +104,10 @@ class NewlyLoadedCellsEvent(CellEvent):
     def __init__(self, loaded_cells: list):
         super().__init__(name="NewlyLoadedCellsEvent")
         self.loaded_cells = loaded_cells
+
+
+# Need:
+# events will typically be things that happen in which multiple other systems may need to respond to
+# World Event?
+# Entity Events? Death event, Spawn Event, Despawn Event
+# Combat Events? Damage Event, Heal Event, such as Damage Event notifying gui of player damage and need for update

@@ -57,8 +57,35 @@ class MusicCommand(AudioCommand):
         self.loop = loop
         self.priority = priority
 
+class PhysicsCommand(Command):
+    def __init__(self, name="PhysicsCommand"):
+        super().__init__(name=name)
+
+class CollisionCommand(Command):
+    def __init__(self, load: bool = True, entity):
+        super().__init__(name="CollisionCommand")
+        self.load = load
+
+class LoadEntityCollisionCommand(CollisionCommand):
+    def __init__(self):
+        super().__init__(load=True)
+        self.name = "LoadEntityCollisionCommand"
+
+
 # Need:
 # commands will typically be issued to one manager
 # CollisionLoad Commands, with load/unload, cell positions not needed
 # Physics Commands, Add Momentum, Separate Momentum
 # Damage Command (to tell damage manager to apply damage)
+# Audio Command (to tell sound manager to play sound)
+
+# types of managers:
+# entity manager
+# effects manager
+# damage manager
+# collision manager
+# sound effects manager
+# physics manager (held by entity manager, various types of physics managers depending on enemy type)
+
+
+# notify_command must be held by managers to receive commands to act upon during their secondary update cycle, basically they receive it, store it, then act upon it later

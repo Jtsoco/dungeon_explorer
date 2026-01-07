@@ -111,3 +111,12 @@ class NewlyLoadedCellsEvent(CellEvent):
 # World Event?
 # Entity Events? Death event, Spawn Event, Despawn Event
 # Combat Events? Damage Event, Heal Event, such as Damage Event notifying gui of player damage and need for update
+
+
+# types of managers:
+# entity manager
+# effects manager
+# damage manager
+# collision manager
+# sound effects manager
+# physics manager (held by entity manager, various types of physics managers depending on enemy type)

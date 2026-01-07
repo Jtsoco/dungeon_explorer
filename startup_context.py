@@ -2,6 +2,7 @@ import pyxel
 from cell_data import CellData
 from tile_context import TileContext
 from enums.entity_enums import EntityType as ET
+from cell_data import CellData
 class StartupContext():
     def __init__(self):
         # size in cells

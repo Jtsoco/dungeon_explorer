@@ -5,6 +5,9 @@ class CollisionManager():
     def __init__(self):
 
         # NOTE eventually refactor this to poll through active entities in the game world instead of using events to check things, but fine for now. going in depth on making a collision manager system could be a lot of fun
+        self.active_entities = []
+        self.active_attacks = []
+        self.player = None
 
         self.recent_collisions = []
         self.recent_attack_collisions = []
@@ -21,6 +24,9 @@ class CollisionManager():
         # will receive a list of possible collision events
         pass
 
+    def notify_command(self, command):
+        pass
+        # adds a command to be acted upon
     def handle_event(self, event):
         pass
 
@@ -113,3 +119,46 @@ class CollisionManager():
         if (pos_a[0] < pos_b[0] + w_h_b[0] and pos_b[0] < pos_a[0] + w_h_a[0] and pos_a[1] < pos_b[1] + w_h_b[1] and pos_b[1] < pos_a[1] + w_h_a[1]):
             return True
         return False
+
+    def handle_updates(self):
+        # for now, this will handle saved commands/events to be processed each frame
+        # separate out into own methods later
+        events = []
+        p_rect = self.player.rect
+        for entity in self.active_entities:
+            rect = entity.rect
+            if rect.colliderect(p_rect):
+                if entity.touch_damage:
+                    # change to damage command
+                    damage_event = DE(entity, self.player, entity.touch_damage, knockback=entity.knockback)
+                    events.append(damage_event)
+                else:
+                    separation_event = ESE(entity, self.player)
+                    events.append(separation_event)
+        new_recent_attacks = []
+
+        for attacking_entity in self.active_attacks:
+            weapon = attacking_entity.weapon
+            hitbox = weapon.get_current_hitbox()
+            weapon_position = weapon.get_position(attacking_entity)
+            if attacking_entity.target_type == CET.ENEMY:
+                targets = self.active_entities
+            elif attacking_entity.target_type == CET.PLAYER:
+                targets = [self.player]
+            else:
+                targets = self.active_entities + [self.player]
+            for target in targets:
+                target_rect = target.rect
+                if target_rect.is_colliding(weapon_position, hitbox):
+                    damage_event = DE(attacking_entity, target, weapon.damage, knockback=weapon.knockback)
+                    events.append(damage_event)
+                    new_recent_attacks.append((weapon, target))
+        self.recent_attack_collisions = new_recent_attacks
+
+        for boundary in self.boundaries:
+            boundary_rect = boundary.rect
+            if boundary_rect.is_rect_colliding(p_rect):
+                boundary_event = BCE(self.player, boundary)
+                events.append(boundary_event)
+        # change these to commands to do something if they have only one target, like damage or separate entities, and keep as events for things that may have multiple targets. will boundary be an event or command? probably event for now
+        # I don't plan on having this return events right now, it will primarily send things through the bus

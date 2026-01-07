@@ -62,14 +62,27 @@ class PhysicsCommand(Command):
         super().__init__(name=name)
 
 class CollisionCommand(Command):
-    def __init__(self, load: bool = True, entity):
+    def __init__(self, load: bool = True):
         super().__init__(name="CollisionCommand")
         self.load = load
 
 class LoadEntityCollisionCommand(CollisionCommand):
-    def __init__(self):
+    def __init__(self, load=True, entity=None):
         super().__init__(load=True)
         self.name = "LoadEntityCollisionCommand"
+        self.entity = entity
+
+class LoadMultipleEntityCollisionCommand(CollisionCommand):
+    def __init__(self, load=True, entities=[]):
+        super().__init__(load=True)
+        self.name = "LoadMultipleEntityCollisionCommand"
+        self.entities = entities
+class LoadActiveAttackCollisionCommand(CollisionCommand):
+    def __init__(self, load=True, attacking_entity=None):
+        super().__init__(load=True)
+        self.name = "LoadActiveAttackCollisionCommand"
+        self.attacking_entity = attacking_entity
+        # this actually uses the attacking entity to get the active attack hitbox and position, because the entity is used in the calculations and passed for the event. It's useful when determining direction of knockback and such
 
 
 # Need:

@@ -120,3 +120,6 @@ class NewlyLoadedCellsEvent(CellEvent):
 # collision manager
 # sound effects manager
 # physics manager (held by entity manager, various types of physics managers depending on enemy type)
+
+
+# notify_event must be held by managers to receive events to act upon during their secondary update cycle, basically they receive it, store it, then act upon it later

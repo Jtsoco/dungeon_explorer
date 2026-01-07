@@ -44,4 +44,5 @@ class SystemBus:
         if key:
             listeners = self.command_listeners[key]
             for listener in listeners:
+                # use notify command, to indicate that it's a command to be acted upon during update cycle
                 listener.notify_command(command)

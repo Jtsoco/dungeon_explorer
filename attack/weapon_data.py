@@ -1,5 +1,6 @@
 from enums.entity_enums import AttackType as AT, CollisionEntityTarget as CET, WeaponActionState as WS, WeaponCategory as WC
 from audio.sound_enums import SoundEnum
+from enums.entity_enums import DirectionState as DS
 
 def default_hitbox():
     dict = {}
@@ -60,3 +61,13 @@ class WeaponData():
         #     self.current_hitbox = self.hitboxes.get(self.state, {})
         # else:
         #     self.current_hitbox = {}
+
+    def get_position(self, entity_data):
+        hitbox = self.get_current_hitbox()
+        if entity_data.direction_state == DS.RIGHT:
+            attack_x = entity_data.position[0] + entity_data.w_h[0]
+        else:
+            attack_x = entity_data.position[0] - hitbox[0]
+        attack_y = entity_data.position[1]
+        # super simple that doesn't take into account any offsets or anything, revisit later
+        return (attack_x, attack_y)

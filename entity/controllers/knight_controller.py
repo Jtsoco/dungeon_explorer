@@ -10,6 +10,8 @@ class KnightController(DefaultController):
         self.long_wait = 90
         self.short_wait = 30
         self.medium_wait = 60
+        self.max_notice_distance = (40, 20)  # x, y distances
+
         # for now, just inherit default controller behavior
 
     def contextless_update(self, entity):
@@ -58,7 +60,7 @@ class KnightController(DefaultController):
     def is_target_close(self, distance):
         distance_x = distance[0]
         distance_y = distance[1]
-        if distance_x < 40 and distance_y < 20:
+        if distance_x < self.max_notice_distance[0] and distance_y < self.max_notice_distance[1]:
             return True
         return False
 

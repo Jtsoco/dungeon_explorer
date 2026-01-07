@@ -10,6 +10,10 @@ from combat.damage_manager import DamageManager
 from entity.entity_setup import spawn_player
 
 from events_commands.events import PossibleAttackCollisionEvent as PACE, DamageEvent as DE, PhysicsEvent as PE, DeathEvent as Death, NewlyLoadedCellsEvent as NLCE, BoundaryCollisionEvent as BCE
+from events_commands.commands import EffectCommand, SoundCommand, MusicCommand, AudioCommand
+
+from effects.effects_manager import EffectsManager
+from audio.sound_effects_manager import SoundEffectsManager
 
 from datetime import datetime
 class Game():
@@ -51,12 +55,22 @@ class Game():
         self.current_frame_count = 0
         self.context.player_data = self.player_data
 
+        self.effects_manager = EffectsManager()
+        self.sound_effects_manager = SoundEffectsManager()
+        self.sound_effects_manager.handle_command(MusicCommand(music_enum=0))  # Start background music
+
+
+
+
+
     def update(self):
         main_events = []
         all_entities = self.cell_manager.current_state.get_enemies() + [self.player_data]
+        main_commands = []
         for entity in all_entities:
-            events = self.entity_manager.update(entity)
+            events, commands = self.entity_manager.update(entity)
             main_events.extend(events)
+            main_commands.extend(commands)
 
         # after main events, need a last check to see if any state changes happend that need to be handled for respective entities
         # possibly consider breaking down entity manager into subparts or having it like this for now where it contains a full 'sub process' for each entity
@@ -66,13 +80,24 @@ class Game():
             match event:
                 case PACE():
                     self.collision_manager.register_collision(event)
+        for command in main_commands:
+            self.delegate_command(command)
+
+
         boundaries = self.cell_manager.current_state.get_boundaries()
         collision_events = self.collision_manager.update(self.player_data, self.cell_manager.current_state.get_enemies(), boundaries)
-        events = collision_events
+        effects_events = self.effects_manager.update()
+
+        events = collision_events + effects_events
+        commands = []
         while events:
             event = events.pop(0)
-            new_events = self.delegate_event(event)
+            new_events, new_commands = self.delegate_event(event)
             events.extend(new_events)
+            commands.extend(new_commands)
+        for command in commands:
+            self.delegate_command(command)
+        self.sound_effects_manager.update()
         self.scene_manager.camera.update()
 
 
@@ -85,13 +110,23 @@ class Game():
         # for physics pass to entity physics manager through event handler and it will handle add momentum event, and add momentum, which will update position on next physics update (next frame then), but update entities momentum now.
         # also edit physics manager, so that if momentum is above/below current speed based on direction, change by 1 until it matches that speed. revist eventually later for more robust acceleration/deceleration system
 
+    def delegate_command(self, command):
+        # for now commands probably shouldn't return new events or commands, but if they do in the future can handle that here
+        match command:
+            case EffectCommand():
+                self.effects_manager.handle_command(command)
+            case AudioCommand():
+                self.sound_effects_manager.handle_command(command)
+
     def delegate_event(self, event):
         events = []
         # here it may be useful to have an observer pattern later, as a consideration for refactoring, but for now just this
+        commands = []
         match event:
             case DE():
-                new_events = self.damage_manager.handle_event(event)
+                new_events, new_commands = self.damage_manager.handle_event(event)
                 events.extend(new_events)
+                commands.extend(new_commands)
             case PE():
                 new_events = self.entity_manager.handle_event(event)
                 events.extend(new_events)
@@ -103,22 +138,25 @@ class Game():
             case NLCE():
                 new_events = self.entity_manager.handle_newly_loaded_cells(event)
                 events.extend(new_events)
-        return events
+        return events, commands
 
     def death_event(self, event):
         entity = event.entity
         if not entity.player:
             self.cell_manager.current_state.remove_entity(entity)
+            self.effects_manager.handle_event(event)
 
     def draw(self):
         self.scene_manager.draw()
+        effects = self.effects_manager.get_effects()
+        self.scene_manager.render_effects(effects)
         # for now this, but change it later when i have time
         enemies = self.cell_manager.current_state.get_enemies()
         for enemy in enemies:
             self.entity_manager.draw(enemy)
         self.entity_manager.draw(self.player_data)
         camera_pos = self.scene_manager.camera.current_camera
-        display_info(f"Player Pos: {self.player_data.position[1]}", pos_x=camera_pos[0]+2, pos_y=camera_pos[1]+8)
+        display_info(f"Player Pos: {self.player_data.position[0]}", pos_x=camera_pos[0]+2, pos_y=camera_pos[1]+8)
         # outline_entity(self.player.data)
 
         # player animation

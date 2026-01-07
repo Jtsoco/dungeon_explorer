@@ -42,3 +42,6 @@ class EntityData():
         self.touch_damage = touch_damage
         self.knockback = knockback
         self.boss = False
+        # will have a powerup states dictionary to keep track of active powerups, based on enum
+
+        self.power_ups = {}

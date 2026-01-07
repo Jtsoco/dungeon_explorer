@@ -1,12 +1,13 @@
 from animations.animation_manager import AnimationManager
 from attack.attack_manager import AttackManager
-from events_commands.commands import MovementCommand, AttackCommand
+from events_commands.commands import MovementCommand, AttackCommand, EffectCommand, SoundCommand, AudioCommand
 from events_commands.events import StateChangedEvent, PossibleCollisionEvent as PCE, AttackFinishedEvent as AFE, PhysicsEvent as PE, NewlyLoadedCellsEvent as NLCE
-from enums.entity_enums import EntityType as ET, EntityCategory as EC
+from enums.entity_enums import EntityType as ET, EntityCategory as EC, InputEnums as IE, PowerUpStates as PUS
 from state_machines.default_state_machine import DefaultStateMachine
 from entity.controllers.skull_controller import SkullController
 from entity.controllers.player_controller import PlayerController
 from entity.controllers.knight_controller import KnightController
+from entity.controllers.winged_knight_controller import WingedKnightController
 from collisions.collision_manager import CollisionManager
 from renderers.default_renderer import DefaultRenderer
 from physics.ground_physics import GroundPhysics
@@ -27,6 +28,7 @@ class EntityManager():
         self.attack_manager = attack_manager
         self.context = context
         self.main_return_events = []
+        self.main_return_commands = []
         self.renderer = DefaultRenderer()
 
 
@@ -37,6 +39,15 @@ class EntityManager():
         input_events = []
         input_events = input_events + self.controllers[entity.entity_type].update(entity, self.context)
         events, commands = self.state_machine.input_events(entity, input_events)
+
+        # if entity.entity_type == ET.PLAYER:
+        #     jumped = False
+        #     for event in input_events:
+        #         if event.input_type == IE.JUMP:
+        #             print("Player Jumped!")
+        #             jumped = True
+        #     if not jumped:
+        #         print("Player did not jump this frame.")
 
         animation_event = self.animation_manager.update(entity)
         if animation_event:
@@ -73,15 +84,21 @@ class EntityManager():
                     # consider dividing events into main and sub, or lvl1 lvl2 event types later to inherit from for easier filtering
                     self.main_return_events.append(attack_event)
 
-        state_change = self.state_machine.state_updates(entity, state_updates)
-        if state_change:
-            self.delegate_event(state_change, entity)
+        events, commands = self.state_machine.state_updates(entity, state_updates)
+        if events or commands:
+            for event in events:
+                self.delegate_event(event, entity)
+            for command in commands:
+                self.delegate_command(command, entity)
+
 
         events = self.main_return_events.copy()
+        commands = self.main_return_commands.copy()
+        self.main_return_commands.clear()
         self.main_return_events.clear()
 
         # expand to sound later
-        return events
+        return events, commands
 
     def handle_event(self, event):
         # this is for when external systems want to pass events to entity manager to be delegated to respective systems
@@ -110,11 +127,17 @@ class EntityManager():
         return [], []  # Return empty lists if no new events/commands
 
     def delegate_command(self, command, entity):
+        commands = []
         match command:
             case MovementCommand():
                 return self.physics[entity.entity_category].handle_command(command, entity)
             case AttackCommand():
                 return self.attack_manager.handle_command(command, entity)
+            case EffectCommand():
+                self.main_return_commands.append(command)
+            case AudioCommand():
+                self.main_return_commands.append(command)
+        return [], commands  # Return empty lists if no new events/commands
 
 
     def draw(self, entity):
@@ -144,7 +167,7 @@ class EntityManager():
                 self.setup_controller(ET.KNIGHT, KnightController)
                 self.setup_physics(EC.GROUND, GroundPhysics, context=self.context)
             case ET.WINGED_KNIGHT:
-                self.setup_controller(ET.WINGED_KNIGHT, KnightController)
+                self.setup_controller(ET.WINGED_KNIGHT, WingedKnightController)
                 self.setup_physics(EC.GROUND, GroundPhysics, context=self.context)
                 # for now just use ground physics, revisit later to make a flying physics module
 

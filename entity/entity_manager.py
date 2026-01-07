@@ -11,7 +11,8 @@ from entity.controllers.winged_knight_controller import WingedKnightController
 from collisions.collision_manager import CollisionManager
 from renderers.default_renderer import DefaultRenderer
 from physics.ground_physics import GroundPhysics
-class EntityManager():
+from base_manager import BaseManager
+class EntityManager(BaseManager):
     def __init__(self, animation_manager=AnimationManager(), attack_manager=AttackManager(), context=None):
         self.controllers = {}
         # controllers are loaded depending on entity type, done when loading a level

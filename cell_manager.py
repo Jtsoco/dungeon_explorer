@@ -6,10 +6,11 @@ from animations.sprite_registry import SPRITES, BOSS_SPRITES
 from entity.animation_data import AnimationData
 from attack.weapon_data import WeaponData
 from entity.entity_setup import spawn_weapon, spawn_winged_boss
+from base_manager import BaseManager
 
 import pyxel
 
-class CellManager():
+class CellManager(BaseManager):
     def __init__(self, cells_data, active_cell: tuple):
         self.logic_manager = CellLogicManager()
         # cells is just a dict of cell coordinates to cell data, but the data is unloaded until needed

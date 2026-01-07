@@ -1,7 +1,10 @@
 import pyxel
 from events_commands.commands import SoundCommand, MusicCommand
 from audio.sound_enums import SoundEnum
-class SoundEffectsManager:
+
+from base_manager import BaseManager
+
+class SoundEffectsManager(BaseManager):
     def __init__(self, context= None):
         self.context = context
         self.sounds_to_play = set()

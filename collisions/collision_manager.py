@@ -1,7 +1,8 @@
 from events_commands.events import PossibleAttackCollisionEvent as PACE, DamageEvent as DE, EntitySeparatedEvent as ESE, BoundaryCollisionEvent as BCE
 from enums.entity_enums import EntityType as ET, CollisionEntityTarget as CET, DirectionState as DS
+from base_manager import BaseManager
 
-class CollisionManager():
+class CollisionManager(BaseManager):
     def __init__(self):
 
         # NOTE eventually refactor this to poll through active entities in the game world instead of using events to check things, but fine for now. going in depth on making a collision manager system could be a lot of fun

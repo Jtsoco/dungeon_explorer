@@ -2,9 +2,9 @@ from enums.entity_enums import WeaponActionState as WAS, MovementState as MS, Co
 from events_commands.events import AttackFinishedEvent as AFE, PossibleAttackCollisionEvent as PACE
 from events_commands.commands import AttackCommand, SoundCommand
 from audio.sound_enums import SoundEnum
+from base_manager import BaseManager
 
-
-class AttackManager():
+class AttackManager(BaseManager):
     def __init__(self):
         pass
 

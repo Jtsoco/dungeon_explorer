@@ -2,7 +2,8 @@ from enums.entity_enums import DirectionState as DS
 from events_commands.events import DeathEvent, AddMomentumEvent
 from events_commands.commands import SoundCommand
 from audio.sound_enums import SoundEnum
-class DamageManager():
+from base_manager import BaseManager
+class DamageManager(BaseManager):
     def __init__(self):
         pass
 

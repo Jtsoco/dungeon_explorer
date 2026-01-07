@@ -13,8 +13,9 @@ from enums.effects_enums import EffectType, ParticleEffectType
 from events_commands.events import DeathEvent as Death
 from events_commands.commands import EffectCommand
 from effects.effects import Effect
+from base_manager import BaseManager
 
-class EffectsManager():
+class EffectsManager(BaseManager):
     def __init__(self, context=None):
         self.context = context
         self.active_effects = []

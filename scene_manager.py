@@ -1,7 +1,7 @@
 from map_camera import MapCamera
 from scene_renderer import SceneRenderer
-
-class SceneManager():
+from base_manager import BaseManager
+class SceneManager(BaseManager):
     def __init__(self, context):
         # notifies camera when an event related to cell transition occurs
         self.context = context
@@ -17,8 +17,8 @@ class SceneManager():
     def draw(self):
         # for now, just a single cell draw with no transitions, so keep it simple as of now
         cam_x, cam_y = self.camera.space_to_draw()
-        width = self.context.CELL_SIZE * self.context.BRICK_SIZE
-        height = self.context.CELL_SIZE * self.context.BRICK_SIZE
+        width = self.context.data_context.CELL_SIZE * self.context.data_context.BRICK_SIZE
+        height = self.context.data_context.CELL_SIZE * self.context.data_context.BRICK_SIZE
         self.renderer.draw_one(cam_x, cam_y, width, height)
 
     def render_effects(self, effects):

@@ -99,3 +99,13 @@ class DataContext():
                 self.player_start = (brick_x, brick_y)
                 cell = self.find_cell(brick_x * self.BRICK_SIZE, brick_y * self.BRICK_SIZE)
                 self.start_cell = cell
+
+
+
+    def find_cell(self, x, y):
+        # floor division with //
+        brick_x = x // self.BRICK_SIZE
+        brick_y = y // self.BRICK_SIZE
+        cell_x = brick_x // self.CELL_SIZE
+        cell_y = brick_y // self.CELL_SIZE
+        return (cell_x, cell_y)

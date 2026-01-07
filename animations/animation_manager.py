@@ -1,7 +1,7 @@
 from enums.entity_enums import MovementState as MS
 from events_commands.events import StateChangedEvent
-
-class AnimationManager():
+from base_manager import BaseManager
+class AnimationManager(BaseManager):
     def __init__(self):
         pass  # Placeholder for future implementation
 

@@ -1,6 +1,5 @@
 
 import pyxel
-from startup_context import StartupContext
 from cell_manager import CellManager
 from scene_manager import SceneManager
 from debug.quick_debug import display_info, quick_point, outline_entity, calculate_fps
@@ -15,6 +14,8 @@ from events_commands.commands import EffectCommand, SoundCommand, MusicCommand, 
 from effects.effects_manager import EffectsManager
 from audio.sound_effects_manager import SoundEffectsManager
 
+from system.context import Context
+
 from datetime import datetime
 class Game():
     def __init__(self):
@@ -26,16 +27,19 @@ class Game():
     # possible could make an update array, and the camera class adds itself and moves out depending on whether it needs to handle a transition or not
 
     # anyway, start with just getting a camera and active cell (1 cell, no transitions) working first
-        self.context = StartupContext()
-        self.context.get_context()
-        self.game_world = self.context.get_world()
+        self.context = Context()
+        self.context.setup_defaults()
+        # adjust this later
+        # self.context = StartupContext()
+        # self.context.get_context()
+        self.game_world = self.context.data_context.get_world()
         # the game world is a dict of cells
 
-        self.cell_manager = CellManager(self.game_world, self.context.start_cell)
+        self.cell_manager = CellManager(self.game_world, self.context.data_context.start_cell)
         self.scene_manager = SceneManager(self.context)
         self.player_data = spawn_player()
         # for now player is just stored here, later might make a separate player manager if needed
-        self.player_data.position = [self.context.player_start[0] * self.context.BRICK_SIZE, self.context.player_start[1] * self.context.BRICK_SIZE]
+        self.player_data.position = [self.context.data_context.player_start[0] * self.context.data_context.BRICK_SIZE, self.context.data_context.player_start[1] * self.context.data_context.BRICK_SIZE]
         self.scene_manager.camera.set_target(self.player_data)
 
         # just have it use players attack and animation manager for now, as they work, restructure later if needed
@@ -53,7 +57,7 @@ class Game():
         self.current_time = datetime.now()
         self.last_frame_count = 0
         self.current_frame_count = 0
-        self.context.player_data = self.player_data
+        self.context.data_context.player_data = self.player_data
 
         self.effects_manager = EffectsManager()
         self.sound_effects_manager = SoundEffectsManager()

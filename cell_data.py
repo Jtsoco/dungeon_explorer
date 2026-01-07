@@ -31,7 +31,10 @@ class CellData():
     def get_enemies(self):
         return self.enemies
 
-    # methods to allow cells to message things when events happen?
+    def get_items(self):
+        # get all items, not implemented yet
+        pass
+    # ls to message things when events happen?
     # or maybe just make cells primarily old data, and have some other manager do the updates through a cells respective things, like going through enemies in each cell and updating them.
     # data holder cell, or more active cell? maybe split cells into data cell and manager cell? that way data cells are simple holders, and managers handle logic
     # IMPORTANT: just have these be data cells

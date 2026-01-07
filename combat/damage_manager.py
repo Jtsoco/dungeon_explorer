@@ -4,7 +4,8 @@ from events_commands.commands import SoundCommand
 from audio.sound_enums import SoundEnum
 from base_manager import BaseManager
 class DamageManager(BaseManager):
-    def __init__(self):
+    def __init__(self, context):
+        super().__init__(context)
         pass
 
     # goal of this class as of now:

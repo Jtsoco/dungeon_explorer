@@ -1,32 +1,36 @@
 from enums.entity_enums import WeaponActionState as WAS, MovementState as MS, CollisionEntityTarget as CET, DirectionState as DS
 from events_commands.events import AttackFinishedEvent as AFE, PossibleAttackCollisionEvent as PACE
-from events_commands.commands import AttackCommand, SoundCommand
+from events_commands.commands import AttackCommand, SoundCommand, LoadActiveAttackCollisionCommand as LAACC
 from audio.sound_enums import SoundEnum
 from base_manager import BaseManager
 
 class AttackManager(BaseManager):
-    def __init__(self):
-        pass
+    def __init__(self, context):
+        super().__init__(context=context)
+        self.context = context
 
-    def update(self, player_data):
-        if not player_data.weapon:
+    def update(self, entity_data):
+        if not entity_data.weapon:
             return None
         # will create a dummy weapon data later, but also will in general will revisit how this is handled and if i will create a cleaner system that doesn't make calls to things that won't do anything, but for now this is fine
-        if player_data.weapon.active:
-            return self.update_weapon(player_data)
+        if entity_data.weapon.active:
+            return self.update_weapon(entity_data)
 
     def update_weapon(self, entity_data):
         if self.update_frame_index(entity_data.weapon):
             if entity_data.weapon.current_frame == 0:
                 # finished attack animation
                 self.finish_attack(entity_data.weapon)
-
+                self.context.bus.send_command(LAACC(load=False, attacking_entity=entity_data))
                 return AFE()
-        pos = self.get_position(entity_data)
-        return PACE(entity_data, attack_position=pos, target_type=entity_data.weapon.target_type)
+        return None
+        # pos = self.get_position(entity_data)
+        # return PACE(entity_data, attack_position=pos, target_type=entity_data.weapon.target_type)
+
 
 
     def get_position(self, entity_data):
+        # TODO delete possibly, collision might retrieve position instead
         weapon = entity_data.weapon
         hitbox = weapon.get_current_hitbox()
         if entity_data.direction_state == DS.RIGHT:
@@ -45,18 +49,18 @@ class AttackManager(BaseManager):
         weapon.frame_timer = 0
         weapon.set_current_hitboxes(WAS.SHEATHED)
 
-    def handle_command(self, command, player_data):
+    def handle_command(self, command, entity_data):
         match command:
             case AttackCommand():
-                commands = self.start_attack(player_data)
+                commands = self.start_attack(entity_data)
         return [], commands  # No new events or commands
 
-    def start_attack(self, player_data):
+    def start_attack(self, entity_data):
         # for now, just default. it will decide what attack to set otherwise, but for now there is only one
         commands = []
-        weapon = player_data.weapon
+        weapon = entity_data.weapon
         if not weapon.active:
-            player_state = player_data.movement_state
+            player_state = entity_data.movement_state
             weapon.active = True
             match player_state:
                 case MS.FALLING | MS.JUMPING:
@@ -69,6 +73,7 @@ class AttackManager(BaseManager):
             weapon.frame_timer = 0
             weapon.set_current_hitboxes(state)
             commands.append(SoundCommand(sound_enum=weapon.attack_sound))
+            self.context.bus.send_command(LAACC(load=True, attacking_entity=entity_data))
         return commands
 
 

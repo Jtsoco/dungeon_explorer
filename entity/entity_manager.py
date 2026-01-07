@@ -13,7 +13,12 @@ from renderers.default_renderer import DefaultRenderer
 from physics.ground_physics import GroundPhysics
 from base_manager import BaseManager
 class EntityManager(BaseManager):
-    def __init__(self, animation_manager=AnimationManager(), attack_manager=AttackManager(), context=None):
+    def __init__(self, animation_manager=None, attack_manager=None, context=None):
+        super().__init__(context=context)
+        if not animation_manager:
+            animation_manager = AnimationManager(context)
+        if not attack_manager:
+            attack_manager = AttackManager(context)
         self.controllers = {}
         # controllers are loaded depending on entity type, done when loading a level
         self.physics = {}

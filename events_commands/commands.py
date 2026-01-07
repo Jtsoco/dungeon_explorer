@@ -83,7 +83,11 @@ class LoadActiveAttackCollisionCommand(CollisionCommand):
         self.name = "LoadActiveAttackCollisionCommand"
         self.attacking_entity = attacking_entity
         # this actually uses the attacking entity to get the active attack hitbox and position, because the entity is used in the calculations and passed for the event. It's useful when determining direction of knockback and such
-
+class LoadMultipleBoundariesCollisionCommand(CollisionCommand):
+    def __init__(self, load=True, boundaries=[]):
+        super().__init__(load=True)
+        self.name = "LoadMultipleBoundariesCollisionCommand"
+        self.boundaries = boundaries
 
 # Need:
 # commands will typically be issued to one manager

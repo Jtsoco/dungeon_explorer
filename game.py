@@ -35,7 +35,8 @@ class Game():
         self.game_world = self.context.data_context.get_world()
         # the game world is a dict of cells
 
-        self.cell_manager = CellManager(self.game_world, self.context.data_context.start_cell)
+        self.collision_manager = CollisionManager(self.context)
+        self.cell_manager = CellManager(self.game_world, self.context.data_context.start_cell, self.context)
         self.scene_manager = SceneManager(self.context)
         self.player_data = spawn_player()
         # for now player is just stored here, later might make a separate player manager if needed
@@ -48,9 +49,9 @@ class Game():
         self.entity_manager.setup_entity(self.player_data.entity_type)
         self.entity_manager.setup_entities(types)
         # just this quick one for now on setting up entities, refactor later when redoing cell loading system
-        self.collision_manager = CollisionManager()
+        self.collision_manager.player = self.player_data
 
-        self.damage_manager = DamageManager()
+        self.damage_manager = DamageManager(self.context)
 
         # debug for framerate
         self.last_time = datetime.now()
@@ -81,15 +82,16 @@ class Game():
 
         # take these main event filter logic type code sections and put them into a deticated filter module/class later, to clean this logic up
         for event in main_events:
-            match event:
-                case PACE():
-                    self.collision_manager.register_collision(event)
+            pass
+            # match event:
+            #     case PACE():
+            #         self.collision_manager.register_collision(event)
         for command in main_commands:
             self.delegate_command(command)
 
 
         boundaries = self.cell_manager.current_state.get_boundaries()
-        collision_events = self.collision_manager.update(self.player_data, self.cell_manager.current_state.get_enemies(), boundaries)
+        collision_events = self.collision_manager.update()
         effects_events = self.effects_manager.update()
 
         events = collision_events + effects_events

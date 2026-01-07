@@ -7,17 +7,20 @@ from entity.animation_data import AnimationData
 from attack.weapon_data import WeaponData
 from entity.entity_setup import spawn_weapon, spawn_winged_boss
 from base_manager import BaseManager
-
+from events_commands.commands import LoadMultipleEntityCollisionCommand as LMECC, LoadMultipleBoundariesCollisionCommand as LMBCC
 import pyxel
 
 class CellManager(BaseManager):
-    def __init__(self, cells_data, active_cell: tuple):
+    def __init__(self, cells_data, active_cell: tuple, context):
+        super().__init__(context=context)
+        # TODO clean up and rework this class, won't have single cell manager any more so consolidate to one cell manager, as original design has changed for the game and also context by itself provides all the necessary data so only need one argument
         self.logic_manager = CellLogicManager()
         # cells is just a dict of cell coordinates to cell data, but the data is unloaded until needed
         self.cells = cells_data
+        self.context = context
 
         # wait, what am i doing with single cell manager?? relook at this, change it, its really just a loader for a single cell...
-        self.current_state = MultipleCellManager(self.cells[active_cell], self.cells)
+        self.current_state = MultipleCellManager(self.cells[active_cell], self.cells, context)
 
     def update(self):
         self.current_state.update()
@@ -140,13 +143,17 @@ class CellLogicManager():
         pass
 
 class MultipleCellManager(SingleCellManager):
-    def __init__(self, cell_data, cells):
+    def __init__(self, cell_data, cells, context):
         self.cells = cells
+        self.context = context
         self.center_cell = cell_data
         adjacent, newly_loaded = self.handle_loading([cell_data])
         self.adjacent = adjacent
         self.load_cell(cell_data)
-        self.central_cells = [cell_data]
+        self.central_cells = []
+        self.set_active_cells([cell_data])
+        # self.central_cells = [cell_data]
+        self.context = context
 
 
 
@@ -219,12 +226,84 @@ class MultipleCellManager(SingleCellManager):
         else:
             adjacent, newly_loaded = self.handle_loading(active_cells)
             # set the new cells
+            old_cells = self.central_cells + self.adjacent
+            new_cells = active_cells + adjacent
+            enemies = self.enemies_to_load(old_cells, new_cells)
+            boundaries = self.boundaries_to_load(self.central_cells, active_cells)
+
+            if enemies or boundaries:
+                # if enemies are newly loaded boundaries should have something newly loaded too and vice versa
+                self.context.bus.send_command(LMECC(load=True, entities=enemies))
+                self.context.bus.send_command(LMBCC(load=True, boundaries=boundaries))
+
+
+            enemies = self.enemies_to_unload(old_cells, new_cells)
+            boundaries = self.boundaries_to_unload(self.central_cells, active_cells)
+
+            if enemies or boundaries:
+                self.context.bus.send_command(LMECC(load=False, entities=enemies))
+                self.context.bus.send_command(LMBCC(load=False, boundaries=boundaries))
+
+
+
             self.central_cells = active_cells
             self.adjacent = list(set(adjacent) - set(self.central_cells))
             if newly_loaded:
                 return newly_loaded
             # if new cells were loaded, inform whatever called this method
         return []
+
+    def all_to_load(self, old_cells, new_cells):
+        enemies = []
+        boundaries = []
+        # should only ever be max 8 cells to iterate through
+        for cell in new_cells:
+            if cell not in old_cells:
+                enemies.extend(cell.get_enemies())
+                boundaries.extend(cell.get_boundaries())
+        return enemies, boundaries
+
+    def all_to_unload(self, old_cells, new_cells):
+        enemies = []
+        boundaries = []
+        # should only ever be max 8 cells to iterate through
+        for cell in old_cells:
+            if cell not in new_cells:
+                enemies.extend(cell.get_enemies())
+                boundaries.extend(cell.get_boundaries())
+        return enemies, boundaries
+
+    def boundaries_to_load(self, old_cells, new_cells):
+        items = []
+        # should only ever be max 8 cells to iterate through
+        for cell in new_cells:
+            if cell not in old_cells:
+                items.extend(cell.get_boundaries())
+        return items
+
+    def boundaries_to_unload(self, old_cells, new_cells):
+        # should only ever be max 8 cells to iterate through
+        items = []
+        for cell in old_cells:
+            if cell not in new_cells:
+                items.extend(cell.get_boundaries())
+        return items
+
+    def enemies_to_load(self, old_cells, new_cells):
+        enemies = []
+        # should only ever be max 8 cells to iterate through
+        for cell in new_cells:
+            if cell not in old_cells:
+                enemies.extend(cell.get_enemies())
+        return enemies
+
+    def enemies_to_unload(self, old_cells, new_cells):
+        # should only ever be max 8 cells to iterate through
+        enemies = []
+        for cell in old_cells:
+            if cell not in new_cells:
+                enemies.extend(cell.get_enemies())
+        return enemies
 
     def get_boundaries(self):
         return self.get_active_boundaries()

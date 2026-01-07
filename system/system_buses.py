@@ -27,7 +27,7 @@ class SystemBus:
         pass
 
     def register_command_listener(self, command_type, listener):
-        pass
+        self.command_listeners[command_type].append(listener)
 
     def get_command_key(self, command):
         # because some keys may be subclasses of others

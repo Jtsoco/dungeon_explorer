@@ -3,6 +3,7 @@ from scene_renderer import SceneRenderer
 from base_manager import BaseManager
 class SceneManager(BaseManager):
     def __init__(self, context):
+        super().__init__(context=context)
         # notifies camera when an event related to cell transition occurs
         self.context = context
         self.camera = MapCamera(context)

@@ -6,7 +6,7 @@ from base_manager import BaseManager
 
 class SoundEffectsManager(BaseManager):
     def __init__(self, context= None):
-        self.context = context
+        super().__init__(context=context)
         self.sounds_to_play = set()
         # a set, because why play the same sound more than once in a frame?
         self.music_to_play = set()

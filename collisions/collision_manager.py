@@ -1,13 +1,16 @@
 from events_commands.events import PossibleAttackCollisionEvent as PACE, DamageEvent as DE, EntitySeparatedEvent as ESE, BoundaryCollisionEvent as BCE
 from enums.entity_enums import EntityType as ET, CollisionEntityTarget as CET, DirectionState as DS
 from base_manager import BaseManager
+from events_commands.commands import LoadActiveAttackCollisionCommand as LAACC, LoadEntityCollisionCommand as LECC, LoadMultipleEntityCollisionCommand as LMECC, LoadMultipleBoundariesCollisionCommand as LMBCC, CollisionCommand
 
 class CollisionManager(BaseManager):
-    def __init__(self):
+    def __init__(self, context):
+        super().__init__(context=context)
 
         # NOTE eventually refactor this to poll through active entities in the game world instead of using events to check things, but fine for now. going in depth on making a collision manager system could be a lot of fun
         self.active_entities = []
         self.active_attacks = []
+        self.active_boundaries = []
         self.player = None
 
         self.recent_collisions = []
@@ -20,14 +23,25 @@ class CollisionManager(BaseManager):
         self.collision_queue = []
 
     # purpose of this class is to receive possible collision events, then  determine if anything needs to be done about them
+    def setup_bus(self):
+        self.context.bus.register_command_listener(CollisionCommand, self)
 
     def handle_events(self, events):
         # will receive a list of possible collision events
         pass
 
-    def notify_command(self, command):
-        pass
+    def handle_command(self, command):
+        match command:
+            case LAACC():
+                self.load_active_attack_collision(command)
+            case LECC():
+                self.load_entity_collision(command)
+            case LMECC():
+                self.active_entities.extend(command.entities)
+            case LMBCC():
+                self.load_active_boundaries(command)
         # adds a command to be acted upon
+
     def handle_event(self, event):
         pass
 
@@ -36,7 +50,7 @@ class CollisionManager(BaseManager):
     def register_collision(self, possible_collision_event):
         self.collision_queue.append(possible_collision_event)
 
-    def update(self, player, entities, boundaries):
+    def old_update(self, player, entities, boundaries):
         new_events = []
         for event in self.collision_queue:
             match event:
@@ -121,6 +135,16 @@ class CollisionManager(BaseManager):
             return True
         return False
 
+    def update(self):
+        for command in self.queued_commands:
+            self.handle_command(command)
+        self.queued_commands.clear()
+        for event in self.queued_events:
+            self.handle_event(event)
+        self.queued_events.clear()
+        return self.handle_updates()
+
+
     def handle_updates(self):
         # for now, this will handle saved commands/events to be processed each frame
         # separate out into own methods later
@@ -128,7 +152,7 @@ class CollisionManager(BaseManager):
         p_rect = self.player.rect
         for entity in self.active_entities:
             rect = entity.rect
-            if rect.colliderect(p_rect):
+            if rect.is_rect_colliding(p_rect):
                 if entity.touch_damage:
                     # change to damage command
                     damage_event = DE(entity, self.player, entity.touch_damage, knockback=entity.knockback)
@@ -142,9 +166,9 @@ class CollisionManager(BaseManager):
             weapon = attacking_entity.weapon
             hitbox = weapon.get_current_hitbox()
             weapon_position = weapon.get_position(attacking_entity)
-            if attacking_entity.target_type == CET.ENEMY:
+            if weapon.target_type == CET.ENEMY:
                 targets = self.active_entities
-            elif attacking_entity.target_type == CET.PLAYER:
+            elif weapon.target_type == CET.PLAYER:
                 targets = [self.player]
             else:
                 targets = self.active_entities + [self.player]
@@ -156,10 +180,45 @@ class CollisionManager(BaseManager):
                     new_recent_attacks.append((weapon, target))
         self.recent_attack_collisions = new_recent_attacks
 
-        for boundary in self.boundaries:
+        for boundary in self.active_boundaries:
             boundary_rect = boundary.rect
             if boundary_rect.is_rect_colliding(p_rect):
                 boundary_event = BCE(self.player, boundary)
                 events.append(boundary_event)
+        # TODO for now return these events and they'll be acted upon in the current game loop, but eventually have the collision manager send them through the event bus
+        return events
+
+
         # change these to commands to do something if they have only one target, like damage or separate entities, and keep as events for things that may have multiple targets. will boundary be an event or command? probably event for now
         # I don't plan on having this return events right now, it will primarily send things through the bus
+
+    # Loading and unloading entities and attacks for collision checking
+    def load_entity_collision(self, command):
+        if command.load:
+            self.active_entities.append(command.entity)
+        else:
+            if command.entity in self.active_entities:
+                self.active_entities.remove(command.entity)
+
+    def load_multiple_entity_collision(self, command):
+        if command.load:
+            self.active_entities.extend(command.entities)
+        else:
+            for entity in command.entities:
+                if entity in self.active_entities:
+                    self.active_entities.remove(entity)
+
+    def load_active_attack_collision(self, command):
+        if command.load:
+            self.active_attacks.append(command.attacking_entity)
+        else:
+            if command.attacking_entity in self.active_attacks:
+                self.active_attacks.remove(command.attacking_entity)
+
+    def load_active_boundaries(self, command):
+        if command.load:
+            self.active_boundaries.extend(command.boundaries)
+        else:
+            for boundary in command.boundaries:
+                if boundary in self.active_boundaries:
+                    self.active_boundaries.remove(boundary)

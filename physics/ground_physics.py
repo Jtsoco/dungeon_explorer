@@ -23,7 +23,7 @@ class GroundPhysics:
         # for now, its the startup context it has access to with tile context in that
         events = []
         # update position based on velocity
-        # data.position[0] += data.velocity[0]
+        # data.rect.position[0] += data.velocity[0]
 
         # returns a dict with all tiles around the player as values, keys being their relative position
         returned_events = self.horizontal_motion(data, context)
@@ -36,7 +36,7 @@ class GroundPhysics:
             events.append(returned_event)
         # if there are any events after this, added here. might not actually be any, but jump will have some state change events probably
 
-        # data.position[1] += data.velocity[1]
+        # data.rect.position[1] += data.velocity[1]
         # gravity and other physics would go here
 
         # once tile context is added, check for collisions and then implement a backstep if neeed
@@ -69,12 +69,12 @@ class GroundPhysics:
         loops = int(remaining_movement // chunk_size)
         initial_movement = remaining_movement % chunk_size
         for _ in range(loops):
-            data.position[axis] += sign * chunk_size
+            data.rect.position[axis] += sign * chunk_size
             if self.check_tile_collisions(data, context):
                 self.stepback(data, -sign * chunk_size, context, axis=axis)
                 return True
         if initial_movement > 0:
-            data.position[axis] += sign * initial_movement
+            data.rect.position[axis] += sign * initial_movement
             if self.check_tile_collisions(data, context):
                 self.stepback(data, -sign * initial_movement, context, axis=axis)
                 return True
@@ -82,13 +82,13 @@ class GroundPhysics:
         # returns true if tile collision occurred during chunked movement
 
     def check_tile_collisions(self, data, context):
-        x, y = int(data.position[0]), int(data.position[1])
-        tiles = context.tile_context.get_touching_bricks(x, y, data.w_h[0], data.w_h[1])
+        x, y = int(data.rect.position[0]), int(data.rect.position[1])
+        tiles = context.tile_context.get_touching_bricks(x, y, data.rect.width, data.rect.height)
         return self.has_tile_collision(tiles, context)
 
     def has_tile_collision(self, tiles, context):
         for tile in tiles:
-            if tile[0] >= context.collideable_tile_x:
+            if tile[0] >= context.data_context.collideable_tile_x:
                 return True
         return False
 
@@ -96,7 +96,7 @@ class GroundPhysics:
         event = None
         movement = data.velocity[1] + data.secondary_momentum[1]
         collided = self.chunk_movement(-movement, data, context, axis=1)
-        data.position[1] = int(data.position[1])  # so if a float is used renderer sometimes makes the player stand in the floor, and keeping it a float while rendering uses ints means movement gets jittery, just requiring int for y positions makes everything smoother
+        data.rect.position[1] = int(data.rect.position[1])  # so if a float is used renderer sometimes makes the player stand in the floor, and keeping it a float while rendering uses ints means movement gets jittery, just requiring int for y positions makes everything smoother
         # this does, however, affect how much jump power can make someone go up
 
         match data.movement_state:
@@ -133,10 +133,10 @@ class GroundPhysics:
         return event
 
     def ground_beneath_player(self, data, context):
-        x_start = int(data.position[0])
+        x_start = int(data.rect.position[0])
 
-        y_value = int(data.position[1] + data.w_h[1])
-        bricks = context.tile_context.get_touching_bricks(x_start, y_value, data.w_h[0], 1)
+        y_value = int(data.rect.position[1] + data.rect.height)
+        bricks = context.tile_context.get_touching_bricks(x_start, y_value, data.rect.width, 1)
         return self.has_tile_collision(bricks, context)
 
 
@@ -157,7 +157,7 @@ class GroundPhysics:
         sign = -1 if reverse < 0 else 1
         # moves back one pixel at a time until no longer colliding
         while self.check_tile_collisions(data, context):
-            data.position[axis] += sign
+            data.rect.position[axis] += sign
 
     def handle_event(self, event):
         match event:

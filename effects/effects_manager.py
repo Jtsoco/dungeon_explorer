@@ -17,7 +17,7 @@ from base_manager import BaseManager
 
 class EffectsManager(BaseManager):
     def __init__(self, context=None):
-        self.context = context
+        super().__init__(context=context)
         self.active_effects = []
 
     def update(self):

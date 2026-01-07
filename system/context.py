@@ -2,6 +2,7 @@
 import pyxel
 from system.tile_context import TileContext
 from cell_data import CellData
+from system.system_buses import SystemBus
 
 class Context():
     def __init__(self):
@@ -29,6 +30,7 @@ class Context():
                                         cell_size=self.data_context.CELL_SIZE)
 
     def setup_defaults(self):
+        self.bus = SystemBus()
         self.data_context = DataContext()
         self.data_context.check_cells()
         self.setup_tile_context()

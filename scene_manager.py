@@ -29,3 +29,9 @@ class SceneManager(BaseManager):
     def notify(self, event):
         # event will be a custom event class later
         pass
+
+    def set_camera_to_current(self):
+        self.camera.set_camera_to_current()
+
+    def set_camera_to_zero(self):
+        self.camera.set_absolute_position(0, 0)

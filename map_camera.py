@@ -26,7 +26,8 @@ class MapCamera():
         self.current_camera = (camera_x, camera_y)
         self.current_size = (self.context.data_context.CELL_SIZE * self.context.data_context.BRICK_SIZE, self.context.data_context.CELL_SIZE * self.context.data_context.BRICK_SIZE)
 
-
+    def set_camera_to_current(self):
+        pyxel.camera(self.current_camera[0], self.current_camera[1])
 
     def set_absolute_position(self, x: int, y: int):
         pyxel.camera(x, y)

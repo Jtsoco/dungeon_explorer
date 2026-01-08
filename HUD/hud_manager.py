@@ -1,5 +1,8 @@
 from base_manager import BaseManager
 from events_commands.events import PlayerEvent as PE, PlayerDamagedEvent as PDe, PlayerHealedEvent as PHe, PlayerDeathEvent as PDea
+from enums.hud_enums import HUDComponentType as HCT
+from HUD.health_component import HealthComponent
+from renderers.hud_renderer import HudRenderer
 
 
 class HUDManager(BaseManager):
@@ -8,7 +11,10 @@ class HUDManager(BaseManager):
         self.context = context
         # HUD elements can be initialized here
         # e.g., health bars, score displays, etc.
-
+        self.components = {
+            HCT.HEALTH: HealthComponent(max_health=100),
+        }
+        self.renderer = HudRenderer()
 
     def get_render_items(self):
         pass
@@ -18,16 +24,24 @@ class HUDManager(BaseManager):
 
     def handle_event(self, event):
         match event:
-            case PDe(damage_amount):
-                pass
-            case PHe(heal_amount):
+            case PDe():
+                self.handle_damage(event)
+            case PHe():
                 pass
             case PDea():
                 pass
+
+    def handle_damage(self, damage_amount):
+        # damage amount isn't needed for now, really just plan to have it as a way to show what degree the health changed by with an animation later
+        player = self.context.player_data
+        health_component = self.components[HCT.HEALTH]
+        new_health = player.health
+        health_component.set_new_health(new_health)
 
     def handle_updates(self):
         pass
 
     def draw(self):
         # Draw HUD elements on the screen
-        pass
+        components = self.components.values()
+        self.renderer.render(components)

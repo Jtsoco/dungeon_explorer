@@ -10,6 +10,7 @@ from entity.entity_setup import spawn_player
 
 from events_commands.events import PossibleAttackCollisionEvent as PACE, DamageEvent as DE, PhysicsEvent as PE, DeathEvent as Death, NewlyLoadedCellsEvent as NLCE, BoundaryCollisionEvent as BCE
 from events_commands.commands import EffectCommand, SoundCommand, MusicCommand, AudioCommand
+from HUD.hud_manager import HUDManager
 
 from effects.effects_manager import EffectsManager
 from audio.sound_effects_manager import SoundEffectsManager
@@ -65,7 +66,7 @@ class Game():
         self.sound_effects_manager = SoundEffectsManager(self.context)
         self.sound_effects_manager.handle_command(MusicCommand(music_enum=0))  # Start background music
 
-
+        self.hud_manager = HUDManager(self.context)
 
 
 
@@ -93,7 +94,7 @@ class Game():
         self.damage_manager.update()
         self.cell_manager.update()
         self.entity_manager.update()
-
+        self.hud_manager.update()
 
         self.sound_effects_manager.update()
         self.scene_manager.camera.update()
@@ -151,6 +152,10 @@ class Game():
         self.entity_manager.draw(self.player_data)
         camera_pos = self.scene_manager.camera.current_camera
         display_info(f"Player Pos: {self.player_data.position[0]}", pos_x=camera_pos[0]+2, pos_y=camera_pos[1]+8)
+
+        self.scene_manager.set_camera_to_zero()
+        self.hud_manager.draw()
+        self.scene_manager.set_camera_to_current()
         # outline_entity(self.player.data)
 
         # player animation

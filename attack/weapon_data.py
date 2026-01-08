@@ -65,9 +65,9 @@ class WeaponData():
     def get_position(self, entity_data):
         hitbox = self.get_current_hitbox()
         if entity_data.direction_state == DS.RIGHT:
-            attack_x = entity_data.position[0] + entity_data.w_h[0]
+            attack_x = entity_data.rect.position[0] + entity_data.rect.width
         else:
-            attack_x = entity_data.position[0] - hitbox[0]
-        attack_y = entity_data.position[1]
+            attack_x = entity_data.rect.position[0] - hitbox[0]
+        attack_y = entity_data.rect.position[1]
         # super simple that doesn't take into account any offsets or anything, revisit later
         return (attack_x, attack_y)

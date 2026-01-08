@@ -1,4 +1,3 @@
-
 class Effect:
     # a class for scene effects, like little animations for deaths and such
     def __init__(self, effect_type, position, animation_frames):

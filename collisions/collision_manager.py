@@ -83,34 +83,34 @@ class CollisionManager(BaseManager):
         self.collision_queue.clear()
         return new_events
 
-    def handle_attack_collision(self, event, player, entities):
+    def handle_attack_collision(self, attacker):
         # NOTE will eventually change entitiy references to use ids instead of direct references
 
         # also clean up this method later, it's a bit messy
 
-        entity = event.origin
-        weapon = entity.weapon
-        attack_position = event.attack_position
+        weapon = attacker.weapon
+        attack_position = weapon.get_position(attacker)
         hitbox = weapon.get_current_hitbox()
-        if event.target_type == CET.ENEMY:
-            targets = entities
-        elif event.target_type == CET.PLAYER:
-            targets = [player]
+
+        if weapon.target_type == CET.ENEMY:
+            targets = self.active_entities
+        elif weapon.target_type == CET.PLAYER:
+            targets = [self.player]
         else:
-            targets = entities + [player]
+            targets = self.active_entities + [self.player]
         hits = self.check_collision_entities(targets, hitbox, attack_position)
         damage_events = []
         new_recent_attacks = []
 
         for hit in hits:
+            # hits are the entity hit
             new_recent_attacks.append((weapon, hit))
             if (weapon, hit) in self.recent_attack_collisions:
                 continue  # already registered this collision recently
-            damage_event = DE(entity, hit, weapon.damage, knockback=weapon.knockback)
+            damage_event = DE(attacker, hit, weapon.damage, knockback=weapon.knockback)
             damage_events.append(damage_event)
 
-        self.recent_attack_collisions = new_recent_attacks
-        return damage_events
+        return damage_events, new_recent_attacks
 
     def check_player_boundaries(self, entity, boundaries):
         hits = []
@@ -123,10 +123,9 @@ class CollisionManager(BaseManager):
         hits = []
         # just use AABB for now
         for entity in entities:
-            pos_b = entity.position
-            b_w_h = entity.w_h
-            if self.check_collision(pos_a, w_h, pos_b, b_w_h):
+            if entity.rect.is_colliding(pos_a, w_h):
                 hits.append(entity)
+
         return hits
 
     def check_collision(self, pos_a, w_h_a: tuple, pos_b, w_h_b: tuple):
@@ -150,11 +149,15 @@ class CollisionManager(BaseManager):
         # separate out into own methods later
         events = []
         p_rect = self.player.rect
+        new_recent_collisions = []
         for entity in self.active_entities:
             rect = entity.rect
             if rect.is_rect_colliding(p_rect):
                 if entity.touch_damage:
                     # change to damage command
+                    new_recent_collisions.append((entity, self.player))
+                    if (entity, self.player) in self.recent_collisions:
+                        continue  # already registered this collision recently
                     damage_event = DE(entity, self.player, entity.touch_damage, knockback=entity.knockback)
                     events.append(damage_event)
                 else:
@@ -163,28 +166,21 @@ class CollisionManager(BaseManager):
         new_recent_attacks = []
 
         for attacking_entity in self.active_attacks:
-            weapon = attacking_entity.weapon
-            hitbox = weapon.get_current_hitbox()
-            weapon_position = weapon.get_position(attacking_entity)
-            if weapon.target_type == CET.ENEMY:
-                targets = self.active_entities
-            elif weapon.target_type == CET.PLAYER:
-                targets = [self.player]
-            else:
-                targets = self.active_entities + [self.player]
-            for target in targets:
-                target_rect = target.rect
-                if target_rect.is_colliding(weapon_position, hitbox):
-                    damage_event = DE(attacking_entity, target, weapon.damage, knockback=weapon.knockback)
-                    events.append(damage_event)
-                    new_recent_attacks.append((weapon, target))
+            damage_events, additional_recent_attacks = self.handle_attack_collision(attacking_entity)
+            events.extend(damage_events)
+            new_recent_attacks.extend(additional_recent_attacks)
+
         self.recent_attack_collisions = new_recent_attacks
 
         for boundary in self.active_boundaries:
             boundary_rect = boundary.rect
             if boundary_rect.is_rect_colliding(p_rect):
+                new_recent_collisions.append((self.player, boundary))
+                if (self.player, boundary) in self.recent_collisions:
+                    continue  # already registered this collision recently
                 boundary_event = BCE(self.player, boundary)
                 events.append(boundary_event)
+        self.recent_collisions = new_recent_collisions
         # TODO for now return these events and they'll be acted upon in the current game loop, but eventually have the collision manager send them through the event bus
         return events
 

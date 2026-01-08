@@ -13,8 +13,8 @@ class DefaultRenderer():
         Renders an entity, and if they have a weapon that weapon too, using the weapons offset and the entity offset. Entity offset determines where they hold the weapon, weapon offset determines where the weapon handle is relative to upperleft of a frame
         """
 
-        x = entity_data.position[0]
-        y = entity_data.position[1]
+        x = entity_data.rect.position[0]
+        y = entity_data.rect.position[1]
         # float positions for y mean sometimes it's in the floor, using int here would make movement more jittery, so physics just requires it to be int for y positions, x doesn't have this limition and just uses floats, as no one cares if it goes in the wall a little
 
         current_frame = entity_data.animation_data.get_current_frame()

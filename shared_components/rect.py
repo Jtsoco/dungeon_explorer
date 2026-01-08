@@ -3,7 +3,8 @@ class Rect:
     def __init__(self, w: int, h: int, position=(0,0)):
         self.width = w
         self.height = h
-        self.position = position  # x, y tuple
+        self.position = position
+          # x, y tuple
     def is_rect_colliding(self, other_rect):
         # simple aabb collision detection
         if (self.position[0] < other_rect.position[0] + other_rect.width and

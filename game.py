@@ -40,8 +40,8 @@ class Game():
         self.scene_manager = SceneManager(self.context)
         self.player_data = spawn_player()
         # for now player is just stored here, later might make a separate player manager if needed
-        self.player_data.position = [self.context.data_context.player_start[0] * self.context.data_context.BRICK_SIZE, self.context.data_context.player_start[1] * self.context.data_context.BRICK_SIZE]
-        self.scene_manager.camera.set_target(self.player_data)
+        self.player_data.rect.position = [self.context.data_context.player_start[0] * self.context.data_context.BRICK_SIZE, self.context.data_context.player_start[1] * self.context.data_context.BRICK_SIZE]
+        self.scene_manager.camera.set_target(self.player_data.rect)
 
         # just have it use players attack and animation manager for now, as they work, restructure later if needed
         self.entity_manager = EntityManager(context=self.context)

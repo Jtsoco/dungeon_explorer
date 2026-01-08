@@ -79,10 +79,7 @@ class EntityManager(BaseManager):
             match attack_event:
                 case AFE():
                     state_updates.append(attack_event)
-                case PCE():
-                    # collision events are main events
-                    # consider dividing events into main and sub, or lvl1 lvl2 event types later to inherit from for easier filtering
-                    self.main_return_events.append(attack_event)
+
 
         events, commands = self.state_machine.state_updates(entity, state_updates)
         if events or commands:
@@ -92,13 +89,9 @@ class EntityManager(BaseManager):
                 self.delegate_command(command, entity)
 
 
-        events = self.main_return_events.copy()
-        commands = self.main_return_commands.copy()
-        self.main_return_commands.clear()
-        self.main_return_events.clear()
+
 
         # expand to sound later
-        return events, commands
 
     def handle_event(self, event):
         # this is for when external systems want to pass events to entity manager to be delegated to respective systems

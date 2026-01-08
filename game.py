@@ -70,20 +70,17 @@ class Game():
 
 
     def update(self):
-        main_events = []
         all_entities = self.cell_manager.current_state.get_enemies() + [self.player_data]
         main_commands = []
         for entity in all_entities:
-            events, commands = self.entity_manager.update_entity(entity)
-            main_events.extend(events)
-            main_commands.extend(commands)
+            self.entity_manager.update_entity(entity)
+
 
         # after main events, need a last check to see if any state changes happend that need to be handled for respective entities
         # possibly consider breaking down entity manager into subparts or having it like this for now where it contains a full 'sub process' for each entity
 
         # take these main event filter logic type code sections and put them into a deticated filter module/class later, to clean this logic up
-        for event in main_events:
-            pass
+
             # match event:
             #     case PACE():
             #         self.collision_manager.register_collision(event)
@@ -97,14 +94,7 @@ class Game():
         self.cell_manager.update()
         self.entity_manager.update()
 
-        commands = []
-        while events:
-            event = events.pop(0)
-            new_events, new_commands = self.delegate_event(event)
-            events.extend(new_events)
-            commands.extend(new_commands)
-        for command in commands:
-            self.delegate_command(command)
+
         self.sound_effects_manager.update()
         self.scene_manager.camera.update()
 

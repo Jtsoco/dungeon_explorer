@@ -33,7 +33,7 @@ class WingedKnightController(KnightController):
 
 
     def player_close(self, entity, context, distance):
-        player_data = context.player_data
+        player_data = context.data_context.player_data
         distance_x = distance[0]
         distance_y = distance[1]
         events = []
@@ -105,7 +105,7 @@ class WingedKnightController(KnightController):
 
     def select_active_action(self, entity, context, distance_x, distance_y):
         events = []
-        player_data = context.player_data
+        player_data = context.data_context.player_data
         if distance_x < 10 and distance_y < 10:
             # attack
             events.append(InputEvent(IE.ATTACK))
@@ -123,7 +123,7 @@ class WingedKnightController(KnightController):
 
     def set_chase(self, entity, player_data):
         events = []
-        if (entity.position[0] + entity.w_h[0] / 2) < (player_data.position[0] + player_data.w_h[0] / 2):
+        if (entity.rect.position[0] + entity.w_h[0] / 2) < (player_data.rect.position[0] + player_data.w_h[0] / 2):
                 events.append(InputEvent(IE.MOVE, direction=DS.RIGHT))
         else:
             events.append(InputEvent(IE.MOVE, direction=DS.LEFT))

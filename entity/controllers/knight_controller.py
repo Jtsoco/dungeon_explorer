@@ -52,8 +52,8 @@ class KnightController(DefaultController):
 
     def distance_to_player(self, entity, context):
         player_data = context.data_context.player_data
-        distance_x = abs((entity.position[0] + entity.w_h[0] / 2) - (player_data.position[0] + player_data.w_h[0] / 2))
-        distance_y = abs((entity.position[1] + entity.w_h[1] / 2) - (player_data.position[1] + player_data.w_h[1] / 2))
+        distance_x = abs((entity.rect.position[0] + entity.w_h[0] / 2) - (player_data.rect.position[0] + player_data.w_h[0] / 2))
+        distance_y = abs((entity.rect.position[1] + entity.w_h[1] / 2) - (player_data.rect.position[1] + player_data.w_h[1] / 2))
         return (distance_x, distance_y)
 
 
@@ -121,7 +121,7 @@ class KnightController(DefaultController):
                 return InputEvent(IE.MOVE, direction=DS.LEFT)
 
     def following_target(self, entity, player_data):
-        player_to_left = (entity.position[0] + entity.w_h[0] / 2) >= (player_data.position[0] + player_data.w_h[0] / 2)
+        player_to_left = (entity.rect.position[0] + entity.w_h[0] / 2) >= (player_data.rect.position[0] + player_data.w_h[0] / 2)
         match entity.direction_state:
             case DS.LEFT:
                 if player_to_left:
@@ -143,7 +143,7 @@ class KnightController(DefaultController):
             return events
         elif distance_x < 40 and distance_y < 20:
             # move toward player
-            if (entity.position[0] + entity.w_h[0] / 2) < (player_data.position[0] + player_data.w_h[0] / 2):
+            if (entity.rect.position[0] + entity.w_h[0] / 2) < (player_data.rect.position[0] + player_data.w_h[0] / 2):
                 events.append(InputEvent(IE.MOVE, direction=DS.RIGHT))
             else:
                 events.append(InputEvent(IE.MOVE, direction=DS.LEFT))

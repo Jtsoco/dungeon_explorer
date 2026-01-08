@@ -37,7 +37,7 @@ class CollisionManager(BaseManager):
             case LECC():
                 self.load_entity_collision(command)
             case LMECC():
-                self.active_entities.extend(command.entities)
+                self.load_multiple_entity_collision(command)
             case LMBCC():
                 self.load_active_boundaries(command)
         # adds a command to be acted upon
@@ -146,7 +146,8 @@ class CollisionManager(BaseManager):
     # Loading and unloading entities and attacks for collision checking
     def load_entity_collision(self, command):
         if command.load:
-            self.active_entities.append(command.entity)
+            if command.entity not in self.active_entities:
+                self.active_entities.append(command.entity)
         else:
             if command.entity in self.active_entities:
                 self.active_entities.remove(command.entity)

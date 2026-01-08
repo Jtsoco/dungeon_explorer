@@ -161,7 +161,8 @@ class MultipleCellManager(SingleCellManager):
         self.bus = context.bus
 
 
-
+    def all_cells_loaded(self):
+        return self.central_cells + self.adjacent
 
 
     def determine_adjacent_cells(self, cell):
@@ -380,7 +381,8 @@ class MultipleCellManager(SingleCellManager):
         return entity_types
 
     def remove_entity(self, entity):
-        for cell in self.central_cells:
+        all_cells = self.all_cells_loaded()
+        for cell in all_cells:
             if entity in cell.enemies:
                 cell.enemies.remove(entity)
                 self.context.bus.send_command(LECC(load=False, entity=entity))

@@ -60,8 +60,8 @@ class Game():
         self.current_frame_count = 0
         self.context.data_context.player_data = self.player_data
 
-        self.effects_manager = EffectsManager()
-        self.sound_effects_manager = SoundEffectsManager()
+        self.effects_manager = EffectsManager(self.context)
+        self.sound_effects_manager = SoundEffectsManager(self.context)
         self.sound_effects_manager.handle_command(MusicCommand(music_enum=0))  # Start background music
 
 
@@ -90,12 +90,10 @@ class Game():
             self.delegate_command(command)
 
 
-        boundaries = self.cell_manager.current_state.get_boundaries()
-        collision_events = self.collision_manager.update()
-        effects_events = self.effects_manager.update()
+        self.collision_manager.update()
+        self.effects_manager.update()
         self.damage_manager.update()
         self.cell_manager.update()
-        events = collision_events + effects_events
         commands = []
         while events:
             event = events.pop(0)

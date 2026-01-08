@@ -20,7 +20,11 @@ class EffectsManager(BaseManager):
         super().__init__(context=context)
         self.active_effects = []
 
-    def update(self):
+    def setup_bus(self):
+        self.context.bus.register_command_listener(EffectCommand, self)
+
+
+    def handle_updates(self):
         to_remove = []
         for effect in self.active_effects:
             self.update_effect(effect)
@@ -32,6 +36,19 @@ class EffectsManager(BaseManager):
 
         # eventually may have events to return based on effects finishing, for now just keep it simple
         return []
+
+
+
+    def handle_event(self, event):
+        # based on event type, create new effects
+        match event:
+            case Death():
+                self.create_death_effect(event)
+
+    def handle_command(self, command):
+        match command:
+            case EffectCommand():
+                self.create_effect(command)
 
     def update_effect(self, effect):
         # effects store data, they don't have the logic in them for updates, that's the managers job
@@ -56,12 +73,6 @@ class EffectsManager(BaseManager):
     def get_effects(self):
         return self.active_effects
 
-    def handle_event(self, event):
-        # based on event type, create new effects
-        match event:
-            case Death():
-                self.create_death_effect(event)
-
     def create_death_effect(self, event):
         # for now just a simple placeholder effect, but will differ based on entity type later
         entity = event.entity
@@ -72,11 +83,6 @@ class EffectsManager(BaseManager):
         self.active_effects.append(new_effect)
         print(f"Created death effect at {effect_position}")
 
-    def handle_command(self, command):
-        match command:
-            case EffectCommand():
-                self.create_effect(command)
-        return [], []  # No new events or commands
 
     def create_effect(self, command):
         effect_position = command.position

@@ -108,7 +108,24 @@ class NewlyLoadedCellsEvent(CellEvent):
         super().__init__(name="NewlyLoadedCellsEvent")
         self.loaded_cells = loaded_cells
 
+class PlayerEvent(Event):
+    # this is specifically for events that happened to the player reported through the bus,
+    def __init__(self, name="PlayerEvent"):
+        super().__init__(name=name)
 
+class PlayerDamagedEvent(PlayerEvent):
+    def __init__(self, damage_amount):
+        super().__init__(name="PlayerDamagedEvent")
+        self.damage_amount = damage_amount
+
+class PlayerHealedEvent(PlayerEvent):
+    def __init__(self, heal_amount):
+        super().__init__(name="PlayerHealedEvent")
+        self.heal_amount = heal_amount
+
+class PlayerDeathEvent(PlayerEvent):
+    def __init__(self):
+        super().__init__(name="PlayerDeathEvent")
 # Need:
 # events will typically be things that happen in which multiple other systems may need to respond to
 # World Event?

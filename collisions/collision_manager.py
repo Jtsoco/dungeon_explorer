@@ -79,12 +79,6 @@ class CollisionManager(BaseManager):
 
         return damage_events, new_recent_attacks
 
-    def check_player_boundaries(self, entity, boundaries):
-        hits = []
-        for boundary in boundaries:
-            if self.check_collision(entity.rect.position, entity.w_h, boundary.rect.position, boundary.w_h):
-                hits.append(BCE(entity, boundary))
-        return hits
 
     def check_collision_entities(self, entities: list, w_h: tuple, pos_a: tuple):
         hits = []
@@ -94,12 +88,6 @@ class CollisionManager(BaseManager):
                 hits.append(entity)
 
         return hits
-
-    def check_collision(self, pos_a, w_h_a: tuple, pos_b, w_h_b: tuple):
-        # AABB collision check
-        if (pos_a[0] < pos_b[0] + w_h_b[0] and pos_b[0] < pos_a[0] + w_h_a[0] and pos_a[1] < pos_b[1] + w_h_b[1] and pos_b[1] < pos_a[1] + w_h_a[1]):
-            return True
-        return False
 
     def update(self):
         for command in self.queued_commands:

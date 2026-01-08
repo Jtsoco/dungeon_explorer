@@ -9,22 +9,22 @@ class MapCamera():
         # change later to proper state machine, but possible just leave it as enums depending on how complex. So far, just idle and transitioning will be needed
         # actually probably will use a state class, with the states keeping track of necessary data for transitions
         self.current_camera = (0, 0)
-        self.current_size = (context.CELL_SIZE * context.BRICK_SIZE, context.CELL_SIZE * context.BRICK_SIZE)
-        self.set_camera_cell(context.start_cell)
+        self.current_size = (context.data_context.CELL_SIZE * context.data_context.BRICK_SIZE, context.data_context.CELL_SIZE * context.data_context.BRICK_SIZE)
+        self.set_camera_cell(context.data_context.start_cell)
         self._target = target
         # target must have a position attribute known as position
         # this will be the center of the camera
-        self.disp_x = (context.CELL_SIZE / 2) * context.BRICK_SIZE
-        self.disp_y = (context.CELL_SIZE / 2) * context.BRICK_SIZE
+        self.disp_x = (context.data_context.CELL_SIZE / 2) * context.data_context.BRICK_SIZE
+        self.disp_y = (context.data_context.CELL_SIZE / 2) * context.data_context.BRICK_SIZE
 
     # set camera will be state specific when further implemented
 
     def set_camera_cell(self, cell_coordinates: tuple):
-        camera_x = cell_coordinates[0] * self.context.CELL_SIZE * self.context.BRICK_SIZE
-        camera_y = cell_coordinates[1] * self.context.CELL_SIZE * self.context.BRICK_SIZE
+        camera_x = cell_coordinates[0] * self.context.data_context.CELL_SIZE * self.context.data_context.BRICK_SIZE
+        camera_y = cell_coordinates[1] * self.context.data_context.CELL_SIZE * self.context.data_context.BRICK_SIZE
         pyxel.camera(camera_x, camera_y)
         self.current_camera = (camera_x, camera_y)
-        self.current_size = (self.context.CELL_SIZE * self.context.BRICK_SIZE, self.context.CELL_SIZE * self.context.BRICK_SIZE)
+        self.current_size = (self.context.data_context.CELL_SIZE * self.context.data_context.BRICK_SIZE, self.context.data_context.CELL_SIZE * self.context.data_context.BRICK_SIZE)
 
 
 
@@ -53,7 +53,7 @@ class MapCamera():
         return self.current_camera
 
 
-    # needs to handle drawing a cell (active cell based on context)
+    # needs to handle drawing a cell (active cell based on context.data_context)
     # or if its in a transition, to handle the cell transition by entering a transition state showing half of each cell that's active
     # transitioning in when an event comes marking cell transition
     # leaving when the cell transition is over

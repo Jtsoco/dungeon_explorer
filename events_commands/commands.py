@@ -68,13 +68,13 @@ class CollisionCommand(Command):
 
 class LoadEntityCollisionCommand(CollisionCommand):
     def __init__(self, load=True, entity=None):
-        super().__init__(load=True)
+        super().__init__(load=load)
         self.name = "LoadEntityCollisionCommand"
         self.entity = entity
 
 class LoadMultipleEntityCollisionCommand(CollisionCommand):
     def __init__(self, load=True, entities=[]):
-        super().__init__(load=True)
+        super().__init__(load=load)
         self.name = "LoadMultipleEntityCollisionCommand"
         self.entities = entities
 class LoadActiveAttackCollisionCommand(CollisionCommand):
@@ -85,7 +85,7 @@ class LoadActiveAttackCollisionCommand(CollisionCommand):
         # this actually uses the attacking entity to get the active attack hitbox and position, because the entity is used in the calculations and passed for the event. It's useful when determining direction of knockback and such
 class LoadMultipleBoundariesCollisionCommand(CollisionCommand):
     def __init__(self, load=True, boundaries=[]):
-        super().__init__(load=True)
+        super().__init__(load=load)
         self.name = "LoadMultipleBoundariesCollisionCommand"
         self.boundaries = boundaries
 

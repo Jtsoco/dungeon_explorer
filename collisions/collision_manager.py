@@ -114,7 +114,7 @@ class CollisionManager(BaseManager):
     def check_player_boundaries(self, entity, boundaries):
         hits = []
         for boundary in boundaries:
-            if self.check_collision(entity.position, entity.w_h, boundary.position, boundary.w_h):
+            if self.check_collision(entity.rect.position, entity.w_h, boundary.rect.position, boundary.w_h):
                 hits.append(BCE(entity, boundary))
         return hits
 

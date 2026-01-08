@@ -1,6 +1,6 @@
 from enums.entity_enums import DirectionState as DS
-from events_commands.events import DeathEvent, AddMomentumEvent
-from events_commands.commands import SoundCommand, DamageCommand
+from events_commands.events import DeathEvent
+from events_commands.commands import SoundCommand, DamageCommand, AddMomentumCommand
 from audio.sound_enums import SoundEnum
 from base_manager import BaseManager
 class DamageManager(BaseManager):
@@ -51,8 +51,8 @@ class DamageManager(BaseManager):
                 kb_vector = [-knockback[0], knockback[1]]
             else:
                 kb_vector = [knockback[0], knockback[1]]
-            momentum_event = AddMomentumEvent(target, kb_vector)
-            events.append(momentum_event)
+            momentum_event = AddMomentumCommand(target, kb_vector)
+            commands.append(momentum_event)
 
         return events, commands
 

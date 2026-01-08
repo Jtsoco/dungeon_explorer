@@ -1,6 +1,6 @@
 from animations.animation_manager import AnimationManager
 from attack.attack_manager import AttackManager
-from events_commands.commands import MovementCommand, AttackCommand, EffectCommand, SoundCommand, AudioCommand
+from events_commands.commands import MovementCommand, AttackCommand, EffectCommand, SoundCommand, AudioCommand, PhysicsCommand
 from events_commands.events import StateChangedEvent, PossibleCollisionEvent as PCE, AttackFinishedEvent as AFE, PhysicsEvent as PE, NewlyLoadedCellsEvent as NLCE
 from enums.entity_enums import EntityType as ET, EntityCategory as EC, InputEnums as IE, PowerUpStates as PUS
 from state_machines.default_state_machine import DefaultStateMachine
@@ -37,23 +37,17 @@ class EntityManager(BaseManager):
         self.main_return_commands = []
         self.renderer = DefaultRenderer()
 
+    def setup_bus(self):
+        self.context.bus.register_event_listener(NLCE, self)
+        self.context.bus.register_command_listener(PhysicsCommand, self)
 
 
-    def update(self, entity):
+    def update_entity(self, entity):
         events, commands = [], []
 
         input_events = []
         input_events = input_events + self.controllers[entity.entity_type].update(entity, self.context)
         events, commands = self.state_machine.input_events(entity, input_events)
-
-        # if entity.entity_type == ET.PLAYER:
-        #     jumped = False
-        #     for event in input_events:
-        #         if event.input_type == IE.JUMP:
-        #             print("Player Jumped!")
-        #             jumped = True
-        #     if not jumped:
-        #         print("Player did not jump this frame.")
 
         animation_event = self.animation_manager.update(entity)
         if animation_event:
@@ -114,7 +108,12 @@ class EntityManager(BaseManager):
             case NLCE():
                 self.handle_newly_loaded_cells(event)
 
-        return []
+
+    def handle_command(self, command):
+        # handle commands are for commands external systems have given to entity manager to be delegated to respective systems
+        match command:
+            case PhysicsCommand():
+                self.physics[command.entity.entity_category].handle_command(command)
 
     def handle_newly_loaded_cells(self, event: NLCE):
         # when new cells are loaded, setup entities in those cells
@@ -123,12 +122,12 @@ class EntityManager(BaseManager):
         return []
 
     def delegate_event(self, event, entity):
+        # delegate is for its respective held systems
         match event:
             case StateChangedEvent():
                 # only animation manager needs it for now, but later it might be useful to have it delegated to all other systems too
                 self.animation_manager.handle_event(event, entity)
-            case PCE():
-                self.main_return_events.append(event)
+
 
         return [], []  # Return empty lists if no new events/commands
 

@@ -1,4 +1,4 @@
-from events_commands.commands import Command, MovementCommand, MoveCommand, JumpCommand
+from events_commands.commands import Command, MovementCommand, MoveCommand, JumpCommand, AddMomentumCommand, EntitySeparationCommand
 from events_commands.events import LandedEvent, StartedFallingEvent, AddMomentumEvent as AME
 from enums.entity_enums import MovementState as MS
 from enums.entity_enums import DirectionState as DS
@@ -159,17 +159,16 @@ class GroundPhysics:
         while self.check_tile_collisions(data, context):
             data.rect.position[axis] += sign
 
+
     def handle_event(self, event):
-        match event:
-            case AME():
-                self.apply_momentum_event(event)
-        return []
+        pass
 
-    def apply_momentum_event(self, event):
-        event.entity.secondary_momentum[0] += event.momentum_vector[0]
-        event.entity.secondary_momentum[1] += event.momentum_vector[1]
+    def apply_momentum_command(self, command):
+        command.entity.secondary_momentum[0] += command.momentum_vector[0]
+        command.entity.secondary_momentum[1] += command.momentum_vector[1]
 
-    def handle_command(self, command, data):
+    def handle_command(self, command, data=None):
+        # TODO there is overlap of internal entity_manager derived commands and external commands, separate that later so data=None is not needed
 
         # returns a tuple of events and commands
         match command:
@@ -179,6 +178,10 @@ class GroundPhysics:
             case JumpCommand():
                 # implement jump logic later
                 self.jump(command, data)
+            case AddMomentumCommand():
+                self.apply_momentum_command(command)
+            case EntitySeparationCommand():
+                pass
         return ([], [])
 
     def jump(self, command, data):

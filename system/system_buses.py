@@ -1,6 +1,6 @@
 
 
-from events_commands.events import Event, DeathEvent, BoundaryCollisionEvent
+from events_commands.events import Event, DeathEvent, BoundaryCollisionEvent, NewlyLoadedCellsEvent
 from events_commands.commands import Command, AudioCommand, EffectCommand, CollisionCommand, PhysicsCommand, DamageCommand
 
 class SystemBus:
@@ -19,6 +19,7 @@ class SystemBus:
         self.event_listeners = {
             DeathEvent: [],
             BoundaryCollisionEvent: [],
+            NewlyLoadedCellsEvent: [],
         }
         self.command_keys = set(self.command_listeners.keys())
 

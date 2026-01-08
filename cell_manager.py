@@ -217,12 +217,12 @@ class MultipleCellManager(SingleCellManager):
         new_active_cells = []
         for cell_coords in new_active_cell_coordinates:
             new_active_cells.append(self.cells[cell_coords])
-        events = []
+
         newly_loaded = self.set_active_cells(new_active_cells)
         if newly_loaded:
             # if cells were loaded, they were returned here
-            events.append(NLCE(loaded_cells=newly_loaded))
-        return events
+            self.context.bus.send_event(NLCE(loaded_cells=newly_loaded))
+
 
 
 

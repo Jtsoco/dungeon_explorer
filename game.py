@@ -53,6 +53,7 @@ class Game():
 
         self.damage_manager = DamageManager(self.context)
 
+
         # debug for framerate
         self.last_time = datetime.now()
         self.current_time = datetime.now()
@@ -73,7 +74,7 @@ class Game():
         all_entities = self.cell_manager.current_state.get_enemies() + [self.player_data]
         main_commands = []
         for entity in all_entities:
-            events, commands = self.entity_manager.update(entity)
+            events, commands = self.entity_manager.update_entity(entity)
             main_events.extend(events)
             main_commands.extend(commands)
 
@@ -94,6 +95,8 @@ class Game():
         self.effects_manager.update()
         self.damage_manager.update()
         self.cell_manager.update()
+        self.entity_manager.update()
+
         commands = []
         while events:
             event = events.pop(0)

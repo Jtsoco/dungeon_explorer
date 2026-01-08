@@ -114,3 +114,19 @@ class DamageCommand(Command):
 
 
 # notify_command must be held by managers to receive commands to act upon during their secondary update cycle, basically they receive it, store it, then act upon it later
+class PhysicsCommand(Command):
+    def __init__(self, name="PhysicsCommand"):
+        super().__init__(name=name)
+
+
+class AddMomentumCommand(PhysicsCommand):
+    def __init__(self, entity, momentum_vector: list):
+        super().__init__(name="AddMomentumCommand")
+        self.entity = entity
+        self.momentum_vector = momentum_vector
+
+class EntitySeparationCommand(PhysicsCommand):
+    def __init__(self, entity_a, entity_b):
+        super().__init__(name="EntitySeparationCommand")
+        self.entity = entity_a
+        self.entity_b = entity_b

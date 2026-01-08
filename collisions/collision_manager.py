@@ -1,7 +1,7 @@
-from events_commands.events import PossibleAttackCollisionEvent as PACE, EntitySeparatedEvent as ESE, BoundaryCollisionEvent as BCE
+from events_commands.events import PossibleAttackCollisionEvent as PACE, BoundaryCollisionEvent as BCE
 from enums.entity_enums import EntityType as ET, CollisionEntityTarget as CET, DirectionState as DS
 from base_manager import BaseManager
-from events_commands.commands import LoadActiveAttackCollisionCommand as LAACC, LoadEntityCollisionCommand as LECC, LoadMultipleEntityCollisionCommand as LMECC, LoadMultipleBoundariesCollisionCommand as LMBCC, CollisionCommand, DamageCommand as DC
+from events_commands.commands import LoadActiveAttackCollisionCommand as LAACC, LoadEntityCollisionCommand as LECC, LoadMultipleEntityCollisionCommand as LMECC, LoadMultipleBoundariesCollisionCommand as LMBCC, CollisionCommand, DamageCommand as DC, EntitySeparationCommand as ESC
 
 class CollisionManager(BaseManager):
     def __init__(self, context):
@@ -66,7 +66,7 @@ class CollisionManager(BaseManager):
         else:
             targets = self.active_entities + [self.player]
         hits = self.check_collision_entities(targets, hitbox, attack_position)
-        damage_events = []
+        damage_commands = []
         new_recent_attacks = []
 
         for hit in hits:
@@ -75,9 +75,8 @@ class CollisionManager(BaseManager):
             if (weapon, hit) in self.recent_attack_collisions:
                 continue  # already registered this collision recently
             damage_command = DC(attacker, hit, weapon.damage, knockback=weapon.knockback)
-            self.context.bus.send_command(damage_command)
-
-        return damage_events, new_recent_attacks
+            damage_commands.append(damage_command)
+        return damage_commands, new_recent_attacks
 
 
     def check_collision_entities(self, entities: list, w_h: tuple, pos_a: tuple):
@@ -96,13 +95,12 @@ class CollisionManager(BaseManager):
         for event in self.queued_events:
             self.handle_event(event)
         self.queued_events.clear()
-        return self.handle_updates()
+        self.handle_updates()
 
 
     def handle_updates(self):
         # for now, this will handle saved commands/events to be processed each frame
         # separate out into own methods later
-        events = []
         p_rect = self.player.rect
         new_recent_collisions = []
         for entity in self.active_entities:
@@ -114,15 +112,18 @@ class CollisionManager(BaseManager):
                     if (entity, self.player) in self.recent_collisions:
                         continue  # already registered this collision recently
                     damage_command = DC(entity, self.player, entity.touch_damage, knockback=entity.knockback)
+
                     self.context.bus.send_command(damage_command)
+
                 else:
-                    separation_event = ESE(entity, self.player)
-                    events.append(separation_event)
+                    separation_command = ESC(entity, self.player)
+                    self.context.bus.send_command(separation_command)
         new_recent_attacks = []
 
         for attacking_entity in self.active_attacks:
-            damage_events, additional_recent_attacks = self.handle_attack_collision(attacking_entity)
-            events.extend(damage_events)
+            damage_commands, additional_recent_attacks = self.handle_attack_collision(attacking_entity)
+            for command in damage_commands:
+                self.context.bus.send_command(command)
             new_recent_attacks.extend(additional_recent_attacks)
 
         self.recent_attack_collisions = new_recent_attacks
@@ -134,10 +135,9 @@ class CollisionManager(BaseManager):
                 if (self.player, boundary) in self.recent_collisions:
                     continue  # already registered this collision recently
                 boundary_event = BCE(self.player, boundary)
-                events.append(boundary_event)
+                self.context.bus.send_event(boundary_event)
         self.recent_collisions = new_recent_collisions
         # TODO for now return these events and they'll be acted upon in the current game loop, but eventually have the collision manager send them through the event bus
-        return events
 
 
         # change these to commands to do something if they have only one target, like damage or separate entities, and keep as events for things that may have multiple targets. will boundary be an event or command? probably event for now

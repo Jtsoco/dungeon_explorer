@@ -45,7 +45,7 @@ class DamageManager(BaseManager):
 def determine_relative_direction(origin, target):
     # simple implementation for now
     # eventually I plan to use a single knockback value, and determine direction based on relative positions, but for now just this
-    if origin.position[0] < target.position[0]:
+    if origin.rect.position[0] < target.rect.position[0]:
         return DS.RIGHT
     else:
         return DS.LEFT

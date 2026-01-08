@@ -147,8 +147,8 @@ class MultipleCellManager(SingleCellManager):
         self.cells = cells
         self.context = context
         self.center_cell = cell_data
-        adjacent, newly_loaded = self.handle_loading([cell_data])
-        self.adjacent = adjacent
+        # adjacent, newly_loaded = self.handle_loading([cell_data])
+        self.adjacent = []
         self.load_cell(cell_data)
         self.central_cells = []
         self.set_active_cells([cell_data])
@@ -183,19 +183,19 @@ class MultipleCellManager(SingleCellManager):
     def handle_boundary_event(self, event):
         boundary = event.boundary
         cell_half_width = 8 * 16 // 2
-        entity_cell = self.determine_cell(event.entity.position)
+        entity_cell = self.determine_cell(event.entity.rect.position)
 
         new_active_cell_coordinates = []
         match boundary.boundary_type:
             case BT.X:
-                if event.entity.position[0] < (entity_cell[0] * 16 * 8) + cell_half_width:
+                if event.entity.rect.position[0] < (entity_cell[0] * 16 * 8) + cell_half_width:
                     # left boundary
                     new_active_cell_coordinates = [(entity_cell[0] - 1, entity_cell[1]), entity_cell]
                 else:
                     # right boundary
                     new_active_cell_coordinates = [entity_cell, (entity_cell[0] + 1, entity_cell[1])]
             case BT.Y:
-                if event.entity.position[1] < (entity_cell[1] * 16 * 8) + cell_half_width:
+                if event.entity.rect.position[1] < (entity_cell[1] * 16 * 8) + cell_half_width:
                     # top boundary
                     new_active_cell_coordinates = [(entity_cell[0], entity_cell[1] - 1), entity_cell]
                 else:

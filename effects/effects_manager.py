@@ -65,7 +65,7 @@ class EffectsManager(BaseManager):
     def create_death_effect(self, event):
         # for now just a simple placeholder effect, but will differ based on entity type later
         entity = event.entity
-        effect_position = entity.position
+        effect_position = entity.rect.position
         effect_type = EffectType.DEATH_ANIMATION
         animation = GENERIC_DEATH_ANIMATION
         new_effect = Effect(effect_type, effect_position, animation)

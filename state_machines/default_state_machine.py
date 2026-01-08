@@ -59,7 +59,7 @@ class DefaultStateMachine():
                 if self.can_double_jump(data):
                     data.movement_state = MS.JUMPING
                     commands.append(JumpCommand())
-                    commands.append(EffectCommand(pos=data.position))
+                    commands.append(EffectCommand(pos=data.rect.position))
                     commands.append(SoundCommand(sound_enum=SoundEnum.JUMP))  # LAND sound on double jump
         return commands
 
@@ -97,7 +97,7 @@ class DefaultStateMachine():
                     self.landed_update(data)
                     if PUS.DOUBLE_JUMP in data.power_ups:
                         data.power_ups[PUS.DOUBLE_JUMP] = True  # reset double jump on land
-                    commands.append(EffectCommand(pos=data.position, sub_type=PET.LAND_DUST, effect_type=EffectType.PARTICLE))
+                    commands.append(EffectCommand(pos=data.rect.position, sub_type=PET.LAND_DUST, effect_type=EffectType.PARTICLE))
                     commands.append(SoundCommand(sound_enum=SoundEnum.LAND))  # LAND sound
                 case AttackFinishedEvent():
                     data.action_state = AS.NONE

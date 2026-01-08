@@ -1,5 +1,5 @@
 import pyxel
-from events_commands.commands import SoundCommand, MusicCommand
+from events_commands.commands import SoundCommand, MusicCommand, AudioCommand
 from audio.sound_enums import SoundEnum
 
 from base_manager import BaseManager
@@ -16,8 +16,10 @@ class SoundEffectsManager(BaseManager):
 
         self.effects_channels = (1, 2, 3)
         self.currently_used_channels = []
+    def setup_bus(self):
+        self.context.bus.register_command_listener(AudioCommand, self)
 
-    def update(self):
+    def handle_updates(self):
         # play any queued sounds
         for sound_enum in self.sounds_to_play:
             self.play_sound(sound_enum[0], sound_enum[1])

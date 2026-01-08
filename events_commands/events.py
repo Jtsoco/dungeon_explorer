@@ -76,6 +76,9 @@ class PhysicsEvent(Event):
 class EntitySeparatedEvent(PhysicsEvent):
     def __init__(self, entity_a, entity_b):
         super().__init__(name="EntitySeparatedEvent")
+        # quick fix, edit later
+        self.entity = entity_a
+        # end quick fix
         self.entity_a = entity_a
         self.entity_b = entity_b
 

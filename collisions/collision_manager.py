@@ -50,38 +50,6 @@ class CollisionManager(BaseManager):
     def register_collision(self, possible_collision_event):
         self.collision_queue.append(possible_collision_event)
 
-    def old_update(self, player, entities, boundaries):
-        new_events = []
-        for event in self.collision_queue:
-            match event:
-                case PACE():
-                    new = self.handle_attack_collision(event, player, entities)
-                    new_events.extend(new)
-        new_recent_collisions = []
-        for entity in entities:
-            # if an entity touches another, return damage touch event if touch damage, regular entity separation event otherwise, maybe a command to separate entities that's passed to physics
-
-            # for now only check against player, don't care about other entities colliding with each other
-            if self.check_collision(entity.position, entity.w_h, player.position, player.w_h):
-                if entity.touch_damage:
-                    new_recent_collisions.append((entity, player))
-                    if (entity, player) in self.recent_collisions:
-                        continue  # already registered this collision recently
-                    damage_event = DE(entity, player, entity.touch_damage, knockback=entity.knockback)
-                    new_events.append(damage_event)
-                else:
-                    separation_event = ESE(entity, player)
-                    new_events.append(separation_event)
-
-        boundary_events = self.check_player_boundaries(player, boundaries)
-        for boundary_event in boundary_events:
-            new_recent_collisions.append((boundary_event.entity, boundary_event.boundary))
-            if (boundary_event.entity, boundary_event.boundary) not in self.recent_collisions:
-                new_events.append(boundary_event)
-
-        self.recent_collisions = new_recent_collisions
-        self.collision_queue.clear()
-        return new_events
 
     def handle_attack_collision(self, attacker):
         # NOTE will eventually change entitiy references to use ids instead of direct references

@@ -99,7 +99,7 @@ class SingleCellManager():
                         case ET.KNIGHT.value:
                             animation_data = AnimationData(SPRITES[ET.KNIGHT])
                             weapon_data = WeaponData(target_type=CET.PLAYER)
-                            enemy_data = EntityData(entity_type=ET.KNIGHT, position=[brick_x * 8, brick_y * 8], animation_data=animation_data, weapon_data=weapon_data, cell_pos=(cell_data.cell_x, cell_data.cell_y), touch_damage=15, health=150)
+                            enemy_data = EntityData(entity_type=ET.KNIGHT, position=[brick_x * 8, brick_y * 8], animation_data=animation_data, weapon_data=weapon_data, cell_pos=(cell_data.cell_x, cell_data.cell_y), touch_damage=0, health=150)
                             enemies.append(enemy_data)
                             if ET.KNIGHT not in entity_types:
                                 entity_types.append(ET.KNIGHT)

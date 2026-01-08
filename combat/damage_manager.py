@@ -1,25 +1,39 @@
 from enums.entity_enums import DirectionState as DS
 from events_commands.events import DeathEvent, AddMomentumEvent
-from events_commands.commands import SoundCommand
+from events_commands.commands import SoundCommand, DamageCommand
 from audio.sound_enums import SoundEnum
 from base_manager import BaseManager
 class DamageManager(BaseManager):
     def __init__(self, context):
         super().__init__(context)
-        pass
+
 
     # goal of this class as of now:
     # receive damage events, apply damage to entities, handle sending out any resulting events like death events
 
-    def handle_event(self, event):
-        # for now just damage event
+    def setup_bus(self):
+        self.context.bus.register_command_listener(DamageCommand, self)
+
+    def handle_command(self, command):
+        events, commands = [], []
+        match command:
+            case DamageCommand():
+                events, commands = self.handle_damage(command)
+        for event in events:
+            self.context.bus.send_event(event)
+        for command in commands:
+            self.context.bus.send_command(command)
+
+
+    def handle_damage(self, damage):
+        # for now just damage damage
         events = []
         commands = []
 
-        target = event.target
-        damage_amount = event.damage_amount
-        knockback = event.knockback
-        origin = event.origin
+        target = damage.target
+        damage_amount = damage.damage_amount
+        knockback = damage.knockback
+        origin = damage.origin
 
         target.health -= damage_amount
         if target.health <= 0:

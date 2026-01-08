@@ -1,5 +1,5 @@
 from enums.entity_enums import EntityType as ET, BoundaryType as BT, CollisionEntityTarget as CET, WeaponCategory as WC
-from events_commands.events import BoundaryCollisionEvent as BCE, NewlyLoadedCellsEvent as NLCE
+from events_commands.events import BoundaryCollisionEvent as BCE, NewlyLoadedCellsEvent as NLCE, DeathEvent
 from boundaries.boundary import Boundary
 from entity.entity_data import EntityData
 from animations.sprite_registry import SPRITES, BOSS_SPRITES
@@ -22,21 +22,25 @@ class CellManager(BaseManager):
         # wait, what am i doing with single cell manager?? relook at this, change it, its really just a loader for a single cell...
         self.current_state = MultipleCellManager(self.cells[active_cell], self.cells, context)
 
-    def update(self):
-        self.current_state.update()
+
+    def setup_bus(self):
+        self.context.bus.register_event_listener(BCE, self)
+        self.context.bus.register_event_listener(DeathEvent, self)
+
 
     def draw(self):
         self.current_state.draw()
 
     def handle_event(self, event):
-        events = []
         match event:
             case BCE():
                 # boundary collision event
                 # for now i'll just switch to purely using multiple cell manager, decide camera stuff later this is to get minimum viable done quick
-                event = self.current_state.handle_boundary_event(event)
-                events.extend(event)
-        return events
+                self.current_state.handle_boundary_event(event)
+
+            case DeathEvent():
+                self.current_state.remove_entity(event.entity)
+
 
 class SingleCellManager():
     def __init__(self, cell_data):
@@ -154,6 +158,9 @@ class MultipleCellManager(SingleCellManager):
         self.set_active_cells([cell_data])
         # self.central_cells = [cell_data]
         self.context = context
+        self.bus = context.bus
+
+
 
 
 

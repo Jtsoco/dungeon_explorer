@@ -89,6 +89,14 @@ class LoadMultipleBoundariesCollisionCommand(CollisionCommand):
         self.name = "LoadMultipleBoundariesCollisionCommand"
         self.boundaries = boundaries
 
+
+class DamageCommand(Command):
+    def __init__(self, origin, target, damage_amount, knockback=8):
+        super().__init__(name="DammageCommand")
+        self.origin = origin
+        self.target = target
+        self.damage_amount = damage_amount
+        self.knockback = knockback
 # Need:
 # commands will typically be issued to one manager
 # CollisionLoad Commands, with load/unload, cell positions not needed

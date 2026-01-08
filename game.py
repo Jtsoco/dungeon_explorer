@@ -93,7 +93,8 @@ class Game():
         boundaries = self.cell_manager.current_state.get_boundaries()
         collision_events = self.collision_manager.update()
         effects_events = self.effects_manager.update()
-
+        self.damage_manager.update()
+        self.cell_manager.update()
         events = collision_events + effects_events
         commands = []
         while events:
@@ -129,10 +130,6 @@ class Game():
         # here it may be useful to have an observer pattern later, as a consideration for refactoring, but for now just this
         commands = []
         match event:
-            case DE():
-                new_events, new_commands = self.damage_manager.handle_event(event)
-                events.extend(new_events)
-                commands.extend(new_commands)
             case PE():
                 new_events = self.entity_manager.handle_event(event)
                 events.extend(new_events)

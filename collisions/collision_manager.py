@@ -1,7 +1,7 @@
-from events_commands.events import PossibleAttackCollisionEvent as PACE, DamageEvent as DE, EntitySeparatedEvent as ESE, BoundaryCollisionEvent as BCE
+from events_commands.events import PossibleAttackCollisionEvent as PACE, EntitySeparatedEvent as ESE, BoundaryCollisionEvent as BCE
 from enums.entity_enums import EntityType as ET, CollisionEntityTarget as CET, DirectionState as DS
 from base_manager import BaseManager
-from events_commands.commands import LoadActiveAttackCollisionCommand as LAACC, LoadEntityCollisionCommand as LECC, LoadMultipleEntityCollisionCommand as LMECC, LoadMultipleBoundariesCollisionCommand as LMBCC, CollisionCommand
+from events_commands.commands import LoadActiveAttackCollisionCommand as LAACC, LoadEntityCollisionCommand as LECC, LoadMultipleEntityCollisionCommand as LMECC, LoadMultipleBoundariesCollisionCommand as LMBCC, CollisionCommand, DamageCommand as DC
 
 class CollisionManager(BaseManager):
     def __init__(self, context):
@@ -74,8 +74,8 @@ class CollisionManager(BaseManager):
             new_recent_attacks.append((weapon, hit))
             if (weapon, hit) in self.recent_attack_collisions:
                 continue  # already registered this collision recently
-            damage_event = DE(attacker, hit, weapon.damage, knockback=weapon.knockback)
-            damage_events.append(damage_event)
+            damage_command = DC(attacker, hit, weapon.damage, knockback=weapon.knockback)
+            self.context.bus.send_command(damage_command)
 
         return damage_events, new_recent_attacks
 
@@ -113,8 +113,8 @@ class CollisionManager(BaseManager):
                     new_recent_collisions.append((entity, self.player))
                     if (entity, self.player) in self.recent_collisions:
                         continue  # already registered this collision recently
-                    damage_event = DE(entity, self.player, entity.touch_damage, knockback=entity.knockback)
-                    events.append(damage_event)
+                    damage_command = DC(entity, self.player, entity.touch_damage, knockback=entity.knockback)
+                    self.context.bus.send_command(damage_command)
                 else:
                     separation_event = ESE(entity, self.player)
                     events.append(separation_event)

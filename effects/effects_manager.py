@@ -22,6 +22,7 @@ class EffectsManager(BaseManager):
 
     def setup_bus(self):
         self.context.bus.register_command_listener(EffectCommand, self)
+        self.context.bus.register_event_listener(Death, self)
 
 
     def handle_updates(self):

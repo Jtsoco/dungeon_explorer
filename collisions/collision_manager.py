@@ -91,7 +91,8 @@ class CollisionManager(BaseManager):
         weapon = attacker.weapon
         attack_position = weapon.get_position(attacker)
         hitbox = weapon.get_current_hitbox()
-
+        if self.recent_attack_collisions:
+            print('hi')
         if weapon.target_type == CET.ENEMY:
             targets = self.active_entities
         elif weapon.target_type == CET.PLAYER:

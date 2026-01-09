@@ -12,9 +12,11 @@ from collisions.collision_manager import CollisionManager
 from renderers.default_renderer import DefaultRenderer
 from physics.ground_physics import GroundPhysics
 from base_manager import BaseManager
+from system.system_buses import entity_manager_bus
 class EntityManager(BaseManager):
     def __init__(self, animation_manager=None, attack_manager=None, context=None):
         super().__init__(context=context)
+        self.local_bus = entity_manager_bus(self)
         if not animation_manager:
             animation_manager = AnimationManager(context)
         if not attack_manager:
@@ -26,7 +28,7 @@ class EntityManager(BaseManager):
         self.state_machines = {}
         # depends on entity type, different state machines for different entity types
         # but just using default for now
-        self.state_machine = DefaultStateMachine(self.context.bus)
+        self.state_machine = DefaultStateMachine(self.context.bus, self.local_bus)
         self.entities_setup = []
         # types of entities setup already
 
@@ -37,14 +39,28 @@ class EntityManager(BaseManager):
         self.main_return_commands = []
         self.renderer = DefaultRenderer()
 
+        self.local_events = []
+        self.local_commands = []
+        self.state_change_events = []
+
     def setup_bus(self):
         self.context.bus.register_event_listener(NLCE, self)
         self.context.bus.register_command_listener(PhysicsCommand, self)
 
 
     def update_entity(self, entity):
-        events, commands = [], []
 
+        # new way to update entity:
+        # self.entity_events, self.entity_commands,
+        # controllers only get input events once, so they don't need to be called multiple times and can be outside of this, but things that have multiple events/commands get acces to a slot in slot out system
+        # so, minibus will be intermediary for entity_manager to get events and commands from subsystems, rather than them posting directly
+        # why? might refactor it to be more main bus like with setup minibus, where they chose what they listen to, but for now entity manager will decide who gets what events/commands, but doing it like this makes refactor very easy, as they'll just send it to send_event/send_command of the minibus, it'll redirect it to the local_event, local_command lists here
+        # then entity manager will start a process loop, handling all events there until none are left
+        # and the sub systems can add to the loop while it's going, why? because sometimes they need to interact back and forth
+        # there will also be a state_change update, which happens after all events and commands are processed, so minibus will have a way to identify and pass those to entity manager too
+
+
+        # input events are one shot, only come from controller, so it will be most decoupled. Just hand it context and entity, it returns input events
         input_events = []
         input_events = input_events + self.controllers[entity.entity_type].update(entity, self.context)
         events, commands = self.state_machine.input_events(entity, input_events)
@@ -88,6 +104,23 @@ class EntityManager(BaseManager):
             for command in commands:
                 self.delegate_command(command, entity)
 
+
+    def process_loop(self):
+        killswitch = False
+        count = 0
+        # shouldn't need killswitch, but have it just in case
+        # raise error if it hits over 100, this is during testing and building
+        while (self.local_events or self.local_commands):
+            if self.local_events:
+                event = self.local_events.pop(0)
+                self.handle_event(event)
+            if self.local_commands:
+                command = self.local_commands.pop(0)
+                self.handle_command(command)
+            count += 1
+            if count > 100:
+                killswitch = True
+                raise Exception("EntityManager process loop exceeded maximum iterations.")
 
 
 

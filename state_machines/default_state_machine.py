@@ -4,10 +4,10 @@ from events_commands.commands import MoveCommand, JumpCommand, AttackCommand, Ef
 from audio.sound_enums import SoundEnum
 from enums.effects_enums import ParticleEffectType as PET, EffectType
 class DefaultStateMachine():
-    def __init__(self, bus):
+    def __init__(self, bus, local_bus):
         self.bus = bus
         self.events = []
-
+        self.local_bus = local_bus
     # in here is the logic to determine what the next state is based on the previous
 
     def input_events(self, data, input_events):
@@ -16,53 +16,41 @@ class DefaultStateMachine():
         # then again it only gets the input events once, need to think about this more
         last_states = [data.movement_state, data.action_state, data.direction_state]
 
-        return_events = []
-        return_commands = []
-        return_items = (return_events, return_commands)
+
         for event in input_events:
             match event.input_type:
                 case IE.MOVE:
-                    command = self.set_walking(data, event.direction)
-                    return_commands.append(command)
+                    self.set_walking(data, event.direction)
                 case IE.STOP_MOVE:
-                    command = self.stop_move(data)
-                    return_commands.append(command)
+                    self.stop_move(data)
                 case IE.JUMP:
-                    commands = self.jump_input(data)
-                    if commands:
-                        return_commands.extend(commands)
+                    self.jump_input(data)
                 case IE.ATTACK:
-                    command = self.attack_input(data)
-                    if command:
-                        return_commands.append(command)
+                    self.attack_input(data)
 
         new_states = [data.movement_state, data.action_state, data.direction_state]
         if new_states != last_states:
-            return_events.append(StateChangedEvent())
-        return return_items
+            self.local_bus.send_event(StateChangedEvent())
 
     def attack_input(self, data):
         match data.action_state:
             case AS.NONE:
                 data.action_state = AS.ATTACKING
-                return AttackCommand()
-            case _:
-                return None
+                self.local_bus.send_command(AttackCommand())
+
 
     def jump_input(self, data):
-        commands = []
         match data.movement_state:
             case MS.IDLE | MS.WALKING:
                 data.movement_state = MS.JUMPING
-                commands.append(JumpCommand())
+                self.local_bus.send_command(JumpCommand())
                 self.bus.send_command(SoundCommand(sound_enum=SoundEnum.JUMP))  # JUMP sound
             case MS.JUMPING | MS.FALLING:
                 if self.can_double_jump(data):
                     data.movement_state = MS.JUMPING
-                    commands.append(JumpCommand())
+                    self.local_bus.send_command(JumpCommand())
                     self.bus.send_command(EffectCommand(pos=data.rect.position))
                     self.bus.send_command(SoundCommand(sound_enum=SoundEnum.JUMP))  # LAND sound on double jump
-        return commands
 
     def can_double_jump(self, data):
         if PUS.DOUBLE_JUMP in data.power_ups:
@@ -79,13 +67,13 @@ class DefaultStateMachine():
                 data.movement_state = MS.WALKING
         # event type is DS.LEFT or DS.RIGHT
         data.direction_state = event_type
-        return MoveCommand(event_type)
+        self.local_bus.send_command(MoveCommand(event_type))
 
     def stop_move(self, data):
         match data.movement_state:
             case MS.WALKING:
                 data.movement_state = MS.IDLE
-        return MoveCommand(DS.HALT)
+        self.local_bus.send_command(MoveCommand(DS.HALT))
 
     def state_updates(self, data, updates):
         last_states = [data.movement_state, data.action_state, data.direction_state]

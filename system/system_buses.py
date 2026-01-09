@@ -1,7 +1,7 @@
 
 
-from events_commands.events import Event, DeathEvent, BoundaryCollisionEvent, NewlyLoadedCellsEvent, PlayerEvent, BossDeathEvent
-from events_commands.commands import Command, AudioCommand, EffectCommand, CollisionCommand, PhysicsCommand, DamageCommand, HUDCommand
+from events_commands.events import Event, DeathEvent, BoundaryCollisionEvent, NewlyLoadedCellsEvent, PlayerEvent, BossDeathEvent, StateChangedEvent
+from events_commands.commands import Command, AudioCommand, EffectCommand, CollisionCommand, PhysicsCommand, DamageCommand, HUDCommand,
 
 class SystemBus:
 
@@ -25,7 +25,7 @@ class SystemBus:
             BossDeathEvent: [],
 
         }
-        self.command_keys = set(self.command_listeners.keys())
+
 
     def register_new_event(self, event):
         pass
@@ -78,3 +78,19 @@ class SystemBus:
             for listener in listeners:
                 # use notify event, to indicate that it's an event to be acted upon during update cycle
                 listener.notify_event(event)
+
+def entity_manager_bus(SystemBus):
+    # those who hold this know it as a local bus
+    # this bus is for handling communication within subsystems, like the entity_manager handling its own events and commands internally in its
+    # for now it just passes it directly to its receiver
+    def __init__(self, receiver):
+        self.receiver = receiver
+
+    def send_command(self, command):
+        self.receiver.local_commands.append(command)
+
+    def send_event(self, event):
+        if isinstance(event, StateChangedEvent):
+            self.receiver.state_change_events.append(event)
+        else:
+            self.receiver.local_events.append(event)

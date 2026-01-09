@@ -56,7 +56,7 @@ class DataContext():
 
 
         # anything greater than or equal to this tile number is collideable, and is used in tile context for determining whether a tile is collideable. x value comes from the tilemap x coordinate in the tile sheet
-        self.collideable_tile_x = 4
+        self.collideable_tile_y = 3
 
         # these are just initial values, and determine just how far the map goes. For now, empty cell data for each cell will be loaded, scale of game is small and the cell data itself isn't large until enemies are loaded, so should be fine for now
         self.cell_x = 3

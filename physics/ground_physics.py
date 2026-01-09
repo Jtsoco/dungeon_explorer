@@ -88,7 +88,7 @@ class GroundPhysics:
 
     def has_tile_collision(self, tiles, context):
         for tile in tiles:
-            if tile[0] >= context.data_context.collideable_tile_x:
+            if tile[1] <= context.data_context.collideable_tile_y:
                 return True
         return False
 

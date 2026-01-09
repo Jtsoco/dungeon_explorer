@@ -152,7 +152,7 @@ class Game():
             self.entity_manager.draw(enemy)
         self.entity_manager.draw(self.player_data)
         camera_pos = self.scene_manager.camera.current_camera
-        display_info(f"Player Pos: {self.player_data.position[0]}", pos_x=camera_pos[0]+2, pos_y=camera_pos[1]+8)
+        # display_info(f"Player Pos: {self.player_data.position[0]}", pos_x=camera_pos[0]+2, pos_y=camera_pos[1]+8)
 
         # hud has no knowledge of world positions, so temporary set to 0,0 for drawing then set back
         self.scene_manager.set_camera_to_zero()
@@ -169,7 +169,7 @@ class Game():
         # display_info(f"Frame Pos: {a_d.get_current_frame().pos}", pos_x=camera_pos[0]+2, pos_y=camera_pos[1]+32)
         self.current_time = datetime.now()
         self.current_frame_count = pyxel.frame_count
-        fps = calculate_fps(self.last_time, self.current_time, self.last_frame_count, self.current_frame_count)
+        # fps = calculate_fps(self.last_time, self.current_time, self.last_frame_count, self.current_frame_count)
         self.last_time = self.current_time
         self.last_frame_count = self.current_frame_count
         # display_info(fps, pos_x=camera_pos[0]+2, pos_y=camera_pos[1]+2)

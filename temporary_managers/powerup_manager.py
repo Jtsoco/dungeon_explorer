@@ -1,7 +1,7 @@
 from base_manager import BaseManager
 from events_commands.events import BossDeathEvent
 from enums.entity_enums import PowerUpStates as PUS
-
+from events_commands.commands import TemporaryMessageCommand
 class PowerupManager(BaseManager):
     # this class gives powerups to the player and possibly other entities when the time comes
     def __init__(self, context):
@@ -24,10 +24,13 @@ class PowerupManager(BaseManager):
 
     def grant_boss_powerup(self, entity):
         if entity.powerup_reward:
+            # this will set the dictionary to have double jump, as it's enabled by the key existing, and True means can currently use double jump
+            player = self.context.data_context.player_data
+            player.power_ups[entity.powerup_reward] = True
+            # message differs based on powerup granted
+            # but generally for now powerups are like this, just in the powerups key and when trying to use them it'll be checked
+            # as things change i'll change how they are granted, but for now as all powerups are like this, this is fine
             match entity.powerup_reward:
                 case PUS.DOUBLE_JUMP:
-                    # this will set the dictionary to have double jump, as it's enabled by the key existing, and True means can currently use double jump
-                    player = self.context.data_context.player_data
-                    player.power_ups[PUS.DOUBLE_JUMP] = True
-                    print("Player granted double jump powerup!")
-                    # next send notifaction to HUD to show player got double jump
+                    message = "Double Jump Acquired!"
+                    self.context.bus.send_command(TemporaryMessageCommand(message=message, seconds_duration=3.0))

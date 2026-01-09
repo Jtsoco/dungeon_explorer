@@ -1,7 +1,7 @@
 
 
 from events_commands.events import Event, DeathEvent, BoundaryCollisionEvent, NewlyLoadedCellsEvent, PlayerEvent, BossDeathEvent
-from events_commands.commands import Command, AudioCommand, EffectCommand, CollisionCommand, PhysicsCommand, DamageCommand
+from events_commands.commands import Command, AudioCommand, EffectCommand, CollisionCommand, PhysicsCommand, DamageCommand, HUDCommand
 
 class SystemBus:
 
@@ -14,6 +14,7 @@ class SystemBus:
             CollisionCommand: [],
             PhysicsCommand: [],
             DamageCommand: [],
+            HUDCommand: [],
         }
         #
         self.event_listeners = {

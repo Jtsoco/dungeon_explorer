@@ -76,6 +76,9 @@ class PhysicsEvent(Event):
 class EntitySeparatedEvent(PhysicsEvent):
     def __init__(self, entity_a, entity_b):
         super().__init__(name="EntitySeparatedEvent")
+        # quick fix, edit later
+        self.entity = entity_a
+        # end quick fix
         self.entity_a = entity_a
         self.entity_b = entity_b
 
@@ -104,3 +107,39 @@ class NewlyLoadedCellsEvent(CellEvent):
     def __init__(self, loaded_cells: list):
         super().__init__(name="NewlyLoadedCellsEvent")
         self.loaded_cells = loaded_cells
+
+class PlayerEvent(Event):
+    # this is specifically for events that happened to the player reported through the bus,
+    def __init__(self, name="PlayerEvent"):
+        super().__init__(name=name)
+
+class PlayerDamagedEvent(PlayerEvent):
+    def __init__(self, damage_amount):
+        super().__init__(name="PlayerDamagedEvent")
+        self.damage_amount = damage_amount
+
+class PlayerHealedEvent(PlayerEvent):
+    def __init__(self, heal_amount):
+        super().__init__(name="PlayerHealedEvent")
+        self.heal_amount = heal_amount
+
+class PlayerDeathEvent(PlayerEvent):
+    def __init__(self):
+        super().__init__(name="PlayerDeathEvent")
+# Need:
+# events will typically be things that happen in which multiple other systems may need to respond to
+# World Event?
+# Entity Events? Death event, Spawn Event, Despawn Event
+# Combat Events? Damage Event, Heal Event, such as Damage Event notifying gui of player damage and need for update
+
+
+# types of managers:
+# entity manager
+# effects manager
+# damage manager
+# collision manager
+# sound effects manager
+# physics manager (held by entity manager, various types of physics managers depending on enemy type)
+
+
+# notify_event must be held by managers to receive events to act upon during their secondary update cycle, basically they receive it, store it, then act upon it later

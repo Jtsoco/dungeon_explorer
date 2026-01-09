@@ -1,38 +1,46 @@
 from enums.entity_enums import EntityType as ET, BoundaryType as BT, CollisionEntityTarget as CET, WeaponCategory as WC
-from events_commands.events import BoundaryCollisionEvent as BCE, NewlyLoadedCellsEvent as NLCE
+from events_commands.events import BoundaryCollisionEvent as BCE, NewlyLoadedCellsEvent as NLCE, DeathEvent
 from boundaries.boundary import Boundary
 from entity.entity_data import EntityData
 from animations.sprite_registry import SPRITES, BOSS_SPRITES
 from entity.animation_data import AnimationData
 from attack.weapon_data import WeaponData
-from entity.entity_setup import spawn_weapon
-
+from entity.entity_setup import spawn_weapon, spawn_winged_boss
+from base_manager import BaseManager
+from events_commands.commands import LoadMultipleEntityCollisionCommand as LMECC, LoadMultipleBoundariesCollisionCommand as LMBCC, LoadEntityCollisionCommand as LECC
 import pyxel
 
-class CellManager():
-    def __init__(self, cells_data, active_cell: tuple):
+class CellManager(BaseManager):
+    def __init__(self, cells_data, active_cell: tuple, context):
+        super().__init__(context=context)
+        # TODO clean up and rework this class, won't have single cell manager any more so consolidate to one cell manager, as original design has changed for the game and also context by itself provides all the necessary data so only need one argument
         self.logic_manager = CellLogicManager()
         # cells is just a dict of cell coordinates to cell data, but the data is unloaded until needed
         self.cells = cells_data
+        self.context = context
 
         # wait, what am i doing with single cell manager?? relook at this, change it, its really just a loader for a single cell...
-        self.current_state = MultipleCellManager(self.cells[active_cell], self.cells)
+        self.current_state = MultipleCellManager(self.cells[active_cell], self.cells, context)
 
-    def update(self):
-        self.current_state.update()
+
+    def setup_bus(self):
+        self.context.bus.register_event_listener(BCE, self)
+        self.context.bus.register_event_listener(DeathEvent, self)
+
 
     def draw(self):
         self.current_state.draw()
 
     def handle_event(self, event):
-        events = []
         match event:
             case BCE():
                 # boundary collision event
                 # for now i'll just switch to purely using multiple cell manager, decide camera stuff later this is to get minimum viable done quick
-                event = self.current_state.handle_boundary_event(event)
-                events.extend(event)
-        return events
+                self.current_state.handle_boundary_event(event)
+
+            case DeathEvent():
+                self.current_state.remove_entity(event.entity)
+
 
 class SingleCellManager():
     def __init__(self, cell_data):
@@ -95,15 +103,13 @@ class SingleCellManager():
                         case ET.KNIGHT.value:
                             animation_data = AnimationData(SPRITES[ET.KNIGHT])
                             weapon_data = WeaponData(target_type=CET.PLAYER)
-                            enemy_data = EntityData(entity_type=ET.KNIGHT, position=[brick_x * 8, brick_y * 8], animation_data=animation_data, weapon_data=weapon_data, cell_pos=(cell_data.cell_x, cell_data.cell_y), touch_damage=15, health=150)
+                            enemy_data = EntityData(entity_type=ET.KNIGHT, position=[brick_x * 8, brick_y * 8], animation_data=animation_data, weapon_data=weapon_data, cell_pos=(cell_data.cell_x, cell_data.cell_y), touch_damage=0, health=150)
                             enemies.append(enemy_data)
                             if ET.KNIGHT not in entity_types:
                                 entity_types.append(ET.KNIGHT)
                         case ET.WINGED_KNIGHT.value:
-                            animation_data = AnimationData(BOSS_SPRITES[ET.WINGED_KNIGHT])
-                            weapon_data = spawn_weapon(WC.GLAIVE)
-                            enemy_data = EntityData(entity_type=ET.WINGED_KNIGHT, position=[brick_x * 8, brick_y * 8], animation_data=animation_data, weapon_data=weapon_data, cell_pos=(cell_data.cell_x, cell_data.cell_y), touch_damage=20, health=300)
-                            enemies.append(enemy_data)
+                            enemy = spawn_winged_boss((cell_data.cell_x, cell_data.cell_y), brick_x, brick_y, BOSS_SPRITES)
+                            enemies.append(enemy)
                             if ET.WINGED_KNIGHT not in entity_types:
                                 entity_types.append(ET.WINGED_KNIGHT)
                 if tile in BT:
@@ -141,14 +147,22 @@ class CellLogicManager():
         pass
 
 class MultipleCellManager(SingleCellManager):
-    def __init__(self, cell_data, cells):
+    def __init__(self, cell_data, cells, context):
         self.cells = cells
+        self.context = context
         self.center_cell = cell_data
-        adjacent, newly_loaded = self.handle_loading([cell_data])
-        self.adjacent = adjacent
+        # adjacent, newly_loaded = self.handle_loading([cell_data])
+        self.adjacent = []
         self.load_cell(cell_data)
-        self.central_cells = [cell_data]
+        self.central_cells = []
+        self.set_active_cells([cell_data])
+        # self.central_cells = [cell_data]
+        self.context = context
+        self.bus = context.bus
 
+
+    def all_cells_loaded(self):
+        return self.central_cells + self.adjacent
 
 
     def determine_adjacent_cells(self, cell):
@@ -177,19 +191,19 @@ class MultipleCellManager(SingleCellManager):
     def handle_boundary_event(self, event):
         boundary = event.boundary
         cell_half_width = 8 * 16 // 2
-        entity_cell = self.determine_cell(event.entity.position)
+        entity_cell = self.determine_cell(event.entity.rect.position)
 
         new_active_cell_coordinates = []
         match boundary.boundary_type:
             case BT.X:
-                if event.entity.position[0] < (entity_cell[0] * 16 * 8) + cell_half_width:
+                if event.entity.rect.position[0] < (entity_cell[0] * 16 * 8) + cell_half_width:
                     # left boundary
                     new_active_cell_coordinates = [(entity_cell[0] - 1, entity_cell[1]), entity_cell]
                 else:
                     # right boundary
                     new_active_cell_coordinates = [entity_cell, (entity_cell[0] + 1, entity_cell[1])]
             case BT.Y:
-                if event.entity.position[1] < (entity_cell[1] * 16 * 8) + cell_half_width:
+                if event.entity.rect.position[1] < (entity_cell[1] * 16 * 8) + cell_half_width:
                     # top boundary
                     new_active_cell_coordinates = [(entity_cell[0], entity_cell[1] - 1), entity_cell]
                 else:
@@ -204,12 +218,12 @@ class MultipleCellManager(SingleCellManager):
         new_active_cells = []
         for cell_coords in new_active_cell_coordinates:
             new_active_cells.append(self.cells[cell_coords])
-        events = []
+
         newly_loaded = self.set_active_cells(new_active_cells)
         if newly_loaded:
             # if cells were loaded, they were returned here
-            events.append(NLCE(loaded_cells=newly_loaded))
-        return events
+            self.context.bus.send_event(NLCE(loaded_cells=newly_loaded))
+
 
 
 
@@ -220,12 +234,84 @@ class MultipleCellManager(SingleCellManager):
         else:
             adjacent, newly_loaded = self.handle_loading(active_cells)
             # set the new cells
+            old_cells = self.central_cells + self.adjacent
+            new_cells = active_cells + adjacent
+            enemies = self.enemies_to_load(old_cells, new_cells)
+            boundaries = self.boundaries_to_load(self.central_cells, active_cells)
+
+            if enemies or boundaries:
+                # if enemies are newly loaded boundaries should have something newly loaded too and vice versa
+                self.context.bus.send_command(LMECC(load=True, entities=enemies))
+                self.context.bus.send_command(LMBCC(load=True, boundaries=boundaries))
+
+
+            enemies = self.enemies_to_unload(old_cells, new_cells)
+            boundaries = self.boundaries_to_unload(self.central_cells, active_cells)
+
+            if enemies or boundaries:
+                self.context.bus.send_command(LMECC(load=False, entities=enemies))
+                self.context.bus.send_command(LMBCC(load=False, boundaries=boundaries))
+
+
+
             self.central_cells = active_cells
             self.adjacent = list(set(adjacent) - set(self.central_cells))
             if newly_loaded:
                 return newly_loaded
             # if new cells were loaded, inform whatever called this method
         return []
+
+    def all_to_load(self, old_cells, new_cells):
+        enemies = []
+        boundaries = []
+        # should only ever be max 8 cells to iterate through
+        for cell in new_cells:
+            if cell not in old_cells:
+                enemies.extend(cell.get_enemies())
+                boundaries.extend(cell.get_boundaries())
+        return enemies, boundaries
+
+    def all_to_unload(self, old_cells, new_cells):
+        enemies = []
+        boundaries = []
+        # should only ever be max 8 cells to iterate through
+        for cell in old_cells:
+            if cell not in new_cells:
+                enemies.extend(cell.get_enemies())
+                boundaries.extend(cell.get_boundaries())
+        return enemies, boundaries
+
+    def boundaries_to_load(self, old_cells, new_cells):
+        items = []
+        # should only ever be max 8 cells to iterate through
+        for cell in new_cells:
+            if cell not in old_cells:
+                items.extend(cell.get_boundaries())
+        return items
+
+    def boundaries_to_unload(self, old_cells, new_cells):
+        # should only ever be max 8 cells to iterate through
+        items = []
+        for cell in old_cells:
+            if cell not in new_cells:
+                items.extend(cell.get_boundaries())
+        return items
+
+    def enemies_to_load(self, old_cells, new_cells):
+        enemies = []
+        # should only ever be max 8 cells to iterate through
+        for cell in new_cells:
+            if cell not in old_cells:
+                enemies.extend(cell.get_enemies())
+        return enemies
+
+    def enemies_to_unload(self, old_cells, new_cells):
+        # should only ever be max 8 cells to iterate through
+        enemies = []
+        for cell in old_cells:
+            if cell not in new_cells:
+                enemies.extend(cell.get_enemies())
+        return enemies
 
     def get_boundaries(self):
         return self.get_active_boundaries()
@@ -295,7 +381,10 @@ class MultipleCellManager(SingleCellManager):
         return entity_types
 
     def remove_entity(self, entity):
-        for cell in self.central_cells:
+        all_cells = self.all_cells_loaded()
+        for cell in all_cells:
             if entity in cell.enemies:
                 cell.enemies.remove(entity)
+                self.context.bus.send_command(LECC(load=False, entity=entity))
+                # i could make a group type class like pygame does, but i do kind of like the explicitness of this, like you know exactly where things are being removed from based on the event or command
                 return

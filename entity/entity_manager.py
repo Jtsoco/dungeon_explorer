@@ -1,17 +1,24 @@
 from animations.animation_manager import AnimationManager
 from attack.attack_manager import AttackManager
-from events_commands.commands import MovementCommand, AttackCommand
+from events_commands.commands import MovementCommand, AttackCommand, EffectCommand, SoundCommand, AudioCommand, PhysicsCommand
 from events_commands.events import StateChangedEvent, PossibleCollisionEvent as PCE, AttackFinishedEvent as AFE, PhysicsEvent as PE, NewlyLoadedCellsEvent as NLCE
-from enums.entity_enums import EntityType as ET, EntityCategory as EC
+from enums.entity_enums import EntityType as ET, EntityCategory as EC, InputEnums as IE, PowerUpStates as PUS
 from state_machines.default_state_machine import DefaultStateMachine
 from entity.controllers.skull_controller import SkullController
 from entity.controllers.player_controller import PlayerController
 from entity.controllers.knight_controller import KnightController
+from entity.controllers.winged_knight_controller import WingedKnightController
 from collisions.collision_manager import CollisionManager
 from renderers.default_renderer import DefaultRenderer
 from physics.ground_physics import GroundPhysics
-class EntityManager():
-    def __init__(self, animation_manager=AnimationManager(), attack_manager=AttackManager(), context=None):
+from base_manager import BaseManager
+class EntityManager(BaseManager):
+    def __init__(self, animation_manager=None, attack_manager=None, context=None):
+        super().__init__(context=context)
+        if not animation_manager:
+            animation_manager = AnimationManager(context)
+        if not attack_manager:
+            attack_manager = AttackManager(context)
         self.controllers = {}
         # controllers are loaded depending on entity type, done when loading a level
         self.physics = {}
@@ -19,7 +26,7 @@ class EntityManager():
         self.state_machines = {}
         # depends on entity type, different state machines for different entity types
         # but just using default for now
-        self.state_machine = DefaultStateMachine()
+        self.state_machine = DefaultStateMachine(self.context.bus)
         self.entities_setup = []
         # types of entities setup already
 
@@ -27,11 +34,15 @@ class EntityManager():
         self.attack_manager = attack_manager
         self.context = context
         self.main_return_events = []
+        self.main_return_commands = []
         self.renderer = DefaultRenderer()
 
+    def setup_bus(self):
+        self.context.bus.register_event_listener(NLCE, self)
+        self.context.bus.register_command_listener(PhysicsCommand, self)
 
 
-    def update(self, entity):
+    def update_entity(self, entity):
         events, commands = [], []
 
         input_events = []
@@ -68,20 +79,19 @@ class EntityManager():
             match attack_event:
                 case AFE():
                     state_updates.append(attack_event)
-                case PCE():
-                    # collision events are main events
-                    # consider dividing events into main and sub, or lvl1 lvl2 event types later to inherit from for easier filtering
-                    self.main_return_events.append(attack_event)
 
-        state_change = self.state_machine.state_updates(entity, state_updates)
-        if state_change:
-            self.delegate_event(state_change, entity)
 
-        events = self.main_return_events.copy()
-        self.main_return_events.clear()
+        events, commands = self.state_machine.state_updates(entity, state_updates)
+        if events or commands:
+            for event in events:
+                self.delegate_event(event, entity)
+            for command in commands:
+                self.delegate_command(command, entity)
+
+
+
 
         # expand to sound later
-        return events
 
     def handle_event(self, event):
         # this is for when external systems want to pass events to entity manager to be delegated to respective systems
@@ -91,7 +101,12 @@ class EntityManager():
             case NLCE():
                 self.handle_newly_loaded_cells(event)
 
-        return []
+
+    def handle_command(self, command):
+        # handle commands are for commands external systems have given to entity manager to be delegated to respective systems
+        match command:
+            case PhysicsCommand():
+                self.physics[command.entity.entity_category].handle_command(command)
 
     def handle_newly_loaded_cells(self, event: NLCE):
         # when new cells are loaded, setup entities in those cells
@@ -100,21 +115,27 @@ class EntityManager():
         return []
 
     def delegate_event(self, event, entity):
+        # delegate is for its respective held systems
         match event:
             case StateChangedEvent():
                 # only animation manager needs it for now, but later it might be useful to have it delegated to all other systems too
                 self.animation_manager.handle_event(event, entity)
-            case PCE():
-                self.main_return_events.append(event)
+
 
         return [], []  # Return empty lists if no new events/commands
 
     def delegate_command(self, command, entity):
+        commands = []
         match command:
             case MovementCommand():
                 return self.physics[entity.entity_category].handle_command(command, entity)
             case AttackCommand():
                 return self.attack_manager.handle_command(command, entity)
+            case EffectCommand():
+                self.main_return_commands.append(command)
+            case AudioCommand():
+                self.main_return_commands.append(command)
+        return [], commands  # Return empty lists if no new events/commands
 
 
     def draw(self, entity):
@@ -144,7 +165,7 @@ class EntityManager():
                 self.setup_controller(ET.KNIGHT, KnightController)
                 self.setup_physics(EC.GROUND, GroundPhysics, context=self.context)
             case ET.WINGED_KNIGHT:
-                self.setup_controller(ET.WINGED_KNIGHT, KnightController)
+                self.setup_controller(ET.WINGED_KNIGHT, WingedKnightController)
                 self.setup_physics(EC.GROUND, GroundPhysics, context=self.context)
                 # for now just use ground physics, revisit later to make a flying physics module
 

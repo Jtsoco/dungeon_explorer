@@ -8,8 +8,8 @@ class CollisionManager(BaseManager):
         super().__init__(context=context)
 
         # NOTE eventually refactor this to poll through active entities in the game world instead of using events to check things, but fine for now. going in depth on making a collision manager system could be a lot of fun
-        self.active_entities = []
-        self.active_attacks = []
+        self.active_entities = set()
+        self.active_attacks = set()
         self.active_boundaries = []
         self.player = None
 
@@ -147,14 +147,18 @@ class CollisionManager(BaseManager):
     def load_entity_collision(self, command):
         if command.load:
             if command.entity not in self.active_entities:
-                self.active_entities.append(command.entity)
+                self.active_entities.add(command.entity)
+
         else:
             if command.entity in self.active_entities:
                 self.active_entities.remove(command.entity)
 
+
+
     def load_multiple_entity_collision(self, command):
         if command.load:
-            self.active_entities.extend(command.entities)
+            self.active_entities.update(command.entities)
+
         else:
             for entity in command.entities:
                 if entity in self.active_entities:
@@ -162,7 +166,7 @@ class CollisionManager(BaseManager):
 
     def load_active_attack_collision(self, command):
         if command.load:
-            self.active_attacks.append(command.attacking_entity)
+            self.active_attacks.add(command.attacking_entity)
         else:
             if command.attacking_entity in self.active_attacks:
                 self.active_attacks.remove(command.attacking_entity)

@@ -7,7 +7,7 @@ from entity.animation_data import AnimationData
 from attack.weapon_data import WeaponData
 from entity.entity_setup import spawn_weapon, spawn_winged_boss
 from base_manager import BaseManager
-from events_commands.commands import LoadMultipleEntityCollisionCommand as LMECC, LoadMultipleBoundariesCollisionCommand as LMBCC, LoadEntityCollisionCommand as LECC
+from events_commands.commands import LoadMultipleEntityCollisionCommand as LMECC, LoadMultipleBoundariesCollisionCommand as LMBCC, LoadEntityCollisionCommand as LECC, LoadActiveAttackCollisionCommand as LAACC
 import pyxel
 
 class CellManager(BaseManager):
@@ -57,6 +57,7 @@ class SingleCellManager():
 
     def set_logic_manager(self, logic_manager):
         self.logic_manager = logic_manager
+
     def set_parent(self, parent):
         self.parent = parent
 
@@ -386,5 +387,8 @@ class MultipleCellManager(SingleCellManager):
             if entity in cell.enemies:
                 cell.enemies.remove(entity)
                 self.context.bus.send_command(LECC(load=False, entity=entity))
+                # need to unload weapons too
+                if entity.weapon_active:
+                    self.context.bus.send_command(LAACC(load=False, attacking_entity=entity))
                 # i could make a group type class like pygame does, but i do kind of like the explicitness of this, like you know exactly where things are being removed from based on the event or command
                 return

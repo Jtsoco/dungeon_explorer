@@ -7,7 +7,7 @@ from animations.attack_registry import WEAPON_STATS, WEAPONS_ANIMATIONS, WEAPONS
 
 def spawn_player(position: tuple = (0, 0)) -> EntityData:
     player_setup = {
-        "health": 300,
+        "health": 500,
         "position": list(position),
         "w_h": (8, 8),
         "player": True,

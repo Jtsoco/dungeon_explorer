@@ -48,3 +48,6 @@ class EntityData():
         self.power_ups = {}
         self.powerup_reward = None
         # for enemies that give powerups when defeated
+
+    def weapon_active(self):
+        return self.weapon is not None and self.weapon.active

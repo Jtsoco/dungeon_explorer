@@ -170,4 +170,4 @@ class Game():
         fps = calculate_fps(self.last_time, self.current_time, self.last_frame_count, self.current_frame_count)
         self.last_time = self.current_time
         self.last_frame_count = self.current_frame_count
-        display_info(fps, pos_x=camera_pos[0]+2, pos_y=camera_pos[1]+2)
+        # display_info(fps, pos_x=camera_pos[0]+2, pos_y=camera_pos[1]+2)

@@ -87,6 +87,11 @@ class DeathEvent(Event):
         super().__init__(name="DeathEvent")
         self.entity = entity
 
+class BossDeathEvent(DeathEvent):
+    def __init__(self, entity):
+        super().__init__(entity)
+        self.name = "BossDeathEvent"
+
 class AddMomentumEvent(PhysicsEvent):
     def __init__(self, entity, momentum_vector: list):
         super().__init__(name="AddMomentumEvent")

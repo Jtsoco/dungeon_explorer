@@ -46,3 +46,5 @@ class EntityData():
         # will have a powerup states dictionary to keep track of active powerups, based on enum
 
         self.power_ups = {}
+        self.powerup_reward = None
+        # for enemies that give powerups when defeated

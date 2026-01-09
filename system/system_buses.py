@@ -1,6 +1,6 @@
 
 
-from events_commands.events import Event, DeathEvent, BoundaryCollisionEvent, NewlyLoadedCellsEvent, PlayerEvent
+from events_commands.events import Event, DeathEvent, BoundaryCollisionEvent, NewlyLoadedCellsEvent, PlayerEvent, BossDeathEvent
 from events_commands.commands import Command, AudioCommand, EffectCommand, CollisionCommand, PhysicsCommand, DamageCommand
 
 class SystemBus:
@@ -21,6 +21,8 @@ class SystemBus:
             BoundaryCollisionEvent: [],
             NewlyLoadedCellsEvent: [],
             PlayerEvent: [],
+            BossDeathEvent: [],
+
         }
         self.command_keys = set(self.command_listeners.keys())
 
@@ -38,18 +40,29 @@ class SystemBus:
 
     def get_command_key(self, command):
         # because some keys may be subclasses of others
+        command_type = type(command)
+        if command_type in self.command_listeners:
+            return command_type
         for key in self.command_keys:
             if isinstance(command, key):
                 return key
         return None
 
     def get_event_key(self, event):
+        # check for exact match first
+        event_type = type(event)
+        if event_type in self.event_listeners:
+            return event_type
+
+        # else see if it's a subclass some keys may be subclasses of others
+
         for key in self.event_listeners.keys():
             if isinstance(event, key):
                 return key
         return None
 
     def send_command(self, command):
+
         key = self.get_command_key(command)
         if key:
             listeners = self.command_listeners[key]

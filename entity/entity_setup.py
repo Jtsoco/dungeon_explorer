@@ -19,7 +19,7 @@ def spawn_player(position: tuple = (0, 0)) -> EntityData:
 
     }
     player_data = EntityData(**player_setup)
-    player_data.power_ups[PUS.DOUBLE_JUMP] = True  # give player double jump powerup for testing
+    # player_data.power_ups[PUS.DOUBLE_JUMP] = True  # give player double jump powerup for testing
     return player_data
 
 # honestly could change weapon category to entity type, and apply weapon based on a mapping later, and consolidate loading into one function
@@ -43,5 +43,6 @@ def spawn_winged_boss(cell_position, brick_x, brick_y, BOSS_SPRITES):
     enemy_data = EntityData(entity_type=ET.WINGED_KNIGHT, position=[brick_x * 8, brick_y * 8], animation_data=animation_data, weapon_data=weapon_data, cell_pos=(cell_position[0], cell_position[1]), touch_damage=20, health=300)
     enemy_data.boss = True
     enemy_data.power_ups[PUS.DOUBLE_JUMP] = True
+    enemy_data.powerup_reward = PUS.DOUBLE_JUMP
     # give boss double jump ability
     return enemy_data

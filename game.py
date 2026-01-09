@@ -11,7 +11,7 @@ from entity.entity_setup import spawn_player
 from events_commands.events import PossibleAttackCollisionEvent as PACE, DamageEvent as DE, PhysicsEvent as PE, DeathEvent as Death, NewlyLoadedCellsEvent as NLCE, BoundaryCollisionEvent as BCE
 from events_commands.commands import EffectCommand, SoundCommand, MusicCommand, AudioCommand
 from HUD.hud_manager import HUDManager
-
+from temporary_managers.powerup_manager import PowerupManager
 from effects.effects_manager import EffectsManager
 from audio.sound_effects_manager import SoundEffectsManager
 
@@ -53,6 +53,7 @@ class Game():
         self.collision_manager.player = self.player_data
 
         self.damage_manager = DamageManager(self.context)
+        self.PowerupManager = PowerupManager(self.context)
 
 
         # debug for framerate

@@ -36,5 +36,5 @@ class SceneRenderer():
         y += offset[1]
         # just a default because i'm only using this for now
         # default direction doesn't exist in effects for now, might edit later
-        print(f"Rendering effect at position ({x}, {y}) with frame u:{u}, v:{v}, width:{width}, height:{height}")
+        # print(f"Rendering effect at position ({x}, {y}) with frame u:{u}, v:{v}, width:{width}, height:{height}")
         pyxel.blt(x, y, image_bank, u, v, width, height, self.context.data_context.TRANSPARENT_COLOR, rotate=rotation)

@@ -130,3 +130,13 @@ class EntitySeparationCommand(PhysicsCommand):
         super().__init__(name="EntitySeparationCommand")
         self.entity = entity_a
         self.entity_b = entity_b
+
+class HUDCommand(Command):
+    def __init__(self, name="HUDCommand"):
+        super().__init__(name=name)
+
+class TemporaryMessageCommand(HUDCommand):
+    def __init__(self, message: str, seconds_duration: float = 2.0):
+        super().__init__(name="TemporaryMessageCommand")
+        self.message = message
+        self.seconds_duration = seconds_duration

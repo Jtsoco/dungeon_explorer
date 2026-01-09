@@ -15,6 +15,7 @@ class HUDManager(BaseManager):
             HCT.HEALTH: HealthComponent(max_health=100),
         }
         self.renderer = HudRenderer()
+        self.temporary_messages = []  # For displaying temporary messages on HUD
 
     def get_render_items(self):
         pass

@@ -4,7 +4,8 @@ from events_commands.commands import MoveCommand, JumpCommand, AttackCommand, Ef
 from audio.sound_enums import SoundEnum
 from enums.effects_enums import ParticleEffectType as PET, EffectType
 class DefaultStateMachine():
-    def __init__(self):
+    def __init__(self, bus):
+        self.bus = bus
         self.events = []
 
     # in here is the logic to determine what the next state is based on the previous
@@ -54,13 +55,13 @@ class DefaultStateMachine():
             case MS.IDLE | MS.WALKING:
                 data.movement_state = MS.JUMPING
                 commands.append(JumpCommand())
-                commands.append(SoundCommand(sound_enum=SoundEnum.JUMP))  # JUMP sound
+                self.bus.send_command(SoundCommand(sound_enum=SoundEnum.JUMP))  # JUMP sound
             case MS.JUMPING | MS.FALLING:
                 if self.can_double_jump(data):
                     data.movement_state = MS.JUMPING
                     commands.append(JumpCommand())
-                    commands.append(EffectCommand(pos=data.rect.position))
-                    commands.append(SoundCommand(sound_enum=SoundEnum.JUMP))  # LAND sound on double jump
+                    self.bus.send_command(EffectCommand(pos=data.rect.position))
+                    self.bus.send_command(SoundCommand(sound_enum=SoundEnum.JUMP))  # LAND sound on double jump
         return commands
 
     def can_double_jump(self, data):
@@ -97,8 +98,8 @@ class DefaultStateMachine():
                     self.landed_update(data)
                     if PUS.DOUBLE_JUMP in data.power_ups:
                         data.power_ups[PUS.DOUBLE_JUMP] = True  # reset double jump on land
-                    commands.append(EffectCommand(pos=data.rect.position, sub_type=PET.LAND_DUST, effect_type=EffectType.PARTICLE))
-                    commands.append(SoundCommand(sound_enum=SoundEnum.LAND))  # LAND sound
+                    self.bus.send_command(EffectCommand(pos=data.rect.position, sub_type=PET.LAND_DUST, effect_type=EffectType.PARTICLE))
+                    self.bus.send_command(SoundCommand(sound_enum=SoundEnum.LAND))  # LAND sound
                 case AttackFinishedEvent():
                     data.action_state = AS.NONE
         new_states = [data.movement_state, data.action_state, data.direction_state]

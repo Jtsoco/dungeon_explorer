@@ -26,7 +26,7 @@ class EntityManager(BaseManager):
         self.state_machines = {}
         # depends on entity type, different state machines for different entity types
         # but just using default for now
-        self.state_machine = DefaultStateMachine()
+        self.state_machine = DefaultStateMachine(self.context.bus)
         self.entities_setup = []
         # types of entities setup already
 

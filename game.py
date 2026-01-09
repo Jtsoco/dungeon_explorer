@@ -153,6 +153,7 @@ class Game():
         camera_pos = self.scene_manager.camera.current_camera
         display_info(f"Player Pos: {self.player_data.position[0]}", pos_x=camera_pos[0]+2, pos_y=camera_pos[1]+8)
 
+        # hud has no knowledge of world positions, so temporary set to 0,0 for drawing then set back
         self.scene_manager.set_camera_to_zero()
         self.hud_manager.draw()
         self.scene_manager.set_camera_to_current()

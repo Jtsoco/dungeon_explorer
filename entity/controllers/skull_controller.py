@@ -37,13 +37,13 @@ class SkullController():
 
     def check_ledge(self, entity, context, direction=DS.LEFT):
         tile_context = context.tile_context
-        pos_x = entity.position[0] + entity.w_h[0] if direction == DS.LEFT else entity.position[0]
-        return tile_context.at_edge_of_dropoff(pos_x, entity.position[1], entity.w_h[0], entity.w_h[1], direction=direction)
+        pos_x = entity.rect.position[0] + entity.w_h[0] if direction == DS.LEFT else entity.rect.position[0]
+        return tile_context.at_edge_of_dropoff(pos_x, entity.rect.position[1], entity.w_h[0], entity.w_h[1], direction=direction)
         # false if not at a ledge
 
     def check_edge_of_cell(self, entity, context, direction=DS.LEFT):
         tile_context = context.tile_context
-        return tile_context.at_edge_of_cell_horizontal(entity.cell_pos[0], entity.position[0], entity.w_h[0], direction=direction)
+        return tile_context.at_edge_of_cell_horizontal(entity.cell_pos[0], entity.rect.position[0], entity.w_h[0], direction=direction)
         # false if not at edge of cell, true if so
 
     def contextless_update(self, entity):

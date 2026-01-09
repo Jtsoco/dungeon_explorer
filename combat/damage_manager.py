@@ -1,5 +1,5 @@
 from enums.entity_enums import DirectionState as DS
-from events_commands.events import DeathEvent
+from events_commands.events import DeathEvent, PlayerDamagedEvent
 from events_commands.commands import SoundCommand, DamageCommand, AddMomentumCommand
 from audio.sound_enums import SoundEnum
 from base_manager import BaseManager
@@ -36,6 +36,10 @@ class DamageManager(BaseManager):
         origin = damage.origin
 
         target.health -= damage_amount
+        if target.player:
+            player_damaged_event = PlayerDamagedEvent(damage_amount)
+            events.append(player_damaged_event)
+            events.append(player_damaged_event)
         if target.health <= 0:
             death_event = DeathEvent(target)
             events.append(death_event)

@@ -33,7 +33,7 @@ class HUDManager(BaseManager):
 
     def handle_damage(self, damage_amount):
         # damage amount isn't needed for now, really just plan to have it as a way to show what degree the health changed by with an animation later
-        player = self.context.player_data
+        player = self.context.data_context.player_data
         health_component = self.components[HCT.HEALTH]
         new_health = player.health
         health_component.set_new_health(new_health)
@@ -45,3 +45,8 @@ class HUDManager(BaseManager):
         # Draw HUD elements on the screen
         components = list(self.components.values())
         self.renderer.render(components)
+
+    def setup_player_hud(self, player_data):
+        health_component = self.components[HCT.HEALTH]
+
+        health_component.set_new_max_health(player_data.health, True)

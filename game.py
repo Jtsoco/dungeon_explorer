@@ -67,7 +67,7 @@ class Game():
         self.sound_effects_manager.handle_command(MusicCommand(music_enum=0))  # Start background music
 
         self.hud_manager = HUDManager(self.context)
-
+        self.hud_manager.setup_player_hud(self.player_data)
 
 
     def update(self):

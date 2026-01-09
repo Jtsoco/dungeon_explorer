@@ -82,7 +82,6 @@ class EffectsManager(BaseManager):
         animation = GENERIC_DEATH_ANIMATION
         new_effect = Effect(effect_type, effect_position, animation)
         self.active_effects.append(new_effect)
-        print(f"Created death effect at {effect_position}")
 
 
     def create_effect(self, command):
@@ -94,7 +93,6 @@ class EffectsManager(BaseManager):
         if animation:
             new_effect = Effect(main_type, effect_position, animation)
             self.active_effects.append(new_effect)
-            print(f"Created partical effect of type {sub_type} at {effect_position}")
 
     def get_animation(self, effect_type, sub_type):
         main = EFFECTS_REGISTRY.get(effect_type, None)

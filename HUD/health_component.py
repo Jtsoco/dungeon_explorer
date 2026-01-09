@@ -7,8 +7,7 @@ class HealthComponent():
         self.max_health = max_health
         self.current_health = max_health
         self.sprite_data = HUD_REGISTRY[HE.HEALTH]
-        self.sprite_list = []
-        self.generate_sprites(current_health=self.current_health)
+        self.sprite_list = self.generate_sprites(current_health=self.current_health)
 
     def generate_sprites(self, current_health):
         health_demoninators = sorted(self.sprite_data.keys(), reverse=True)
@@ -28,6 +27,7 @@ class HealthComponent():
             animation_frames = self.sprite_data[health_demoninators[-1]]
             heart_sprite = HeartSprite(position=(x_offset, 0), animation_frames=animation_frames)
             sprites.append(heart_sprite)
+        return sprites
 
     def set_new_health(self, new_health):
         self.current_health = max(0, min(new_health, self.max_health))

@@ -43,5 +43,5 @@ class HUDManager(BaseManager):
 
     def draw(self):
         # Draw HUD elements on the screen
-        components = self.components.values()
+        components = list(self.components.values())
         self.renderer.render(components)

@@ -12,7 +12,7 @@ class AttackManager(BaseManager):
 
     def update(self, entity_data):
         if not entity_data.weapon:
-            return None
+            return
         # will create a dummy weapon data later, but also will in general will revisit how this is handled and if i will create a cleaner system that doesn't make calls to things that won't do anything, but for now this is fine
         if entity_data.weapon.active:
             self.update_weapon(entity_data)

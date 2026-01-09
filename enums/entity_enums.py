@@ -77,3 +77,16 @@ class SimpleAIState(Enum):
 
 class PowerUpStates(Enum):
     DOUBLE_JUMP = auto()
+
+class SHIELD_ACTION_STATE(Enum):
+    IDLE = auto()
+    TO_BLOCK = auto()
+    BLOCK = auto()
+    DEFLECT = auto()
+    TO_REST = auto()
+
+class SHIELD_CATEGORY(Enum):
+    WOODEN_SHIELD = auto()
+    IRON_SHIELD = auto()
+    MAGIC_SHIELD = auto()
+    BLADE = auto()

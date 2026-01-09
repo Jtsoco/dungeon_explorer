@@ -10,11 +10,11 @@ class CollisionManager(BaseManager):
         # NOTE eventually refactor this to poll through active entities in the game world instead of using events to check things, but fine for now. going in depth on making a collision manager system could be a lot of fun
         self.active_entities = set()
         self.active_attacks = set()
-        self.active_boundaries = []
+        self.active_boundaries = set()
         self.player = None
 
-        self.recent_collisions = []
-        self.recent_attack_collisions = []
+        self.recent_collisions = set()
+        self.recent_attack_collisions = set()
         # so the recent collisions will work like player controller checking for new inputs for now
         # not actually good, as it means once hit by an attack can't be hit again until no longer colliding,
         # but it's a quickly implemented way to prevent multiple damage events from a single hitbox lingering on an entity. rework that later
@@ -151,9 +151,13 @@ class CollisionManager(BaseManager):
 
         else:
             if command.entity in self.active_entities:
-                self.active_entities.remove(command.entity)
+                self.remove_entity(command.entity)
 
-
+    def remove_entity(self, entity):
+        if entity in self.active_entities:
+            self.active_entities.remove(entity)
+        if entity.weapon_active() and entity in self.active_attacks:
+            self.active_attacks.remove(entity)
 
     def load_multiple_entity_collision(self, command):
         if command.load:
@@ -162,7 +166,7 @@ class CollisionManager(BaseManager):
         else:
             for entity in command.entities:
                 if entity in self.active_entities:
-                    self.active_entities.remove(entity)
+                    self.remove_entity(entity)
 
     def load_active_attack_collision(self, command):
         if command.load:
@@ -173,7 +177,7 @@ class CollisionManager(BaseManager):
 
     def load_active_boundaries(self, command):
         if command.load:
-            self.active_boundaries.extend(command.boundaries)
+            self.active_boundaries.update(command.boundaries)
         else:
             for boundary in command.boundaries:
                 if boundary in self.active_boundaries:

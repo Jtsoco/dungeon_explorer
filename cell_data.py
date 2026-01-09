@@ -4,15 +4,15 @@ class CellData():
         # might not actually need to pass context
         self.cell_x = cell_x
         self.cell_y = cell_y
-        self.x_boundaries = []
-        self.y_boundaries = []
-        self.enemies = []
-        self.entity_types = []
+        self.x_boundaries = set()
+        self.y_boundaries = set()
+        self.enemies = set()
+        self.entity_types = set()
         # think of a better way of telling what entities are in the cell later rather than saving all types in here, but for now is fine rather than checking all enemies every time
         self.loaded = False
 
     def get_boundaries(self):
-        return self.x_boundaries + self.y_boundaries
+        return self.x_boundaries.union(self.y_boundaries)
 
     def update(self):
         pass

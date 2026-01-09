@@ -72,7 +72,9 @@ class Game():
 
 
     def update(self):
-        all_entities = self.cell_manager.current_state.get_enemies() + [self.player_data]
+
+        all_entities = self.cell_manager.current_state.get_enemies()
+        all_entities.add(self.player_data)
         main_commands = []
         for entity in all_entities:
             self.entity_manager.update_entity(entity)

@@ -5,16 +5,17 @@ from audio.sound_enums import SoundEnum
 from base_manager import BaseManager
 
 class AttackManager(BaseManager):
-    def __init__(self, context):
+    def __init__(self, context, local_bus):
         super().__init__(context=context)
         self.context = context
+        self.local_bus = local_bus
 
     def update(self, entity_data):
         if not entity_data.weapon:
             return None
         # will create a dummy weapon data later, but also will in general will revisit how this is handled and if i will create a cleaner system that doesn't make calls to things that won't do anything, but for now this is fine
         if entity_data.weapon.active:
-            return self.update_weapon(entity_data)
+            self.update_weapon(entity_data)
 
     def update_weapon(self, entity_data):
         if self.update_frame_index(entity_data.weapon):
@@ -22,8 +23,7 @@ class AttackManager(BaseManager):
                 # finished attack animation
                 self.finish_attack(entity_data.weapon)
                 self.context.bus.send_command(LAACC(load=False, attacking_entity=entity_data))
-                return AFE()
-        return None
+                self.local_bus.send_event(AFE())
         # pos = self.get_position(entity_data)
         # return PACE(entity_data, attack_position=pos, target_type=entity_data.weapon.target_type)
 
@@ -52,12 +52,10 @@ class AttackManager(BaseManager):
     def handle_command(self, command, entity_data):
         match command:
             case AttackCommand():
-                commands = self.start_attack(entity_data)
-        return [], commands  # No new events or commands
+                self.start_attack(entity_data)
 
     def start_attack(self, entity_data):
         # for now, just default. it will decide what attack to set otherwise, but for now there is only one
-        commands = []
         weapon = entity_data.weapon
         if not weapon.active:
             player_state = entity_data.movement_state
@@ -72,9 +70,8 @@ class AttackManager(BaseManager):
             weapon.current_frame = 0
             weapon.frame_timer = 0
             weapon.set_current_hitboxes(state)
-            commands.append(SoundCommand(sound_enum=weapon.attack_sound))
+            self.context.bus.send_command(SoundCommand(sound_enum=weapon.attack_sound))
             self.context.bus.send_command(LAACC(load=True, attacking_entity=entity_data))
-        return commands
 
 
     def get_jump_attack(self, weapon_data):

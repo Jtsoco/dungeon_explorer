@@ -1,7 +1,7 @@
 
 
-from events_commands.events import Event, DeathEvent, BoundaryCollisionEvent, NewlyLoadedCellsEvent, PlayerEvent, BossDeathEvent, StateChangedEvent
-from events_commands.commands import Command, AudioCommand, EffectCommand, CollisionCommand, PhysicsCommand, DamageCommand, HUDCommand,
+from events_commands.events import Event, DeathEvent, BoundaryCollisionEvent, NewlyLoadedCellsEvent, PlayerEvent, BossDeathEvent, StateChangedEvent, MovementEvent, AttackFinishedEvent
+from events_commands.commands import Command, AudioCommand, EffectCommand, CollisionCommand, PhysicsCommand, DamageCommand, HUDCommand
 
 class SystemBus:
 
@@ -44,7 +44,7 @@ class SystemBus:
         command_type = type(command)
         if command_type in self.command_listeners:
             return command_type
-        for key in self.command_keys:
+        for key in self.command_listeners.keys():
             if isinstance(command, key):
                 return key
         return None
@@ -79,7 +79,7 @@ class SystemBus:
                 # use notify event, to indicate that it's an event to be acted upon during update cycle
                 listener.notify_event(event)
 
-def entity_manager_bus(SystemBus):
+class EntityManagerBus(SystemBus):
     # those who hold this know it as a local bus
     # this bus is for handling communication within subsystems, like the entity_manager handling its own events and commands internally in its
     # for now it just passes it directly to its receiver
@@ -90,7 +90,12 @@ def entity_manager_bus(SystemBus):
         self.receiver.local_commands.append(command)
 
     def send_event(self, event):
-        if isinstance(event, StateChangedEvent):
-            self.receiver.state_change_events.append(event)
-        else:
-            self.receiver.local_events.append(event)
+        match event:
+            case StateChangedEvent():
+                self.receiver.state_change_events.append(event)
+            case MovementEvent() | AttackFinishedEvent():
+                # movement events go to state updates for processing, as they are events that occur that may change state
+                # if similar events that need to be processed for possible state updates arise, then maybe make a state update event parent class
+                self.receiver.state_updates.append(event)
+            case _:
+                self.receiver.local_events.append(event)

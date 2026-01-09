@@ -12,15 +12,15 @@ from collisions.collision_manager import CollisionManager
 from renderers.default_renderer import DefaultRenderer
 from physics.ground_physics import GroundPhysics
 from base_manager import BaseManager
-from system.system_buses import entity_manager_bus
+from system.system_buses import EntityManagerBus
 class EntityManager(BaseManager):
     def __init__(self, animation_manager=None, attack_manager=None, context=None):
         super().__init__(context=context)
-        self.local_bus = entity_manager_bus(self)
+        self.local_bus = EntityManagerBus(self)
         if not animation_manager:
             animation_manager = AnimationManager(context)
         if not attack_manager:
-            attack_manager = AttackManager(context)
+            attack_manager = AttackManager(context, self.local_bus)
         self.controllers = {}
         # controllers are loaded depending on entity type, done when loading a level
         self.physics = {}
@@ -42,11 +42,17 @@ class EntityManager(BaseManager):
         self.local_events = []
         self.local_commands = []
         self.state_change_events = []
+        self.state_updates = []
 
     def setup_bus(self):
         self.context.bus.register_event_listener(NLCE, self)
         self.context.bus.register_command_listener(PhysicsCommand, self)
 
+    def reset_local(self):
+        self.local_events = []
+        self.local_commands = []
+        self.state_change_events = []
+        self.state_updates = []
 
     def update_entity(self, entity):
 
@@ -61,51 +67,42 @@ class EntityManager(BaseManager):
 
 
         # input events are one shot, only come from controller, so it will be most decoupled. Just hand it context and entity, it returns input events
+        self.reset_local()
+
         input_events = []
         input_events = input_events + self.controllers[entity.entity_type].update(entity, self.context)
-        events, commands = self.state_machine.input_events(entity, input_events)
+        self.state_machine.input_events(entity, input_events)
+        self.animation_manager.update(entity)
+        # actual flow as of now:
+        # get inputs from controller
+        # pass state machine, it adds commands/events as needed
+        # update animation manager
+        # process commands in a loop, as of now only 1 or 2 exist at a time, but could be more complex later, often it's just movement commmands being relayed to physics, which sets momentum and such, and it itself sending state updates to queue state machine will use
+        # basically state machine says set based on these movements states these momentums etc,
+        # physics sets them
+        # then update physics, moving entity based on its current state and velocities and such, previously set by physics in process loop,
+        # then update attack manager, send any events needed or state updates
+        # as of now, it doesn't send any other commands/events, so a second process loop isn't needed after this, but if it did, would do so here
+        # then take state updates, pass them to state machine, it handles state
+        # if any state change occurred, then inform whoever needs to konw
+        # delegate events only has state change event in it for now, so this is fine to use delegate event rather than state change handle method,
+        # then loop is done
 
-        animation_event = self.animation_manager.update(entity)
-        if animation_event:
-            events.append(animation_event)
-
-        killswitch = False
-        count = 0
-
-        while (events or commands) and not (killswitch):
-            if events:
-                new_events, new_commands = self.delegate_event(events.pop(0), entity)
-                events.extend(new_events)
-                commands.extend(new_commands)
-            if commands:
-                new_events, new_commands = self.delegate_command(commands.pop(0), entity)
-                events.extend(new_events)
-                commands.extend(new_commands)
-            count += 1
-            if count > 100:
-                killswitch = True
+        self.process_loop(entity)
                 # just a killswitch to prevent infinite loops for now. shouldn't need it if designed well, but just in case.
 
-        state_updates = self.physics[entity.entity_category].update(entity)
+        self.physics[entity.entity_category].update(entity)
         # should just return events as of now
-        attack_event = self.attack_manager.update(entity)
+        self.attack_manager.update(entity)
 
-        # clean this up later, make it more readable and consider organizing based match events to be drawn from a module or such, but for now fine, maybe make main events not a class attribute later
-        if attack_event:
-            match attack_event:
-                case AFE():
-                    state_updates.append(attack_event)
-
-
-        events, commands = self.state_machine.state_updates(entity, state_updates)
-        if events or commands:
-            for event in events:
+        self.state_machine.state_updates(entity, self.state_updates)
+        if self.state_change_events:
+            for event in self.state_change_events:
                 self.delegate_event(event, entity)
-            for command in commands:
-                self.delegate_command(command, entity)
 
 
-    def process_loop(self):
+
+    def process_loop(self, entity):
         killswitch = False
         count = 0
         # shouldn't need killswitch, but have it just in case
@@ -113,14 +110,16 @@ class EntityManager(BaseManager):
         while (self.local_events or self.local_commands):
             if self.local_events:
                 event = self.local_events.pop(0)
-                self.handle_event(event)
+                # delegate for local events, handle is for events received by external systems
+                self.delegate_event(event, entity)
             if self.local_commands:
                 command = self.local_commands.pop(0)
-                self.handle_command(command)
+                self.delegate_command(command, entity)
             count += 1
             if count > 100:
                 killswitch = True
-                raise Exception("EntityManager process loop exceeded maximum iterations.")
+                self.reset_local()
+                raise Exception("Entity Manager Process Loop Killswitch Activated - Possible Infinite Loop Detected")
 
 
 
@@ -145,7 +144,6 @@ class EntityManager(BaseManager):
         # when new cells are loaded, setup entities in those cells
         for cell in event.loaded_cells:
             self.setup_entities(cell.entity_types)
-        return []
 
     def delegate_event(self, event, entity):
         # delegate is for its respective held systems
@@ -155,20 +153,14 @@ class EntityManager(BaseManager):
                 self.animation_manager.handle_event(event, entity)
 
 
-        return [], []  # Return empty lists if no new events/commands
 
     def delegate_command(self, command, entity):
-        commands = []
         match command:
             case MovementCommand():
-                return self.physics[entity.entity_category].handle_command(command, entity)
+                self.physics[entity.entity_category].handle_command(command, entity)
             case AttackCommand():
-                return self.attack_manager.handle_command(command, entity)
-            case EffectCommand():
-                self.main_return_commands.append(command)
-            case AudioCommand():
-                self.main_return_commands.append(command)
-        return [], commands  # Return empty lists if no new events/commands
+                self.attack_manager.handle_command(command, entity)
+
 
 
     def draw(self, entity):
@@ -213,7 +205,7 @@ class EntityManager(BaseManager):
         if not context:
             context = self.context
         if entity_category not in self.physics:
-            self.physics[entity_category] = physics_module(context)
+            self.physics[entity_category] = physics_module(context, self.local_bus)
 
     def setup_controller(self, entity_type, controller):
         if entity_type not in self.controllers:

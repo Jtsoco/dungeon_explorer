@@ -12,11 +12,10 @@ class AnimationManager(BaseManager):
         if self.next_frame(current_frame.duration, data.animation_data):
             pass
             # Frame advanced
-            # if the state is an attack state, and next frame is true and current frame is 0, then signal that attack is done with a return statement sending attack finished event
+            # so maybe some states will continue until animation ends, movement wise or so, but not implemented yet
             # however, it will also depend on the attack type whether it will end or loop, for example an air attack might continue till it hits the ground
             # focus on ground attacks for now
         data.animation_data.frame_timer += 1
-        return None
 
     def handle_event(self, event, data):
         match event:

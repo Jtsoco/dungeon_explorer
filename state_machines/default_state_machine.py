@@ -16,7 +16,6 @@ class DefaultStateMachine():
         # then again it only gets the input events once, need to think about this more
         last_states = [data.movement_state, data.action_state, data.direction_state]
 
-
         for event in input_events:
             match event.input_type:
                 case IE.MOVE:
@@ -77,7 +76,6 @@ class DefaultStateMachine():
 
     def state_updates(self, data, updates):
         last_states = [data.movement_state, data.action_state, data.direction_state]
-        events, commands = [], []
         for event in updates:
             match event:
                 case StartedFallingEvent():
@@ -93,8 +91,7 @@ class DefaultStateMachine():
         new_states = [data.movement_state, data.action_state, data.direction_state]
         # events, commands = [], []
         if new_states != last_states:
-            events.append(StateChangedEvent())
-        return (events, commands)
+            self.local_bus.send_event(StateChangedEvent())
 
     def landed_update(self, data):
         # if it's not 0, then they're walking

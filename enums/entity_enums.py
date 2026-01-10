@@ -84,6 +84,7 @@ class SHIELD_ACTION_STATE(Enum):
     BLOCK = auto()
     DEFLECT = auto()
     TO_REST = auto()
+    BROKEN = auto()
 
 class SHIELD_CATEGORY(Enum):
     WOODEN_SHIELD = auto()

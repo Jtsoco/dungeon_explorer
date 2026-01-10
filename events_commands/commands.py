@@ -140,3 +140,23 @@ class TemporaryMessageCommand(HUDCommand):
         super().__init__(name="TemporaryMessageCommand")
         self.message = message
         self.seconds_duration = seconds_duration
+
+class DefenseCommand(Command):
+    def __init__(self):
+        super().__init__(name="DefenseCommand")
+
+class StartBlockCommand(DefenseCommand):
+    def __init__(self):
+        super().__init__()
+        self.name = "StartBlockCommand"
+
+class EndBlockCommand(DefenseCommand):
+    def __init__(self):
+        super().__init__()
+        self.name = "EndBlockCommand"
+
+class BreakBlockCommand(DefenseCommand):
+    def __init__(self):
+        super().__init__()
+        self.name = "BreakBlockCommand"
+        # for when shield breaks

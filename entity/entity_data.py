@@ -23,6 +23,7 @@ class EntityData():
         self.action_state = AS.NONE
 
         self.weapon = weapon_data
+        self.shield = None
 
         self.velocity = [0, 0]  # (x_velocity, y_velocity)
 
@@ -51,3 +52,6 @@ class EntityData():
 
     def weapon_active(self):
         return self.weapon is not None and self.weapon.active
+
+    def shield_active(self):
+        return self.shield is not None and self.shield.active

@@ -181,7 +181,42 @@ class GroundPhysics:
                 self.entity_separation(command, data)
 
     def entity_separation(self, command, data):
-        pass
+        entity_a = command.entity
+        entity_b = command.entity_b
+        b_only = command.b_only
+        impossible = False
+        new_impossible = False
+        RIGHT = entity_a.rect.position[0] < entity_b.rect.position[0]
+        right = RIGHT
+        while entity_a.rect.is_rect_colliding(entity_b.rect) and not impossible:
+            # try to push out b
+            if not new_impossible:
+                new_impossible = self.pushout_entity_b(entity_a, entity_b, right)
+                # if b can't be pushed out, push out a, using new impossible to track whether last push was possible
+                if new_impossible:
+                    right = not right
+            else:
+                # if b couln't be pushed out, push out until a can't be either
+                impossible = self.pushout_entity_b(entity_b, entity_a, right)
+
+
+    def pushout_entity_b(self, entity_a, entity_b, RIGHT):
+        impossible = False
+        if RIGHT:
+            entity_b.rect.position[0] += 1
+            stepback = 1
+        else:
+            entity_b.rect.position[0] -= 1
+            stepback = -1
+        if self.check_tile_collisions(entity_b, self.context):
+            # if entity b hits a wall while being pushed out, then stop pushing it out
+            entity_b.rect.position[0] -= stepback
+            impossible = True
+        return impossible
+
+
+
+
 
     def jump(self, command, data):
         # actually probably don't need the command

@@ -198,6 +198,7 @@ class CollisionManager(BaseManager):
             elif attacker.rect.position[0] > defender.rect.position[0] and attacker.direction_state == DS.LEFT:
                 return True
         elif attacker.direction_state == defender.direction_state:
+            # for now i don't plan to allow walking while shielding, but some might have it later so this is useful then
 
             if defender.rect.position[0] < attacker.rect.position[0] and defender.direction_state == DS.RIGHT:
                 return True

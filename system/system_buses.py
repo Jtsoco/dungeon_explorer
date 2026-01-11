@@ -1,7 +1,7 @@
 
 
 from events_commands.events import Event, DeathEvent, BoundaryCollisionEvent, NewlyLoadedCellsEvent, PlayerEvent, BossDeathEvent, StateChangedEvent, MovementEvent, AttackFinishedEvent, BlockFinishedEvent
-from events_commands.commands import Command, AudioCommand, EffectCommand, CollisionCommand, PhysicsCommand, DamageCommand, HUDCommand
+from events_commands.commands import Command, AudioCommand, EffectCommand, CollisionCommand, PhysicsCommand, CombatCommand, HUDCommand
 
 class SystemBus:
 
@@ -13,7 +13,7 @@ class SystemBus:
             EffectCommand: [],
             CollisionCommand: [],
             PhysicsCommand: [],
-            DamageCommand: [],
+            CombatCommand: [],
             HUDCommand: [],
         }
         #

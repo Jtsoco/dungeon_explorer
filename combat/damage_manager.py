@@ -1,6 +1,6 @@
 from enums.entity_enums import DirectionState as DS
 from events_commands.events import DeathEvent, PlayerDamagedEvent, BossDeathEvent
-from events_commands.commands import SoundCommand, DamageCommand, AddMomentumCommand
+from events_commands.commands import SoundCommand, DamageCommand, AddMomentumCommand, CombatCommand, ShieldHitCommand, EntitySeparationCommand
 from audio.sound_enums import SoundEnum
 from base_manager import BaseManager
 class DamageManager(BaseManager):
@@ -12,18 +12,32 @@ class DamageManager(BaseManager):
     # receive damage events, apply damage to entities, handle sending out any resulting events like death events
 
     def setup_bus(self):
-        self.context.bus.register_command_listener(DamageCommand, self)
+        self.context.bus.register_command_listener(CombatCommand, self)
 
     def handle_command(self, command):
         events, commands = [], []
         match command:
             case DamageCommand():
                 events, commands = self.handle_damage(command)
+            case ShieldHitCommand():
+                events, commands = self.handle_shield_hit(command)
         for event in events:
             self.context.bus.send_event(event)
         for command in commands:
             self.context.bus.send_command(command)
 
+
+    def handle_shield_hit(self, shield_hit):
+        # for now just damage shield, and use entity separation event to push back attacker
+        events = []
+        commands = []
+        target = shield_hit.target
+        damage_amount = shield_hit.damage_amount
+        knockback = shield_hit.knockback
+        origin = shield_hit.origin
+        # if no knockback to shield user, then use this to just separate them
+        self.context.bus.send_command(EntitySeparationCommand(origin, target, b_only=True))
+        print('separating')
 
     def handle_damage(self, damage):
         # for now just damage damage

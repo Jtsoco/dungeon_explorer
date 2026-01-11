@@ -1,7 +1,7 @@
 from events_commands.events import PossibleAttackCollisionEvent as PACE, BoundaryCollisionEvent as BCE
-from enums.entity_enums import EntityType as ET, CollisionEntityTarget as CET, DirectionState as DS
+from enums.entity_enums import EntityType as ET, CollisionEntityTarget as CET, DirectionState as DS, SHIELD_ACTION_STATE as SAS
 from base_manager import BaseManager
-from events_commands.commands import LoadActiveAttackCollisionCommand as LAACC, LoadEntityCollisionCommand as LECC, LoadMultipleEntityCollisionCommand as LMECC, LoadMultipleBoundariesCollisionCommand as LMBCC, CollisionCommand, DamageCommand as DC, EntitySeparationCommand as ESC
+from events_commands.commands import LoadActiveAttackCollisionCommand as LAACC, LoadEntityCollisionCommand as LECC, LoadMultipleEntityCollisionCommand as LMECC, LoadMultipleBoundariesCollisionCommand as LMBCC, CollisionCommand, DamageCommand as DC, EntitySeparationCommand as ESC, ShieldHitCommand as SHC
 
 class CollisionManager(BaseManager):
     def __init__(self, context):
@@ -71,11 +71,17 @@ class CollisionManager(BaseManager):
 
         for hit in hits:
             # hits are the entity hit
-            new_recent_attacks.append((weapon, hit))
-            if (weapon, hit) in self.recent_attack_collisions:
+            shield_active = hit.shield_active()
+            new_recent_attacks.append((weapon, hit, shield_active))
+            if (weapon, hit, shield_active) in self.recent_attack_collisions:
                 continue  # already registered this collision recently
-            damage_command = DC(attacker, hit, weapon.damage, knockback=weapon.knockback)
-            damage_commands.append(damage_command)
+            if shield_active:
+                if self.successful_block(attacker, hit, weapon, hit.shield):
+                    shield_hit_command = SHC(attacker, hit, weapon.damage, knockback=weapon.knockback)
+                    damage_commands.append(shield_hit_command)
+                else:
+                    damage_command = DC(attacker, hit, weapon.damage, knockback=weapon.knockback)
+                    damage_commands.append(damage_command)
         return damage_commands, new_recent_attacks
 
 
@@ -108,12 +114,9 @@ class CollisionManager(BaseManager):
             if rect.is_rect_colliding(p_rect):
                 if entity.touch_damage:
                     # change to damage command
-                    new_recent_collisions.append((entity, self.player))
-                    if (entity, self.player) in self.recent_collisions:
-                        continue  # already registered this collision recently
-                    damage_command = DC(entity, self.player, entity.touch_damage, knockback=entity.knockback)
 
-                    self.context.bus.send_command(damage_command)
+                    collisions = self.touch_damage_collision(entity, self.player)
+                    new_recent_collisions.extend(collisions)
 
                 else:
                     separation_command = ESC(entity, self.player)
@@ -182,3 +185,29 @@ class CollisionManager(BaseManager):
             for boundary in command.boundaries:
                 if boundary in self.active_boundaries:
                     self.active_boundaries.remove(boundary)
+
+    def successful_block(self, attacker, defender, weapon, shield):
+        # for now, simple implementation, later consider other aspects like timing and hitboxes
+        # if not in block state, fail
+        if shield.action_state != SAS.BLOCK:
+            return False
+        # if facing each other, success
+        if attacker.direction_state != defender.direction_state:
+            return True
+        # otherwise fail
+        return False
+
+    def touch_damage_collision(self, attacker, defender):
+        collisions = []
+        if (attacker, defender, defender.shield_active()) in self.recent_collisions:
+            return collisions  # already registered this collision recently
+        if defender.shield_active():
+            if self.successful_block(attacker, defender, None, defender.shield):
+                # separate b from them
+                self.context.bus.send_command(ESC(defender, attacker, b_only=True))
+                return collisions
+        # if no shield block, do damage
+        damage_command = DC(attacker, defender, attacker.touch_damage, knockback=attacker.knockback)
+        self.context.bus.send_command(damage_command)
+        collisions.append((attacker, defender, attacker.shield_active()))
+        return collisions

@@ -89,14 +89,18 @@ class LoadMultipleBoundariesCollisionCommand(CollisionCommand):
         self.name = "LoadMultipleBoundariesCollisionCommand"
         self.boundaries = boundaries
 
-
-class DamageCommand(Command):
-    def __init__(self, origin, target, damage_amount, knockback=8):
-        super().__init__(name="DammageCommand")
+class CombatCommand(Command):
+    def __init__(self, origin, target, damage_amount, knockback=8, name="CombatCommand"):
+        super().__init__(name=name)
         self.origin = origin
         self.target = target
         self.damage_amount = damage_amount
         self.knockback = knockback
+
+class DamageCommand(CombatCommand):
+    def __init__(self, origin, target, damage_amount, knockback=8):
+        super().__init__(origin, target, damage_amount, knockback=knockback, name="DammageCommand")
+
 # Need:
 # commands will typically be issued to one manager
 # CollisionLoad Commands, with load/unload, cell positions not needed
@@ -126,10 +130,11 @@ class AddMomentumCommand(PhysicsCommand):
         self.momentum_vector = momentum_vector
 
 class EntitySeparationCommand(PhysicsCommand):
-    def __init__(self, entity_a, entity_b):
+    def __init__(self, entity_a, entity_b, b_only=False):
         super().__init__(name="EntitySeparationCommand")
         self.entity = entity_a
         self.entity_b = entity_b
+        self.b_only = b_only  # if true, only move entity b, else move both away from each other equally
 
 class HUDCommand(Command):
     def __init__(self, name="HUDCommand"):
@@ -160,3 +165,7 @@ class BreakBlockCommand(DefenseCommand):
         super().__init__()
         self.name = "BreakBlockCommand"
         # for when shield breaks
+
+class ShieldHitCommand(CombatCommand):
+    def __init__(self, origin, target, damage_amount, knockback=0):
+        super().__init__(origin, target, damage_amount, knockback=knockback, name="ShieldHitCommand")

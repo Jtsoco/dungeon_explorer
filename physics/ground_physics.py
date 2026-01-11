@@ -178,7 +178,10 @@ class GroundPhysics:
             case AddMomentumCommand():
                 self.apply_momentum_command(command)
             case EntitySeparationCommand():
-                pass
+                self.entity_separation(command, data)
+
+    def entity_separation(self, command, data):
+        pass
 
     def jump(self, command, data):
         # actually probably don't need the command

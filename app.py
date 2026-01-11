@@ -3,7 +3,7 @@
 # decide what interacts with what
 # whether to use a bus system for events or not
 # try to keep it simple, a fun challenge to make a dungeon explorer type game in pyxel
-# think of:s
+# think of:
 # how to pass around startup_context
 # keep track of what the active cell is
 # how to keep camera synced with active cells

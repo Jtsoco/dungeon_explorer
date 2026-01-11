@@ -37,6 +37,9 @@ class ShieldData:
     def get_current_hitbox(self):
         return self.hitbox
 
+    def get_current_animation(self):
+        return self.animation[self.action_state]
+
     def drain_stamina(self, amount):
         effective_drain = max(0, amount - self.drain_resistance)
         self.current_stamina = max(0, self.current_stamina - effective_drain)

@@ -19,6 +19,8 @@ class PlayerController():
             new_recents.append(InputEvent(IE.JUMP))
         if pyxel.btn(pyxel.KEY_D):
             new_recents.append(InputEvent(IE.ATTACK))
+        if pyxel.btn(pyxel.KEY_S):
+            new_recents.append(InputEvent(IE.BLOCK))
 
         # for now, polling for rl movement as a quick bug fix
         if not rl_movement or (len(rl_movement) == 2):

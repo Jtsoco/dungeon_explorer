@@ -1,6 +1,6 @@
 from animations.animation_manager import AnimationManager
 from attack.attack_manager import AttackManager
-from events_commands.commands import MovementCommand, AttackCommand, EffectCommand, SoundCommand, AudioCommand, PhysicsCommand
+from events_commands.commands import MovementCommand, AttackCommand, EffectCommand, SoundCommand, AudioCommand, PhysicsCommand, DefenseCommand
 from events_commands.events import StateChangedEvent, PossibleCollisionEvent as PCE, AttackFinishedEvent as AFE, PhysicsEvent as PE, NewlyLoadedCellsEvent as NLCE
 from enums.entity_enums import EntityType as ET, EntityCategory as EC, InputEnums as IE, PowerUpStates as PUS
 from state_machines.default_state_machine import DefaultStateMachine
@@ -160,6 +160,8 @@ class EntityManager(BaseManager):
                 self.physics[entity.entity_category].handle_command(command, entity)
             case AttackCommand():
                 self.attack_manager.handle_command(command, entity)
+            case DefenseCommand():
+                self.defense_manager.handle_command(command, entity)
 
 
 

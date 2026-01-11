@@ -27,6 +27,7 @@ class ShieldData:
         self.frame_timer = 0
         self.broken_recovery__time = 30 # frames to recover from broken state
         self.broken_timer = 0
+        self.pending_unblock = False
 
     def get_current_frame(self):
         return self.animation[self.action_state][self.current_frame]

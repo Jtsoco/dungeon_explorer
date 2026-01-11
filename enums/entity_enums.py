@@ -24,6 +24,8 @@ class InputEnums(Enum):
     JUMP = auto()
     ATTACK = auto()
     STOP_MOVE = auto()
+    BLOCK = auto()
+    STOP_BLOCK = auto()
 
 class AttackType(Enum):
     MELEE = auto()

@@ -193,7 +193,16 @@ class CollisionManager(BaseManager):
             return False
         # if facing each other, success
         if attacker.direction_state != defender.direction_state:
-            return True
+            if attacker.rect.position[0] < defender.rect.position[0] and attacker.direction_state == DS.RIGHT:
+                return True
+            elif attacker.rect.position[0] > defender.rect.position[0] and attacker.direction_state == DS.LEFT:
+                return True
+        elif attacker.direction_state == defender.direction_state:
+
+            if defender.rect.position[0] < attacker.rect.position[0] and defender.direction_state == DS.RIGHT:
+                return True
+            elif defender.rect.position[0] > attacker.rect.position[0] and defender.direction_state == DS.LEFT:
+                return True
         # otherwise fail
         return False
 

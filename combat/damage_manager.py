@@ -18,9 +18,10 @@ class DamageManager(BaseManager):
         events, commands = [], []
         match command:
             case DamageCommand():
+                # todo make damage command send them by itself, not return
                 events, commands = self.handle_damage(command)
             case ShieldHitCommand():
-                events, commands = self.handle_shield_hit(command)
+                self.handle_shield_hit(command)
         for event in events:
             self.context.bus.send_event(event)
         for command in commands:
@@ -37,7 +38,6 @@ class DamageManager(BaseManager):
         origin = shield_hit.origin
         # if no knockback to shield user, then use this to just separate them
         self.context.bus.send_command(EntitySeparationCommand(origin, target, b_only=True))
-        print('separating')
 
     def handle_damage(self, damage):
         # for now just damage damage

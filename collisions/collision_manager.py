@@ -79,9 +79,9 @@ class CollisionManager(BaseManager):
                 if self.successful_block(attacker, hit, weapon, hit.shield):
                     shield_hit_command = SHC(attacker, hit, weapon.damage, knockback=weapon.knockback)
                     damage_commands.append(shield_hit_command)
-                else:
-                    damage_command = DC(attacker, hit, weapon.damage, knockback=weapon.knockback)
-                    damage_commands.append(damage_command)
+            else:
+                damage_command = DC(attacker, hit, weapon.damage, knockback=weapon.knockback)
+                damage_commands.append(damage_command)
         return damage_commands, new_recent_attacks
 
 

@@ -75,8 +75,7 @@ class CollisionManager(BaseManager):
             new_recent_attacks.append((weapon, hit, shield_active))
             if (weapon, hit, shield_active) in self.recent_attack_collisions:
                 continue  # already registered this collision recently
-            if shield_active:
-                if self.successful_block(attacker, hit, weapon, hit.shield):
+            if shield_active and self.successful_block(attacker, hit, weapon, hit.shield):
                     shield_hit_command = SHC(attacker, hit, weapon.damage, knockback=weapon.knockback)
                     damage_commands.append(shield_hit_command)
             else:

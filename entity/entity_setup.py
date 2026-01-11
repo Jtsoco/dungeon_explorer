@@ -1,8 +1,10 @@
 from entity.entity_data import EntityData
 from entity.animation_data import AnimationData
 from attack.weapon_data import WeaponData
-from enums.entity_enums import EntityType as ET, EntityCategory as EC, WeaponCategory as WC, CollisionEntityTarget as CET, PowerUpStates as PUS
+from enums.entity_enums import EntityType as ET, EntityCategory as EC, WeaponCategory as WC, CollisionEntityTarget as CET, PowerUpStates as PUS, SHIELD_ACTION_STATE as SAS, SHIELD_CATEGORY as SC
 from animations.attack_registry import WEAPON_STATS, WEAPONS_ANIMATIONS, WEAPONS_HITBOXES
+from animations.shield_registry import SHIELD_ANIMATIONS, SHIELD_HITBOXES, SHIELD_STATS
+from defense.shield_data import ShieldData
 
 
 def spawn_player(position: tuple = (0, 0)) -> EntityData:
@@ -19,6 +21,8 @@ def spawn_player(position: tuple = (0, 0)) -> EntityData:
 
     }
     player_data = EntityData(**player_setup)
+    shield = spawn_shield(SC.IRON_SHIELD)
+    player_data.shield = shield
     # player_data.power_ups[PUS.DOUBLE_JUMP] = True  # give player double jump powerup for testing
     return player_data
 
@@ -36,6 +40,21 @@ def spawn_weapon(weapon_category: WC = WC.SHORTSWORD, target=CET.PLAYER) -> Weap
         target_type=target
     )
     return weapon_data
+
+def spawn_shield(shield_category: SC = SC.IRON_SHIELD):
+    animations = SHIELD_ANIMATIONS[shield_category]
+    hitbox = SHIELD_HITBOXES[shield_category]
+    stats = SHIELD_STATS[shield_category]
+    shield_data = ShieldData(
+        shield_category=shield_category,
+        animation=animations,
+        hitbox=hitbox,
+        damage_resist=stats['damage_resist'],
+        max_stamina=stats['max_stamina'],
+        drain_resistance=stats['drain_resistance']
+    )
+    return shield_data
+
 
 def spawn_winged_boss(cell_position, brick_x, brick_y, BOSS_SPRITES):
     animation_data = AnimationData(BOSS_SPRITES[ET.WINGED_KNIGHT])

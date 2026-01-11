@@ -20,18 +20,27 @@ IRON_SHIELD = {
     ]
 
 }
-IRON_SHIELD = set_lengths_according_to_fps(IRON_SHIELD, .3)
 
-IRON_SHIELD[SHIELD_ACTION_STATE.TO_REST] = list(reversed(IRON_SHIELD[SHIELD_ACTION_STATE.TO_BLOCK].copy().reverse()))
+set_lengths_according_to_fps(IRON_SHIELD, .3)
+
+IRON_SHIELD[SHIELD_ACTION_STATE.TO_REST] = IRON_SHIELD[SHIELD_ACTION_STATE.TO_BLOCK].copy().reverse()
 
 SHIELD_ANIMATIONS = {
     SHIELD_CATEGORY.IRON_SHIELD: IRON_SHIELD
 }
 
 SHIELD_HITBOXES = {
-    IRON_SHIELD: {
+    SHIELD_CATEGORY.IRON_SHIELD: {
         (4, 4)
         # hitbox size when blocking
         # if enemy attack attacks in direction shield faces, and hits shield, it's a block
+    }
+}
+
+SHIELD_STATS = {
+    SHIELD_CATEGORY.IRON_SHIELD: {
+        "max_stamina": 100,
+        "drain_resistance": 25,
+        "damage_resist": 1.0
     }
 }

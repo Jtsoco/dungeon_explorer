@@ -1,6 +1,6 @@
 from enums.entity_enums import MovementState as MS, ActionState as AS, DirectionState as DS, InputEnums as IE, PowerUpStates as PUS
-from events_commands.events import InputEvent, StartedFallingEvent, LandedEvent, StateChangedEvent, AttackFinishedEvent
-from events_commands.commands import MoveCommand, JumpCommand, AttackCommand, EffectCommand, SoundCommand
+from events_commands.events import InputEvent, StartedFallingEvent, LandedEvent, StateChangedEvent, AttackFinishedEvent, BlockFinishedEvent
+from events_commands.commands import MoveCommand, JumpCommand, AttackCommand, EffectCommand, SoundCommand, EndBlockCommand, StartBlockCommand, BreakBlockCommand
 from audio.sound_enums import SoundEnum
 from enums.effects_enums import ParticleEffectType as PET, EffectType
 class DefaultStateMachine():
@@ -26,17 +26,32 @@ class DefaultStateMachine():
                     self.jump_input(data)
                 case IE.ATTACK:
                     self.attack_input(data)
+                case IE.BLOCK:
+                    self.block_input(data)
+                case IE.STOP_BLOCK:
+                    self.stop_block_input(data)
+
 
         new_states = [data.movement_state, data.action_state, data.direction_state]
         if new_states != last_states:
             self.local_bus.send_event(StateChangedEvent())
+
+    def block_input(self, data):
+        match data.action_state:
+            case AS.NONE:
+                data.action_state = AS.DEFENDING
+                self.local_bus.send_command(StartBlockCommand())
+
+    def stop_block_input(self, data):
+        match data.action_state:
+            case AS.DEFENDING:
+                self.local_bus.send_command(EndBlockCommand())
 
     def attack_input(self, data):
         match data.action_state:
             case AS.NONE:
                 data.action_state = AS.ATTACKING
                 self.local_bus.send_command(AttackCommand())
-
 
     def jump_input(self, data):
         match data.movement_state:
@@ -87,6 +102,8 @@ class DefaultStateMachine():
                     self.bus.send_command(EffectCommand(pos=data.rect.position, sub_type=PET.LAND_DUST, effect_type=EffectType.PARTICLE))
                     self.bus.send_command(SoundCommand(sound_enum=SoundEnum.LAND))  # LAND sound
                 case AttackFinishedEvent():
+                    data.action_state = AS.NONE
+                case BlockFinishedEvent():
                     data.action_state = AS.NONE
         new_states = [data.movement_state, data.action_state, data.direction_state]
         # events, commands = [], []

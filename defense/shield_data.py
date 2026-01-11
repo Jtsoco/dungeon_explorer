@@ -21,6 +21,8 @@ class ShieldData:
         self.action_state = SAS.IDLE
         self.active = False
         self.damage_resist = damage_resist  # multiplier to reduce damage taken when blocking
+
+
         self.animation=animation
         self.hitbox=hitbox
         self.current_frame = 0

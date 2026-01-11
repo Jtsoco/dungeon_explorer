@@ -15,17 +15,27 @@ class DefenseManager(BaseManager):
             self.update_shield(entity_data)
 
     def start_blocking(self, entity_data):
+        entity_data.shield.pending_unblock = False
         entity_data.shield.active = True
         entity_data.shield.action_state = SAS.TO_BLOCK
         entity_data.shield.current_frame = 0
         entity_data.shield.frame_timer = 0
 
     def end_blocking(self, entity_data):
+        if entity_data.shield.action_state == SAS.BLOCK:
+            self.move_to_rest(entity_data)
+
+        else:
+            entity_data.shield.pending_unblock = True
+
+    def move_to_rest(self, entity_data):
         entity_data.shield.action_state = SAS.TO_REST
         entity_data.shield.current_frame = 0
         entity_data.shield.frame_timer = 0
+        entity_data.shield.pending_unblock = False
 
     def break_block(self, entity_data):
+        entity_data.shield.pending_unblock = False
         entity_data.shield.action_state = SAS.BROKEN
         entity_data.shield.current_animation = entity_data.shield.animations[SAS.BROKEN]
         entity_data.shield.current_frame = 0
@@ -48,12 +58,17 @@ class DefenseManager(BaseManager):
         entity_data.shield.action_state = SAS.IDLE
         entity_data.shield.current_frame = 0
         entity_data.shield.frame_timer = 0
+        entity_data.shield.pending_unblock = False
 
     def next_shield_frame(self, shield):
         # to black and to rest are the transitory states, otherwise animations repeat
         match shield.action_state:
             case SAS.TO_BLOCK:
-                shield.action_state = SAS.BLOCK
+                if entity_data.shield.pending_unblock:
+                    shield.action_state = SAS.TO_REST
+                    entity_data.shield.pending_unblock = False
+                else:
+                    shield.action_state = SAS.BLOCK
             case SAS.TO_REST:
                 shield.action_state = SAS.IDLE
                 self.back_to_idle(shield)

@@ -13,6 +13,8 @@ from renderers.default_renderer import DefaultRenderer
 from physics.ground_physics import GroundPhysics
 from base_manager import BaseManager
 from system.system_buses import EntityManagerBus
+from defense.defense_manager import DefenseManager
+
 class EntityManager(BaseManager):
     def __init__(self, animation_manager=None, attack_manager=None, context=None):
         super().__init__(context=context)
@@ -21,6 +23,9 @@ class EntityManager(BaseManager):
             animation_manager = AnimationManager(context)
         if not attack_manager:
             attack_manager = AttackManager(context, self.local_bus)
+
+        self.defense_manager = DefenseManager(context, self.local_bus)
+
         self.controllers = {}
         # controllers are loaded depending on entity type, done when loading a level
         self.physics = {}
@@ -94,6 +99,7 @@ class EntityManager(BaseManager):
         self.physics[entity.entity_category].update(entity)
         # should just return events as of now
         self.attack_manager.update(entity)
+        self.defense_manager.update(entity)
 
         self.state_machine.state_updates(entity, self.state_updates)
         if self.state_change_events:

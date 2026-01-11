@@ -43,6 +43,10 @@ class AttackFinishedEvent(Event):
     def __init__(self, name="AttackFinishedEvent"):
         super().__init__(name)
 
+class BlockFinishedEvent(Event):
+    def __init__(self, name="BlockFinishedEvent"):
+        super().__init__(name)
+
 class PossibleCollisionEvent(Event):
     def __init__(self, origin=None, target_type = CET.ENEMY):
         super().__init__(name="PossibleCollisionEvent")

@@ -1,7 +1,8 @@
-from enums.entity_enums import SHIELD_ACTION_STATE as SAS
+from enums.entity_enums import SHIELD_ACTION_STATE as SAS, ActionState as AS
 from base_manager import BaseManager
-from events_commands.events import BlockFinishedEvent, PlayerShieldDamagedEvent
-from events_commands.commands import DefenseCommand, StartBlockCommand, EndBlockCommand, BreakBlockCommand
+from events_commands.events import BlockFinishedEvent, PlayerShieldDamagedEvent, ActionFailedEvent
+from events_commands.commands import DefenseCommand, StartBlockCommand, EndBlockCommand, BreakBlockCommand, BreakShieldCommand, SoundCommand
+from audio.sound_enums import SoundEnum
 
 
 class DefenseManager(BaseManager):
@@ -16,11 +17,17 @@ class DefenseManager(BaseManager):
             self.update_shield(entity_data)
 
     def start_blocking(self, entity_data):
-        entity_data.shield.pending_unblock = False
-        entity_data.shield.active = True
-        entity_data.shield.action_state = SAS.TO_BLOCK
-        entity_data.shield.current_frame = 0
-        entity_data.shield.frame_timer = 0
+        shield = entity_data.shield
+        if shield.current_stamina <= 0 or shield.action_state != SAS.IDLE:
+            # cannot block
+            self.local_bus.send_event(ActionFailedEvent(action_type=AS.DEFENDING))
+            return
+        shield.pending_unblock = False
+        shield.active = True
+        shield.action_state = SAS.TO_BLOCK
+        shield.current_frame = 0
+        shield.frame_timer = 0
+        self.context.bus.send_command(SoundCommand(sound_enum=SoundEnum.BLOCK))
 
     def end_blocking(self, entity_data):
         if entity_data.shield.action_state == SAS.BLOCK:
@@ -34,14 +41,20 @@ class DefenseManager(BaseManager):
         entity_data.shield.current_frame = 0
         entity_data.shield.frame_timer = 0
         entity_data.shield.pending_unblock = False
+        self.context.bus.send_command(SoundCommand(sound_enum=SoundEnum.UNBLOCK))
+
 
     def break_block(self, entity_data):
         entity_data.shield.pending_unblock = False
         entity_data.shield.action_state = SAS.BROKEN
-        entity_data.shield.current_animation = entity_data.shield.animations[SAS.BROKEN]
+        entity_data.shield.current_animation = entity_data.shield.animation[SAS.BROKEN]
         entity_data.shield.current_frame = 0
         entity_data.shield.frame_timer = 0
         entity_data.shield.broken_timer = 0
+        entity_data.shield.regen_active = False
+        self.local_bus.send_event(BlockFinishedEvent())
+        self.context.bus.send_command(SoundCommand(sound_enum=SoundEnum.BREAK))
+
 
     def update_shield(self, entity_data):
         if self.update_frame_index(entity_data.shield):
@@ -52,7 +65,7 @@ class DefenseManager(BaseManager):
             # while blocking, reset frame to stay on blocking frame
             entity_data.shield.broken_timer += 1
             if entity_data.shield.broken_timer >= entity_data.shield.broken_recovery_time:
-                self.back_to_idle(entity_data)
+                self.back_to_idle(entity_data.shield)
         if entity_data.shield.regen_active:
             self.handle_regen(entity_data)
 
@@ -120,6 +133,9 @@ class DefenseManager(BaseManager):
             case EndBlockCommand():
                 self.end_blocking(entity_data)
             case BreakBlockCommand():
+                # break block is the version received from event manager, which routes through entity manager first, break shield comes from out systems like damage manager and contains the entity in its data
+                self.break_block(entity_data)
+            case BreakShieldCommand():
                 self.break_block(entity_data)
 
     def handle_regen(self, entity_data):
@@ -132,9 +148,9 @@ class DefenseManager(BaseManager):
                 self.context.bus.send_event(shield_damaged_event)
             if shield.current_stamina == shield.max_stamina:
                 shield.regen_timer = None
+                shield.regen_active = False
                 if entity_data.shield.action_state == SAS.IDLE:
                     shield.active = False
-                    shield.regen_active = False
 
 
 class Timer():

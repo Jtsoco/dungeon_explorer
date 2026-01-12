@@ -27,7 +27,7 @@ class ShieldData:
         self.hitbox=hitbox
         self.current_frame = 0
         self.frame_timer = 0
-        self.broken_recovery__time = 30 # frames to recover from broken state
+        self.broken_recovery_time = 60 # frames to recover from broken state
         self.broken_timer = 0
         self.pending_unblock = False
 

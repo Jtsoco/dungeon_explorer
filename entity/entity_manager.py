@@ -1,6 +1,6 @@
 from animations.animation_manager import AnimationManager
 from attack.attack_manager import AttackManager
-from events_commands.commands import MovementCommand, AttackCommand, EffectCommand, SoundCommand, AudioCommand, PhysicsCommand, DefenseCommand
+from events_commands.commands import MovementCommand, AttackCommand, EffectCommand, SoundCommand, AudioCommand, PhysicsCommand, DefenseCommand, BreakShieldCommand, BreakBlockCommand
 from events_commands.events import StateChangedEvent, PossibleCollisionEvent as PCE, AttackFinishedEvent as AFE, PhysicsEvent as PE, NewlyLoadedCellsEvent as NLCE
 from enums.entity_enums import EntityType as ET, EntityCategory as EC, InputEnums as IE, PowerUpStates as PUS
 from state_machines.default_state_machine import DefaultStateMachine
@@ -52,6 +52,7 @@ class EntityManager(BaseManager):
     def setup_bus(self):
         self.context.bus.register_event_listener(NLCE, self)
         self.context.bus.register_command_listener(PhysicsCommand, self)
+        self.context.bus.register_command_listener(DefenseCommand, self)
 
     def reset_local(self):
         self.local_events = []
@@ -101,12 +102,15 @@ class EntityManager(BaseManager):
         self.attack_manager.update(entity)
         self.defense_manager.update(entity)
 
+        self.handle_state_updates(entity)
+
+
+
+    def handle_state_updates(self, entity):
         self.state_machine.state_updates(entity, self.state_updates)
         if self.state_change_events:
             for event in self.state_change_events:
-                self.delegate_event(event, entity)
-
-
+                    self.delegate_event(event, entity)
 
     def process_loop(self, entity):
         killswitch = False
@@ -145,6 +149,10 @@ class EntityManager(BaseManager):
         match command:
             case PhysicsCommand():
                 self.physics[command.entity.entity_category].handle_command(command)
+            case BreakShieldCommand():
+                self.break_shield_command(command)
+
+
 
     def handle_newly_loaded_cells(self, event: NLCE):
         # when new cells are loaded, setup entities in those cells
@@ -218,3 +226,10 @@ class EntityManager(BaseManager):
     def setup_controller(self, entity_type, controller):
         if entity_type not in self.controllers:
             self.controllers[entity_type] = controller()
+
+    def break_shield_command(self, command):
+        # gets its own method because may involve state machine and defense manager
+        entity_data = command.target
+        self.defense_manager.handle_command(command, entity_data)
+        # may have state updates afterwards to process
+        self.handle_state_updates(entity_data)

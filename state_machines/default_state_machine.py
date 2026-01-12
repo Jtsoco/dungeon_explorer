@@ -1,5 +1,5 @@
-from enums.entity_enums import MovementState as MS, ActionState as AS, DirectionState as DS, InputEnums as IE, PowerUpStates as PUS
-from events_commands.events import InputEvent, StartedFallingEvent, LandedEvent, StateChangedEvent, AttackFinishedEvent, BlockFinishedEvent
+from enums.entity_enums import MovementState as MS, ActionState as AS, DirectionState as DS, InputEnums as IE, PowerUpStates as PUS, SHIELD_ACTION_STATE as SAS
+from events_commands.events import InputEvent, StartedFallingEvent, LandedEvent, StateChangedEvent, AttackFinishedEvent, BlockFinishedEvent, ActionFailedEvent
 from events_commands.commands import MoveCommand, JumpCommand, AttackCommand, EffectCommand, SoundCommand, EndBlockCommand, StartBlockCommand, BreakBlockCommand
 from audio.sound_enums import SoundEnum
 from enums.effects_enums import ParticleEffectType as PET, EffectType
@@ -104,6 +104,8 @@ class DefaultStateMachine():
                 case AttackFinishedEvent():
                     data.action_state = AS.NONE
                 case BlockFinishedEvent():
+                    data.action_state = AS.NONE
+                case ActionFailedEvent():
                     data.action_state = AS.NONE
         new_states = [data.movement_state, data.action_state, data.direction_state]
         # events, commands = [], []

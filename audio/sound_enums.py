@@ -8,6 +8,9 @@ class SoundEnum(Enum):
     LAND = 2
     DAMAGE = 3
     DEATH = 4
+    BREAK = 5
+    BLOCK = 6
+    UNBLOCK = 7
     # EXPLOSION = auto()
 
 class MusicEnum(Enum):

@@ -11,6 +11,9 @@ class StateChangedEvent(Event):
     def __init__(self):
         super().__init__(name="StateChangedEvent")
 
+class StateUpdateEvent(Event):
+    def __init__(self, name="StateUpdateEvent"):
+        super().__init__(name)
 
 class InputEvent(Event):
 
@@ -23,7 +26,7 @@ class InputEvent(Event):
     def __str__(self):
         return f"InputEvent: {self.input_type}"
 
-class MovementEvent(Event):
+class MovementEvent(StateUpdateEvent):
     # events for movement system
     # indicating something movement related has happened
     def __init__(self, name="MovementEvent"):
@@ -39,11 +42,13 @@ class StartedFallingEvent(MovementEvent):
     def __init__(self, name="StartedFallingEvent"):
         super().__init__(name)
 
-class AttackFinishedEvent(Event):
+
+
+class AttackFinishedEvent(StateUpdateEvent):
     def __init__(self, name="AttackFinishedEvent"):
         super().__init__(name)
 
-class BlockFinishedEvent(Event):
+class BlockFinishedEvent(StateUpdateEvent):
     def __init__(self, name="BlockFinishedEvent"):
         super().__init__(name)
 
@@ -140,6 +145,12 @@ class PlayerShieldDamagedEvent(PlayerEvent):
 class PlayerDeathEvent(PlayerEvent):
     def __init__(self):
         super().__init__(name="PlayerDeathEvent")
+
+class ActionFailedEvent(StateUpdateEvent):
+    # useful when block or attack fails, for local entity loop
+    def __init__(self, action_type=None):
+        super().__init__(name="ActionFailedEvent")
+        self.action_name = action_type
 # Need:
 # events will typically be things that happen in which multiple other systems may need to respond to
 # World Event?

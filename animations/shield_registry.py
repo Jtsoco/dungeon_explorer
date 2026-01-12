@@ -15,8 +15,8 @@ IRON_SHIELD = {
         AF(pos=(6,8), duration=12)
     ],
     SHIELD_ACTION_STATE.BROKEN: [
-        AF(pos=(5,10), duration=6),
-        AF(pos=(6,10), duration=6),
+        AF(pos=(5,9), duration=6),
+        AF(pos=(6,9), duration=6),
     ]
 
 }

@@ -15,6 +15,15 @@ class BaseManager():
     def notify_event(self, event):
         self.queued_events.append(event)
 
+    def secondary_update(self):
+        # this loop exists just to fire off any newly stored events or commands that may have been queued not during the main update loop, avoids using handle_updates to prevent things that only happen once from being repeated
+        for command in self.queued_commands:
+            self.handle_command(command)
+        self.queued_commands.clear()
+        for event in self.queued_events:
+            self.handle_event(event)
+        self.queued_events.clear()
+
     def update(self):
         # just need to interact with this from outside to process queued events and commands,
         # and activate main update loop,

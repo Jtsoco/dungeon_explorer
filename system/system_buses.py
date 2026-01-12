@@ -1,7 +1,7 @@
 
 
-from events_commands.events import Event, DeathEvent, BoundaryCollisionEvent, NewlyLoadedCellsEvent, PlayerEvent, BossDeathEvent, StateChangedEvent, MovementEvent, AttackFinishedEvent, BlockFinishedEvent
-from events_commands.commands import Command, AudioCommand, EffectCommand, CollisionCommand, PhysicsCommand, CombatCommand, HUDCommand
+from events_commands.events import Event, DeathEvent, BoundaryCollisionEvent, NewlyLoadedCellsEvent, PlayerEvent, BossDeathEvent, StateChangedEvent, StateUpdateEvent
+from events_commands.commands import Command, AudioCommand, EffectCommand, CollisionCommand, DefenseCommand, PhysicsCommand, CombatCommand, HUDCommand
 
 class SystemBus:
 
@@ -15,6 +15,7 @@ class SystemBus:
             PhysicsCommand: [],
             CombatCommand: [],
             HUDCommand: [],
+            DefenseCommand: [],
         }
         #
         self.event_listeners = {
@@ -93,7 +94,7 @@ class EntityManagerBus(SystemBus):
         match event:
             case StateChangedEvent():
                 self.receiver.state_change_events.append(event)
-            case MovementEvent() | AttackFinishedEvent() | BlockFinishedEvent():
+            case StateUpdateEvent():
                 # movement events go to state updates for processing, as they are events that occur that may change state
                 # if similar events that need to be processed for possible state updates arise, then maybe make a state update event parent class
                 self.receiver.state_updates.append(event)

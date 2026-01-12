@@ -13,8 +13,8 @@ class DefaultRenderer():
         Renders an entity, and if they have a weapon that weapon too, using the weapons offset and the entity offset. Entity offset determines where they hold the weapon, weapon offset determines where the weapon handle is relative to upperleft of a frame
         """
 
-        x = entity_data.position[0]
-        y = entity_data.position[1]
+        x = entity_data.rect.position[0]
+        y = entity_data.rect.position[1]
         # float positions for y mean sometimes it's in the floor, using int here would make movement more jittery, so physics just requires it to be int for y positions, x doesn't have this limition and just uses floats, as no one cares if it goes in the wall a little
 
         current_frame = entity_data.animation_data.get_current_frame()
@@ -55,6 +55,21 @@ class DefaultRenderer():
             wv = weapon_frame.pos[1] * 8
             # for now just hardcoding weapon width and w_height, revisit later
             pyxel.blt(weapon_x, weapon_y, image_bank, wu, wv, w_width, w_height, color_key, rotate=weapon_frame.rotation)
+
+        if entity_data.shield:
+            shield_frame = entity_data.shield.get_current_frame()
+            s_width = shield_frame.w_h[0]
+            s_height = shield_frame.w_h[1]
+            shield_x = x
+            shield_y = y
+            # shield doesn't use offset for now
+            wu = shield_frame.pos[0] * 8
+            wv = shield_frame.pos[1] * 8
+            if entity_data.direction_state == DS.LEFT:
+                s_width = -s_width
+            pyxel.blt(shield_x, shield_y, image_bank, wu, wv, s_width, s_height, color_key, rotate=shield_frame.rotation)
+            # shields don't rotate for now but might later
+
 
 
 

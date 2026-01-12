@@ -24,6 +24,8 @@ class InputEnums(Enum):
     JUMP = auto()
     ATTACK = auto()
     STOP_MOVE = auto()
+    BLOCK = auto()
+    STOP_BLOCK = auto()
 
 class AttackType(Enum):
     MELEE = auto()
@@ -73,3 +75,21 @@ class SimpleAIState(Enum):
     CHASE = auto()
     ATTACK = auto()
     FLEE = auto()
+    JUMP_ATTACK = auto()
+
+class PowerUpStates(Enum):
+    DOUBLE_JUMP = auto()
+
+class SHIELD_ACTION_STATE(Enum):
+    IDLE = auto()
+    TO_BLOCK = auto()
+    BLOCK = auto()
+    DEFLECT = auto()
+    TO_REST = auto()
+    BROKEN = auto()
+
+class SHIELD_CATEGORY(Enum):
+    WOODEN_SHIELD = auto()
+    IRON_SHIELD = auto()
+    MAGIC_SHIELD = auto()
+    BLADE = auto()

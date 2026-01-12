@@ -8,7 +8,7 @@ WEAPONS_ANIMATIONS = {
             AF(offset=(0, 6), pos=(2, 6), duration=3),
             AF(offset=(1, 5), pos=(3, 6), duration=1),
             AF(offset=(1, 5), pos=(2, 7), duration=1),
-            AF(offset=(1, 5), pos=(3, 7), duration=11),
+            AF(offset=(1, 5), pos=(3, 7), duration=6),
         ]
     },
     WC.GLAIVE: {
@@ -40,6 +40,9 @@ WEAPONS_ANIMATIONS = {
 
 WEAPONS_HITBOXES = {
     WC.SHORTSWORD: {
+        WAS.SHEATHED: {
+            0: (0, 0)  # no hitbox when sheathed
+        },
         WAS.DEFAULT: {
             0: (0, 0),  # no hitbox on first animation frame
             1: (8, 4),
@@ -48,6 +51,9 @@ WEAPONS_HITBOXES = {
         }
     },
     WC.GLAIVE: {
+        WAS.SHEATHED: {
+            0: (0, 0)  # no hitbox when sheathed
+        },
         WAS.DEFAULT: {
             0: (0, 0),  # no hitbox on first animation frame
             1: (10, 6),

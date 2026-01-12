@@ -1,8 +1,9 @@
 from enums.entity_enums import SHIELD_ACTION_STATE as SAS, ActionState as AS
 from base_manager import BaseManager
 from events_commands.events import BlockFinishedEvent, PlayerShieldDamagedEvent, ActionFailedEvent
-from events_commands.commands import DefenseCommand, StartBlockCommand, EndBlockCommand, BreakBlockCommand, BreakShieldCommand, SoundCommand
+from events_commands.commands import DefenseCommand, StartBlockCommand, EndBlockCommand, BreakBlockCommand, BreakShieldCommand, SoundCommand, EffectCommand
 from audio.sound_enums import SoundEnum
+from enums.effects_enums import ParticleEffectType as PET, EffectType
 
 
 class DefenseManager(BaseManager):
@@ -54,6 +55,8 @@ class DefenseManager(BaseManager):
         entity_data.shield.regen_active = False
         self.local_bus.send_event(BlockFinishedEvent())
         self.context.bus.send_command(SoundCommand(sound_enum=SoundEnum.BREAK))
+        self.context.bus.send_command(EffectCommand(pos=entity_data.rect.position, sub_type=PET.BREAK, effect_type=EffectType.PARTICLE))
+
 
 
     def update_shield(self, entity_data):

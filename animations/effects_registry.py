@@ -16,10 +16,17 @@ PARTICLE_REGISTRY = {
         AnimationFrame((0,30)),
         AnimationFrame((1,30)),
     ],
+
+    ParticleEffectType.BREAK: [
+        AnimationFrame((5,10)),
+        AnimationFrame((6,10)),
+
+    ],
 }
 set_lengths_according_to_fps(PARTICLE_REGISTRY[ParticleEffectType.JUMP_DUST], seconds=0.3)
 set_offset(PARTICLE_REGISTRY[ParticleEffectType.JUMP_DUST], offset=(0,2))
 set_lengths_according_to_fps(PARTICLE_REGISTRY[ParticleEffectType.LAND_DUST], seconds=0.3)
+set_lengths_according_to_fps(PARTICLE_REGISTRY[ParticleEffectType.BREAK], seconds=0.2)
 
 EFFECTS_REGISTRY = {
     EffectType.PARTICLE: PARTICLE_REGISTRY,

@@ -12,3 +12,4 @@ class ParticleEffectType(Enum):
     LAND_DUST = auto()
     EXPLOSION = auto()
     SPARKLES = auto()
+    BREAK = auto()

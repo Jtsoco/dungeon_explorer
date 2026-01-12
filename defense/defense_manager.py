@@ -1,7 +1,8 @@
 from enums.entity_enums import SHIELD_ACTION_STATE as SAS
 from base_manager import BaseManager
-from events_commands.events import BlockFinishedEvent
+from events_commands.events import BlockFinishedEvent, PlayerShieldDamagedEvent
 from events_commands.commands import DefenseCommand, StartBlockCommand, EndBlockCommand, BreakBlockCommand
+
 
 class DefenseManager(BaseManager):
     def __init__(self, context=None, local_bus=None):
@@ -42,6 +43,9 @@ class DefenseManager(BaseManager):
         entity_data.shield.frame_timer = 0
         entity_data.shield.broken_timer = 0
 
+
+
+
     def update_shield(self, entity_data):
         if self.update_frame_index(entity_data.shield):
             if entity_data.shield.current_frame == 0:
@@ -52,9 +56,14 @@ class DefenseManager(BaseManager):
             entity_data.shield.broken_timer += 1
             if entity_data.shield.broken_timer >= entity_data.shield.broken_recovery_time:
                 self.back_to_idle(entity_data)
+        self.handle_regen(entity_data)
+
+    def needs_regen(self, shield):
+        return shield.current_stamina < shield.max_stamina
 
     def back_to_idle(self, shield):
-        shield.active = False
+        if not self.needs_regen(shield):
+            shield.active = False
         shield.action_state = SAS.IDLE
         shield.current_frame = 0
         shield.frame_timer = 0
@@ -105,3 +114,54 @@ class DefenseManager(BaseManager):
                 self.end_blocking(entity_data)
             case BreakBlockCommand():
                 self.break_block(entity_data)
+
+    def handle_regen(self, entity_data):
+        shield = entity_data.shield
+        if shield.current_stamina < shield.max_stamina:
+            if shield.regen_timer is None:
+                shield.regen_timer = RepeatTimer(shield.regen_delay)
+                shield.regen_timer.start()
+            if shield.regen_timer.update():
+                shield.current_stamina = min(shield.max_stamina, shield.current_stamina + shield.regen_amount)
+                if entity_data.player:
+                    # send event to hud to update shield display
+                    shield_damaged_event = PlayerShieldDamagedEvent(-shield.regen_amount)  # 0 damage just to trigger update
+                    self.context.bus.send_event(shield_damaged_event)
+                if shield.current_stamina == shield.max_stamina:
+                    shield.regen_timer = None
+                    if entity_data.shield.action_state == SAS.IDLE:
+                        shield.active = False
+
+
+class Timer():
+    def __init__(self, duration_frames):
+        self.duration_frames = duration_frames
+        self.current_frame = 0
+        self.active = False
+        self.action = None
+
+    def start(self):
+        self.active = True
+        self.current_frame = 0
+
+    def update(self):
+        if not self.active:
+            return False
+        self.current_frame += 1
+        if self.current_frame >= self.duration_frames:
+            self.active = False
+            return True
+        return False
+
+class RepeatTimer(Timer):
+    def __init__(self, duration_frames):
+        super().__init__(duration_frames)
+
+    def update(self):
+        if not self.active:
+            return False
+        self.current_frame += 1
+        if self.current_frame >= self.duration_frames:
+            self.current_frame = 0
+            return True
+        return False

@@ -132,6 +132,11 @@ class PlayerHealedEvent(PlayerEvent):
         super().__init__(name="PlayerHealedEvent")
         self.heal_amount = heal_amount
 
+class PlayerShieldDamagedEvent(PlayerEvent):
+    def __init__(self, damage_amount):
+        super().__init__(name="PlayerShieldDamagedEvent")
+        self.damage_amount = damage_amount
+
 class PlayerDeathEvent(PlayerEvent):
     def __init__(self):
         super().__init__(name="PlayerDeathEvent")

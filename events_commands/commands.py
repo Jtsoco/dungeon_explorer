@@ -169,3 +169,10 @@ class BreakBlockCommand(DefenseCommand):
 class ShieldHitCommand(CombatCommand):
     def __init__(self, origin, target, damage_amount, knockback=0):
         super().__init__(origin, target, damage_amount, knockback=knockback, name="ShieldHitCommand")
+
+# this is a defense command but it will route through the entity manager first then to the defense manager, and physics manager as needed
+class BreakShieldCommand(DefenseCommand):
+    def __init__(self, target):
+        super().__init__()
+        self.name = "BreakShieldCommand"
+        self.target = target

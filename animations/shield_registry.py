@@ -6,10 +6,10 @@ IRON_SHIELD = {
         AF(pos=(5,6), duration=12)
     ],
     SHIELD_ACTION_STATE.TO_BLOCK: [
-        AF(pos=(6,6), duration=3),
-        AF(pos=(5,7), duration=3),
-        AF(pos=(6,7), duration=3),
-        AF(pos=(5,8), duration=3),
+        AF(pos=(6,6), duration=1),
+        AF(pos=(5,7), duration=1),
+        AF(pos=(6,7), duration=1),
+        AF(pos=(5,8), duration=1),
     ],
     SHIELD_ACTION_STATE.BLOCK: [
         AF(pos=(6,8), duration=12)

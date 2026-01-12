@@ -34,6 +34,7 @@ class ShieldData:
         self.regen_timer = None
         self.regen_amount = 10
         self.regen_delay = 20
+        self.regen_active = False
 
     def get_current_frame(self):
         return self.animation[self.action_state][self.current_frame]

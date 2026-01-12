@@ -9,5 +9,12 @@ HUD_REGISTRY = {
         75: [AnimationFrame((2, 11))],
         50: [AnimationFrame((1, 12))],
         25: [AnimationFrame((2, 12))],
+    },
+
+    HE.SHIELD: {
+        100: [AnimationFrame((5, 11))],
+        75: [AnimationFrame((6, 11))],
+        50: [AnimationFrame((5, 12))],
+        25: [AnimationFrame((6, 12))],
     }
 }

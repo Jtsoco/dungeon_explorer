@@ -6,6 +6,7 @@ from HUD.health_component import HealthComponent
 from renderers.hud_renderer import HudRenderer
 from HUD.temporary_message import TemporaryMessage
 from magic_numbers import FPS
+from HUD.sprite_component import SpriteComponent
 
 
 class HUDManager(BaseManager):
@@ -15,7 +16,8 @@ class HUDManager(BaseManager):
         # HUD elements can be initialized here
         # e.g., health bars, score displays, etc.
         self.components = {
-            HCT.HEALTH: HealthComponent(max_health=100),
+            HCT.HEALTH: SpriteComponent(max_value=100),
+            HCT.SHIELD: SpriteComponent(max_value=100, x_offset=-10, start_position=(0, 10), sprite_enum=HCT.SHIELD),
         }
         self.renderer = HudRenderer()
         self.temporary_messages = []  # For displaying temporary messages on HUD
@@ -53,7 +55,7 @@ class HUDManager(BaseManager):
         player = self.context.data_context.player_data
         health_component = self.components[HCT.HEALTH]
         new_health = player.health
-        health_component.set_new_health(new_health)
+        health_component.set_new_value(new_health)
 
     def handle_updates(self):
         # for now, just have temporary commmands play one at a time, when one is done
@@ -77,4 +79,7 @@ class HUDManager(BaseManager):
     def setup_player_hud(self, player_data):
         health_component = self.components[HCT.HEALTH]
 
-        health_component.set_new_max_health(player_data.health, True)
+        health_component.set_new_max_value(player_data.health, True)
+
+        shield_component = self.components[HCT.SHIELD]
+        shield_component.set_new_max_value(player_data.shield.max_stamina, True)

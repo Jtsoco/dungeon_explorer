@@ -16,10 +16,16 @@ class AppController():
         new_recents.update(self.handle_inputs())
         new_commands_to_send = new_recents - self.recent_commands
         for command in new_commands_to_send:
-            self.bus.send_command(command)
+            self.send_command(command)
+
         self.recent_commands = new_recents
 
     def handle_inputs(self):
         # return a set of recent commands
         recents = set()
         return recents
+
+    def send_command(self, command):
+        # meant to be overwritten in subclasses, where they handle what command will be sent
+
+        pass

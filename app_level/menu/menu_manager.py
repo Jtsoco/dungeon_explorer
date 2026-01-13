@@ -1,7 +1,7 @@
 from base_manager import BaseManager
 from app_level.menu.menu_data import MenuData
 from app_level.menu.menu_renderer import MenuRenderer
-from app_level.app_commands_events import MenuCommand
+from app_level.app_commands_events import MenuCommand, StateChangeEvent
 from app_level.app_enums import MenuCommandTypes
 
 
@@ -51,4 +51,4 @@ class MenuManager(BaseManager):
         action = current_option.action
         # Here we would handle the action, e.g., changing menus or executing commands
         # For now, we will just print the action
-        print(f"Executing action: {action}")
+        self.bus.send_event(StateChangeEvent(new_state=action))

@@ -59,3 +59,5 @@ def draw_entity(entity_data, x, y, image_bank=0, color_key=2, additions=True):
 
         if entity_data.shield:
             draw_shield(entity_data, x, y, image_bank, color_key)
+
+# TODO change these to allow scale to be easily modified later

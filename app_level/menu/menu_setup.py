@@ -1,0 +1,37 @@
+from app_level.menu.menu_data import MenuData
+from app_level.menu.menu_option import MenuOption
+from app_level.app_enums import MenuCommandTypes, MenuState
+
+menu_registry = {
+    MenuState.MAIN_MENU: [
+        ("Start Game", MenuState.GAME),
+        ("Options", MenuState.OPTIONS),
+        ("Quit", MenuCommandTypes.QUIT)
+    ],
+    MenuState.PAUSE_MENU: [
+        ("Resume", MenuState.GAME),
+        ("Options", MenuState.OPTIONS),
+        ("Inventory", MenuState.INVENTORY),
+        ("Quit to Main Menu", MenuState.MAIN_MENU)
+    ]
+}
+def setup_main_menu():
+    main_menu = MenuData(title="Main Menu")
+    position_x = 24
+    position_y = 24
+    for option_text, action in menu_registry[MenuState.MAIN_MENU]:
+        menu_option = MenuOption(text=option_text, postion=(position_x, position_y), action=action)
+        main_menu.add_option(menu_option)
+        position_y += 16
+    return main_menu
+
+def setup_pause_menu(context=None):
+    # context isn't used for now, will be soon
+    pause_menu = MenuData(title="Game Paused")
+    position_x = 24
+    position_y = 24
+    for option_text, action in menu_registry[MenuState.PAUSE_MENU]:
+        menu_option = MenuOption(text=option_text, position=(position_x, position_y), action=action)
+        pause_menu.add_option(menu_option)
+        position_y += 16
+    return pause_menu

@@ -115,6 +115,8 @@ class Game():
             self.effects_manager.handle_event(event)
 
     def draw(self):
+        self.scene_manager.set_camera_to_current()
+
         self.scene_manager.draw()
         effects = self.effects_manager.get_effects()
         self.scene_manager.render_effects(effects)
@@ -129,7 +131,6 @@ class Game():
         # hud has no knowledge of world positions, so temporary set to 0,0 for drawing then set back
         self.scene_manager.set_camera_to_zero()
         self.hud_manager.draw()
-        self.scene_manager.set_camera_to_current()
         # outline_entity(self.player.data)
 
         # player animation

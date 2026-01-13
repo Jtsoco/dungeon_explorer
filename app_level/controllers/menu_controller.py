@@ -18,7 +18,7 @@ class MenuController(AppController):
         # when backspace pressed, send a go back command
 
         # for later, when right or left pressed, send respective commands
-        if pyxel.btn(pyxel.KEY_KP_ENTER):
+        if pyxel.btn(pyxel.KEY_RETURN):
             recents.add(MenuCommandTypes.SELECT)
         if pyxel.btn(pyxel.KEY_UP):
             recents.add(MenuCommandTypes.UP)

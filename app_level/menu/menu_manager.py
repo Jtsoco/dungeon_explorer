@@ -13,6 +13,7 @@ class MenuManager(BaseManager):
         self.renderer = MenuRenderer()
         self.bus = bus
         self.menu_data = None
+        self.game = None
         if bus:
             self.setup_menu_bus()
 
@@ -34,8 +35,8 @@ class MenuManager(BaseManager):
         pass
 
     def draw(self):
-        if self.menu_data:
-            self.renderer.render(self.menu_data)
+
+        self.renderer.render(self.menu_data, self.game)
 
     def handle_menu_command(self, command):
         match command.action:

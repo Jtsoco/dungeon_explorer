@@ -98,6 +98,7 @@ class App():
     def setup_game_mode(self):
         if not self.game:
             self.game = Game()
+            self.menu_manager.game = self.game
         self.current_update = self.game.update
         self.current_draw = self.game.draw
         self.setup_game_controller()

@@ -16,7 +16,7 @@ menu_registry = {
     ]
 }
 def setup_main_menu():
-    main_menu = MenuData(title="Main Menu")
+    main_menu = MenuData(MenuState.MAIN_MENU, title="Main Menu")
     position_x = 24
     position_y = 24
     for option_text, action in menu_registry[MenuState.MAIN_MENU]:
@@ -27,7 +27,7 @@ def setup_main_menu():
 
 def setup_pause_menu(context=None):
     # context isn't used for now, will be soon
-    pause_menu = MenuData(title="Game Paused")
+    pause_menu = MenuData(MenuState.PAUSE_MENU, title="Game Paused")
     position_x = 24
     position_y = 24
     for option_text, action in menu_registry[MenuState.PAUSE_MENU]:

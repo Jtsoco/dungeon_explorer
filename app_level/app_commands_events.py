@@ -1,0 +1,14 @@
+from app_level.app_enums import MenuCommandTypes, MenuState
+class AppEvent():
+    def __init__(self, name: str = "GenericAppEvent"):
+        self.name = name
+# this is separate from games own events and commands class system
+
+class AppCommand():
+    def __init__(self, name: str = "GenericAppCommand"):
+        self.name = name
+
+class MenuCommand(AppCommand):
+    def __init__(self, action: MenuCommandTypes.SELECT):
+        super().__init__(name="MenuCommand")
+        self.action = action

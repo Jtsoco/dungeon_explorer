@@ -29,6 +29,14 @@ class App():
         # for an actual game, the menu would select the game (dungeon) to play
         self.running = False
 
+        # for new app, menu system:
+        # need bus for communication
+        # app level controller to always be updated
+        # state change event to be handled here to switch between menu and game
+        # a stack of menu type enums or states to keep track of current menu
+        # leaning towards enums, because game menus access data through context, so no need to keep full state objects for different menus
+        # just reload menu each time based on enum
+
 
     def run(self):
         self.running = True

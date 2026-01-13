@@ -75,22 +75,9 @@ class Game():
 
         all_entities = self.cell_manager.current_state.get_enemies()
         all_entities.add(self.player_data)
-        main_commands = []
+
         for entity in all_entities:
             self.entity_manager.update_entity(entity)
-
-
-        # after main events, need a last check to see if any state changes happend that need to be handled for respective entities
-        # possibly consider breaking down entity manager into subparts or having it like this for now where it contains a full 'sub process' for each entity
-
-        # take these main event filter logic type code sections and put them into a deticated filter module/class later, to clean this logic up
-
-            # match event:
-            #     case PACE():
-            #         self.collision_manager.register_collision(event)
-        for command in main_commands:
-            self.delegate_command(command)
-
 
         self.collision_manager.update()
         self.effects_manager.update()
@@ -102,23 +89,6 @@ class Game():
         self.sound_effects_manager.update()
         self.scene_manager.camera.update()
 
-
-
-        # for now all main events are collision, refactor for sound later
-
-        # then, do damage manager,
-        # get events from damage manager,
-        # for now if death event remove from entities, make death animation later
-        # for physics pass to entity physics manager through event handler and it will handle add momentum event, and add momentum, which will update position on next physics update (next frame then), but update entities momentum now.
-        # also edit physics manager, so that if momentum is above/below current speed based on direction, change by 1 until it matches that speed. revist eventually later for more robust acceleration/deceleration system
-
-    def delegate_command(self, command):
-        # for now commands probably shouldn't return new events or commands, but if they do in the future can handle that here
-        match command:
-            case EffectCommand():
-                self.effects_manager.handle_command(command)
-            case AudioCommand():
-                self.sound_effects_manager.handle_command(command)
 
     def delegate_event(self, event):
         events = []

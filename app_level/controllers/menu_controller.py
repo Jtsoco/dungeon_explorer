@@ -4,8 +4,8 @@ from app_level.app_enums import MenuCommandTypes
 from app_level.app_commands_events import MenuCommand
 
 class MenuController(AppController):
-    def __init__(self, context):
-        super().__init__(context)
+    def __init__(self, bus):
+        super().__init__(bus)
         # setup menu specific things here
 
     def handle_inputs(self):

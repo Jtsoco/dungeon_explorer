@@ -2,12 +2,21 @@
 
 from events_commands.events import Event, DeathEvent, BoundaryCollisionEvent, NewlyLoadedCellsEvent, PlayerEvent, BossDeathEvent, StateChangedEvent, StateUpdateEvent
 from events_commands.commands import Command, AudioCommand, EffectCommand, CollisionCommand, DefenseCommand, PhysicsCommand, CombatCommand, HUDCommand
+from app_level.app_commands_events import AppEvent, AppCommand, MenuCommand, StateChangeEvent as AppStateChangeEvent
 
 class SystemBus:
 
     # it has events, and it allows entities to register themselves to listen for events and commands, which they hold onto until processed
-    def __init__(self):
-        #
+    def __init__(self, game=True):
+
+        self.command_listeners = {}
+        self.event_listeners = {}
+        if game:
+            self.setup()
+        else:
+            self.setup_app_bus()
+
+    def setup(self):
         self.command_listeners = {
             AudioCommand: [],
             EffectCommand: [],
@@ -25,6 +34,14 @@ class SystemBus:
             PlayerEvent: [],
             BossDeathEvent: [],
 
+        }
+
+    def setup_app_bus(self):
+        self.command_listeners = {
+            MenuCommand: [],
+        }
+        self.event_listeners = {
+            AppStateChangeEvent: [],
         }
 
 

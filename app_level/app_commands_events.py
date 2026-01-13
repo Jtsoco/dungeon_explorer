@@ -12,3 +12,8 @@ class MenuCommand(AppCommand):
     def __init__(self, action: MenuCommandTypes.SELECT):
         super().__init__(name="MenuCommand")
         self.action = action
+
+class StateChangeEvent(AppEvent):
+    def __init__(self, new_state: MenuState):
+        super().__init__(name="StateChangeEvent")
+        self.new_state = new_state

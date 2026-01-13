@@ -6,15 +6,22 @@ from app_level.app_enums import MenuCommandTypes
 
 
 class MenuManager(BaseManager):
-    def __init__(self, context=None):
+    def __init__(self, context=None, bus=None):
         super().__init__(context)
         # this will primarily handle menu related events and commands
         self.menu_title = "Main Menu"
-        self.current_menu = None
         self.renderer = MenuRenderer()
+        self.bus = bus
+        self.menu_data = None
+        if bus:
+            self.setup_menu_bus()
+
+    def setup_menu_bus(self):
+        # subscribe to menu related events and commands
+        self.bus.register_command_listener(MenuCommand, self)
 
     def set_menu(self, menu):
-        self.current_menu = menu
+        self.menu_data = menu
 
     def handle_command(self, command):
         # handle menu related commands
@@ -27,8 +34,8 @@ class MenuManager(BaseManager):
         pass
 
     def draw(self):
-        if self.current_menu:
-            self.renderer.render(self.current_menu)
+        if self.menu_data:
+            self.renderer.render(self.menu_data)
 
     def handle_menu_command(self, command):
         match command.action:
@@ -40,7 +47,7 @@ class MenuManager(BaseManager):
                 self.execute_current_selection()
 
     def execute_current_selection(self):
-        current_option = self.current_menu.menu_options[self.current_menu.current_selection_index]
+        current_option = self.menu_data.menu_options[self.menu_data.current_selection_index]
         action = current_option.action
         # Here we would handle the action, e.g., changing menus or executing commands
         # For now, we will just print the action

@@ -20,7 +20,7 @@ def setup_main_menu():
     position_x = 24
     position_y = 24
     for option_text, action in menu_registry[MenuState.MAIN_MENU]:
-        menu_option = MenuOption(text=option_text, postion=(position_x, position_y), action=action)
+        menu_option = MenuOption(text=option_text, position=(position_x, position_y), action=action)
         main_menu.add_option(menu_option)
         position_y += 16
     return main_menu

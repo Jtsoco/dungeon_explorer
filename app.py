@@ -10,6 +10,14 @@
 # probably just fine to use an event system to notify camera of cell changes
 # and main game keeps track of what cell is active based on player position
 # and will run multiple cells during a cell transition
+from app_level.menu.menu_manager import MenuManager
+from system.system_buses import SystemBus
+from app_level.app_commands_events import StateChangeEvent
+from app_level.controllers.menu_controller import MenuController
+from app_level.app_enums import MenuState
+from app_level.menu.menu_setup import setup_main_menu, setup_pause_menu
+from app_level.controllers.menu_controller import MenuController
+
 import pyxel
 TRANSPARENT_COLOR = 2
 from game import Game
@@ -37,22 +45,59 @@ class App():
         # leaning towards enums, because game menus access data through context, so no need to keep full state objects for different menus
         # just reload menu each time based on enum
         # and if last selection is desired, just save it with last selection too, for the stack
+        self.top_bus = SystemBus(False)
+        self.menu_manager = MenuManager(bus=self.top_bus)
+        self.top_bus.register_event_listener(StateChangeEvent, self)
 
+        self.controller = MenuController(self.top_bus)
+
+        self.current_update = None
+        self.current_draw = None
+        main_menu = setup_main_menu()
+        self.menu_manager.set_menu(main_menu)
+        self.setup_menu_mode()
+
+    def state_change_event(self, event):
+        match event.new_state:
+            case MenuState.MAIN_MENU:
+                main_menu = setup_main_menu()
+                self.menu_manager.set_menu(main_menu)
+                self.setup_menu_mode()
+            case MenuState.PAUSE_MENU:
+                pause_menu = setup_pause_menu()
+                self.menu_manager.set_menu(pause_menu)
+                self.setup_menu_mode()
+            case MenuState.GAME:
+                self.setup_game_mode()
+
+    def setup_menu_mode(self):
+        self.current_update = self.menu_manager.update
+        self.current_draw = self.menu_manager.draw
+
+    def setup_game_mode(self):
+        self.game = Game()
+        self.current_update = self.game.update
+        self.current_draw = self.game.draw
+
+    def notify_event(self, event):
+        match event:
+            case StateChangeEvent():
+                self.state_change_event(event)
 
     def run(self):
         self.running = True
-        self.game = Game()
-        print("Starting game loop...")
+
         pyxel.run(self.update, self.draw)
 
 
     def update(self):
-        self.game.update()
+        self.controller.update()
+        self.current_update()
 
     def draw(self):
         # would actually draw the current active state, game for now
         pyxel.cls(0)
-        self.game.draw()
+        self.current_draw()
 
 
 app = App()

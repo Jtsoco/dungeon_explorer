@@ -5,7 +5,7 @@ class Text():
         self.content = content
         self.position = position
         self.color = color
-        self.width = pyxel.Font.text_width(content)
+
         self.height = 8 #pyxel sets hight to be the same for all fonts at 8
     def draw(self):
         pyxel.text(self.position[0], self.position[1], self.content, self.color)

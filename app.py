@@ -59,18 +59,21 @@ class App():
         self.setup_menu_mode()
         self.menu_stack = []
 
-    def state_change_event(self, new_state, append=True):
-        if append:
-            self.menu_stack.append(new_state)
+    def state_change_event(self, new_state):
+
         match new_state:
             case MenuState.MAIN_MENU:
                 main_menu = setup_main_menu()
                 if len(self.menu_stack) > 1:
                     # make sure a return to main menu from another menu resets to main menu
                     self.menu_stack = [MenuState.MAIN_MENU]
+                else:
+                    self.menu_stack.append(MenuState.MAIN_MENU)
                 self.menu_manager.set_menu(main_menu)
+
                 self.setup_menu_mode()
             case MenuState.PAUSE_MENU:
+                self.menu_stack.append(MenuState.PAUSE_MENU)
                 pause_menu = setup_pause_menu()
                 self.menu_manager.set_menu(pause_menu)
                 self.setup_menu_mode()
@@ -83,9 +86,9 @@ class App():
         if self.menu_stack:
             self.menu_stack.pop()
             if self.menu_stack:
-                self.state_change_event(self.menu_stack[-1], False)
+                self.state_change_event(self.menu_stack[-1])
             else:
-                self.state_change_event(MenuState.MAIN_MENU, False)
+                self.state_change_event(MenuState.MAIN_MENU)
                 pyxel.quit()
         else:
             pyxel.quit()
@@ -96,6 +99,7 @@ class App():
         self.current_draw = self.menu_manager.draw
 
     def setup_game_mode(self):
+        self.menu_stack.append(MenuState.GAME)
         if not self.game:
             self.game = Game()
             self.menu_manager.game = self.game
@@ -125,15 +129,15 @@ class App():
 
 
     def setup_menu_controller(self):
-        recents = self.controller.recent_commands.copy()
+        recents = self.controller.recent_keys.copy()
         # prevent losing recent commands when switching controllers
         self.controller = MenuController(self.top_bus)
-        self.controller.recent_commands = recents
+        self.controller.recent_keys = recents
 
     def setup_game_controller(self):
-        recents = self.controller.recent_commands.copy()
+        recents = self.controller.recent_keys.copy()
         self.controller = GameController(self.top_bus)
-        self.controller.recent_commands = recents
+        self.controller.recent_keys = recents
 
 app = App()
 app.run()

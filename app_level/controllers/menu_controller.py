@@ -19,16 +19,31 @@ class MenuController(AppController):
 
         # for later, when right or left pressed, send respective commands
         if pyxel.btn(pyxel.KEY_RETURN):
-            recents.add(MenuCommandTypes.SELECT)
+            recents.add(pyxel.KEY_RETURN)
         if pyxel.btn(pyxel.KEY_UP):
-            recents.add(MenuCommandTypes.UP)
+            recents.add(pyxel.KEY_UP)
         if pyxel.btn(pyxel.KEY_DOWN):
-            recents.add(MenuCommandTypes.DOWN)
+            recents.add(pyxel.KEY_DOWN)
         if pyxel.btn(pyxel.KEY_TAB):
-            recents.add(MenuCommandTypes.QUIT)
+            recents.add(pyxel.KEY_TAB)
 
         return recents
 
     def send_command(self, command_type):
         command = MenuCommand(action=command_type)
         self.bus.send_command(command)
+
+    def process_keys(self, new_recents):
+        commands = set()
+        for key in new_recents:
+            match key:
+                case pyxel.KEY_RETURN:
+                    commands.add(MenuCommandTypes.SELECT)
+                case pyxel.KEY_UP:
+                    commands.add(MenuCommandTypes.UP)
+                case pyxel.KEY_DOWN:
+                    commands.add(MenuCommandTypes.DOWN)
+                case pyxel.KEY_TAB:
+                    commands.add(MenuCommandTypes.QUIT)
+
+        return commands

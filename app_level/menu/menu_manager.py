@@ -2,7 +2,7 @@ from base_manager import BaseManager
 from app_level.menu.menu_data import MenuData
 from app_level.menu.menu_renderer import MenuRenderer
 from app_level.app_commands_events import MenuCommand, StateChangeEvent
-from app_level.app_enums import MenuCommandTypes
+from app_level.app_enums import MenuCommandTypes, MenuState
 
 
 class MenuManager(BaseManager):
@@ -45,6 +45,11 @@ class MenuManager(BaseManager):
                 self.menu_data.index_down()
             case MenuCommandTypes.SELECT:
                 self.execute_current_selection()
+
+            case MenuCommandTypes.QUIT:
+                self.bus.send_event(StateChangeEvent(new_state=MenuState.QUIT))
+            case MenuCommandTypes.TO_MAIN_MENU:
+                self.bus.send_event(StateChangeEvent(new_state=MenuState.MAIN_MENU))
 
     def execute_current_selection(self):
         current_option = self.menu_data.menu_options[self.menu_data.current_selection_index]

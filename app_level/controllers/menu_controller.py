@@ -24,6 +24,8 @@ class MenuController(AppController):
             recents.add(MenuCommandTypes.UP)
         if pyxel.btn(pyxel.KEY_DOWN):
             recents.add(MenuCommandTypes.DOWN)
+        if pyxel.btn(pyxel.KEY_TAB):
+            recents.add(MenuCommandTypes.QUIT)
 
         return recents
 

@@ -6,7 +6,7 @@ menu_registry = {
     MenuState.MAIN_MENU: [
         ("Start Game", MenuState.GAME),
         ("Options", MenuState.OPTIONS),
-        ("Quit", MenuCommandTypes.QUIT)
+        ("Quit", MenuState.QUIT)
     ],
     MenuState.PAUSE_MENU: [
         ("Resume", MenuState.GAME),

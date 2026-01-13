@@ -6,8 +6,8 @@ class MenuCommandTypes(Enum):
     LEFT = auto()
     RIGHT = auto()
     SELECT = auto()
-    BACK = auto()
     QUIT = auto()
+    TO_MAIN_MENU = auto()
 
 class MenuState(Enum):
     MAIN_MENU = auto()
@@ -15,6 +15,7 @@ class MenuState(Enum):
     PAUSE_MENU = auto()
     INVENTORY = auto()
     GAME_OVER = auto()
+    QUIT = auto()
 
     # the game enum references when the actual game is being played
     GAME = auto()

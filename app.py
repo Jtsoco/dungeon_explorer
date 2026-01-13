@@ -17,6 +17,7 @@ from app_level.controllers.menu_controller import MenuController
 from app_level.app_enums import MenuState
 from app_level.menu.menu_setup import setup_main_menu, setup_pause_menu
 from app_level.controllers.menu_controller import MenuController
+from app_level.controllers.game_controller import GameController
 
 import pyxel
 TRANSPARENT_COLOR = 2
@@ -56,11 +57,17 @@ class App():
         main_menu = setup_main_menu()
         self.menu_manager.set_menu(main_menu)
         self.setup_menu_mode()
+        self.menu_stack = []
 
-    def state_change_event(self, event):
-        match event.new_state:
+    def state_change_event(self, new_state, append=True):
+        if append:
+            self.menu_stack.append(new_state)
+        match new_state:
             case MenuState.MAIN_MENU:
                 main_menu = setup_main_menu()
+                if len(self.menu_stack) > 1:
+                    # make sure a return to main menu from another menu resets to main menu
+                    self.menu_stack = [MenuState.MAIN_MENU]
                 self.menu_manager.set_menu(main_menu)
                 self.setup_menu_mode()
             case MenuState.PAUSE_MENU:
@@ -69,20 +76,36 @@ class App():
                 self.setup_menu_mode()
             case MenuState.GAME:
                 self.setup_game_mode()
+            case MenuState.QUIT:
+                self.quit()
+
+    def quit(self):
+        if self.menu_stack:
+            self.menu_stack.pop()
+            if self.menu_stack:
+                self.state_change_event(self.menu_stack[-1], False)
+            else:
+                self.state_change_event(MenuState.MAIN_MENU, False)
+                pyxel.quit()
+        else:
+            pyxel.quit()
 
     def setup_menu_mode(self):
+        self.setup_menu_controller()
         self.current_update = self.menu_manager.update
         self.current_draw = self.menu_manager.draw
 
     def setup_game_mode(self):
-        self.game = Game()
+        if not self.game:
+            self.game = Game()
         self.current_update = self.game.update
         self.current_draw = self.game.draw
+        self.setup_game_controller()
 
     def notify_event(self, event):
         match event:
             case StateChangeEvent():
-                self.state_change_event(event)
+                self.state_change_event(event.new_state)
 
     def run(self):
         self.running = True
@@ -99,6 +122,17 @@ class App():
         pyxel.cls(0)
         self.current_draw()
 
+
+    def setup_menu_controller(self):
+        recents = self.controller.recent_commands.copy()
+        # prevent losing recent commands when switching controllers
+        self.controller = MenuController(self.top_bus)
+        self.controller.recent_commands = recents
+
+    def setup_game_controller(self):
+        recents = self.controller.recent_commands.copy()
+        self.controller = GameController(self.top_bus)
+        self.controller.recent_commands = recents
 
 app = App()
 app.run()

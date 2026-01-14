@@ -1,3 +1,25 @@
-Making a game in pyxel, having fun making the architecture of it, and making it with the goal of practicing using code that takes something in, and returns something, editing as little as possible. 
-Only a couple of the systems inside will change the data they receive, but just wanted to try making an event systems wehre a thing like a collision manager is handed possible colliding entities, then returns a collision event that is then handled by either the state or physics manager, rather than having collision manager change things
-basically having areas of authority that will change the data, and everything else just making events that say 'hey, do this'.
+Making a simple fun game in pyxel, which is a retro style api for making games with python.
+Currently just enjoying making the architecture and things easy to edit for adding lots of sprites.
+Cells now load and unload based on player position when transitioning between cells
+Current furtherst branch is the 5-menu branch, which has added a working main menu and pause menu, but needs to add the inventory menu and some graphics that look nice to the menu.
+This is a retro style game, because that compensates for my artistic ability and sound design skills,
+
+
+
+If you want to try it, after cloning the github:
+
+python -m venv .venv
+source .venv/bin/activate
+pip install pyxel
+
+git switch -c 5-menu
+
+then run the app file.
+
+Controls are:
+D: Attack
+S: Block (shield break exists, so beware of blocking too many attacks!)
+Space: Jump
+Arrowkeys: Move Right, Left
+
+Player is currently not set to get a game over when they die, have fun playing around. Beating the first boss gives the double jump powerup.

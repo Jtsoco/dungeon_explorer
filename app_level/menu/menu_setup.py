@@ -1,7 +1,8 @@
 from app_level.menu.menu_data import MenuData
-from app_level.menu.menu_option import MenuOption
-from app_level.menu.menu_component import MenuComponent
+from app_level.menu.menu_option import MenuOption, CharacterMenuOption
+from app_level.menu.menu_component import MenuComponent, CharacterSelectMenuComponent
 from app_level.app_enums import MenuCommandTypes, MenuState
+from enums.entity_enums import EntityType
 
 menu_registry = {
     MenuState.MAIN_MENU: [
@@ -34,6 +35,13 @@ def setup_main_menu():
     menu_option = MenuOption(text=new_option[0], position=(position_x, position_y + 16), action=new_option[1])
     new_component.add_option(menu_option)
     main_menu.add_component(new_component)
+
+
+    # character_select component
+    character_options = [
+        EntityType.PLAYER,
+        EntityType.PLAYER_RONIN
+    ]
 
     return main_menu
 

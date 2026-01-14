@@ -2,6 +2,7 @@
 # this is the base class to be inherited from, for things like inventory, and regular selections
 from app_level.menu.menu_option import MenuOption
 from HUD.text import Text
+from enums.entity_enums import EntityType
 
 class MenuComponent():
     def __init__(self, pos, x_offset, y_offset, title=None):
@@ -137,3 +138,12 @@ class HorizontalMenuComponent(MenuComponent):
         for option in self.options:
             items.append(option.text)
         return items
+
+class CharacterSelectMenuComponent(HorizontalMenuComponent):
+    def __init__(self, pos, x_offset, y_offset, title="Select Character"):
+        super().__init__(pos, x_offset, y_offset, title)
+
+
+    def character_to_draw(self):
+        current_option = self.get_current_selection()
+        return current_option.character

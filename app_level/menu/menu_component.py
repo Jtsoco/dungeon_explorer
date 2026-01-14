@@ -104,3 +104,36 @@ class TwoDMenuComponent(MenuComponent):
 
     def get_current_selection(self):
         return self.options[self.y_index][self.x_index]
+
+class HorizontalMenuComponent(MenuComponent):
+    def __init__(self, pos, x_offset, y_offset, title=None):
+        super().__init__(pos, x_offset, y_offset, title)
+
+    def index_up(self):
+        return False
+
+    def index_down(self):
+        return False
+
+    def index_right(self):
+        if self.x_index < len(self.options) - 1:
+            self.x_index += 1
+            return True
+        return False
+
+    def index_left(self):
+        if self.x_index > 0:
+            self.x_index -= 1
+            return True
+        return False
+
+    def get_current_selection(self):
+        return self.options[self.x_index]
+
+    def items_to_draw(self):
+        items = []
+        if self.title:
+            items.append(self.title)
+        for option in self.options:
+            items.append(option.text)
+        return items

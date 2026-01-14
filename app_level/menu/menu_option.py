@@ -5,3 +5,9 @@ class MenuOption():
     def __init__(self, text, position=(0,0), action=None):
         self.text = Text(content=text, position=position)
         self.action = action  #enum for action to perform on select
+
+
+class CharacterMenuOption(MenuOption):
+    def __init__(self, character, position=(0,0), action=None):
+        super().__init__(text=character.name, position=position, action=action)
+        self.character = character

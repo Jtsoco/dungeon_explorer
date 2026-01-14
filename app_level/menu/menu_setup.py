@@ -6,8 +6,8 @@ from app_level.app_enums import MenuCommandTypes, MenuState
 menu_registry = {
     MenuState.MAIN_MENU: [
         ("Start Game", MenuState.GAME),
+
         ("Options", MenuState.OPTIONS),
-        ("Quit", MenuState.QUIT)
     ],
     MenuState.PAUSE_MENU: [
         ("Resume", MenuState.GAME),
@@ -21,11 +21,20 @@ def setup_main_menu():
     main_menu_component = MenuComponent(pos=(24, 24), x_offset=0, y_offset=16)
     position_x = 24
     position_y = 24
+
+    character_component = ("Character Select", MenuState.CHARACTER_SELECT),
     for option_text, action in menu_registry[MenuState.MAIN_MENU]:
         menu_option = MenuOption(text=option_text, position=(position_x, position_y), action=action)
         main_menu_component.add_option(menu_option)
         position_y += 16
+
     main_menu.add_component(main_menu_component)
+    new_component = MenuComponent(pos=(24, position_y + 16), x_offset=0, y_offset=16)
+    new_option = ("Quit", MenuState.QUIT)
+    menu_option = MenuOption(text=new_option[0], position=(position_x, position_y + 16), action=new_option[1])
+    new_component.add_option(menu_option)
+    main_menu.add_component(new_component)
+
     return main_menu
 
 def setup_pause_menu(context=None):

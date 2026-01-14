@@ -8,6 +8,7 @@ from defense.shield_data import ShieldData
 
 
 def spawn_player(position: tuple = (0, 0)) -> EntityData:
+    weapon= spawn_weapon(WC.KATANA, CET.ENEMY)
     player_setup = {
         "health": 500,
         "position": list(position),
@@ -16,7 +17,7 @@ def spawn_player(position: tuple = (0, 0)) -> EntityData:
         "entity_type": ET.PLAYER,
         "entity_category": EC.GROUND,
         "animation_data": AnimationData(),
-        "weapon_data": WeaponData(),
+        "weapon_data": weapon,
         "speed": 2
 
     }

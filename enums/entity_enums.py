@@ -68,6 +68,7 @@ class WeaponCategory(Enum):
     STAFF = auto()
     AXE = auto()
     GLAIVE = auto()
+    KATANA = auto()
 
 class BoundaryType(Enum):
     X = (3, 8)

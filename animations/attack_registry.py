@@ -11,6 +11,15 @@ WEAPONS_ANIMATIONS = {
             AF(offset=(1, 5), pos=(3, 7), duration=6),
         ]
     },
+    WC.KATANA: {
+        WAS.SHEATHED: [AF(pos=(9,6), offset=(7,6), duration=3)],
+        WAS.DEFAULT: [
+            # AF(pos=(9,6), offset=(1,6), duration=1),
+            AF(pos=(10,6), offset=(1,6), duration=1),
+            AF(pos=(9,7), offset=(1,6), duration=1),
+            AF(pos=(10,7), offset=(1,6), duration=1),
+        ]
+    },
     WC.GLAIVE: {
         WAS.SHEATHED: [AF(pos=(0,26), duration=3, offset=(6,14), w_h=(8, 16))],
         WAS.DEFAULT: [
@@ -75,7 +84,19 @@ WEAPONS_HITBOXES = {
             10: (14, 10),
             11: (14, 10),
         }
+    },
+    WC.KATANA: {
+        WAS.SHEATHED: {
+            0: (0, 0)  # no hitbox when sheathed
+        },
+        WAS.DEFAULT: {
+            0: (0, 0),  # no hitbox on first animation frame
+            1: (8, 6),
+            2: (8, 6),
+            3: (8, 6),
+        }
     }
+
 
 }
 
@@ -88,5 +109,9 @@ WEAPON_STATS = {
     WC.GLAIVE: {
         "damage": 80,
         "knockback": (2.0, 1.5)
+    },
+    WC.KATANA: {
+        "damage": 50,
+        "knockback": (.3, 0)
     }
 }

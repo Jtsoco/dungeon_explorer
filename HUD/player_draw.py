@@ -41,6 +41,9 @@ def draw_shield(entity_data, x, y, image_bank=0, color_key=2):
     pyxel.blt(shield_x, shield_y, image_bank, wu, wv, s_width, s_height, color_key, rotate=shield_frame.rotation)
 
 def draw_entity(entity_data, x, y, image_bank=0, color_key=2, additions=True):
+    if additions:
+        if entity_data.weapon:
+            draw_weapon(entity_data, x, y, image_bank, color_key)
     current_frame = entity_data.animation_data.get_current_frame()
     u = current_frame.pos[0] * 8
     v = current_frame.pos[1] * 8
@@ -54,9 +57,6 @@ def draw_entity(entity_data, x, y, image_bank=0, color_key=2, additions=True):
     # pyxel.rect(entity_data.position[0], entity_data.position[1], entity_data.w_h[0], entity_data.w_h[1], 8)
     pyxel.blt(x, y, image_bank, u, v, width, height, color_key, rotate=rotation)
     if additions:
-        if entity_data.weapon:
-            draw_weapon(entity_data, x, y, image_bank, color_key)
-
         if entity_data.shield:
             draw_shield(entity_data, x, y, image_bank, color_key)
 

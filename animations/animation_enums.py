@@ -9,6 +9,12 @@ class PlayerAnimationEnums(Enum):
     PLAYER_FALL = (0, 10)
     # Add more as needed
 
+    RONIN_IDLE = (7,6)
+    RONIN_WALK_1 = (8,6)
+    RONIN_WALK_2 = (8,7)
+    RONIN_JUMP = (7,7)
+    RONIN_FALL = (7,8)
+    # Add more as needed
 class SkullAnimationEnums(Enum):
     SKULL_IDLE_1 = (0, 15)
     SKULL_WALK_1 = (0, 15)

@@ -44,6 +44,9 @@ class EntityType(Enum):
     SKULL = (3, 15)
     KNIGHT = (3, 16)
     WINGED_KNIGHT = (3, 23)
+    # this spawn won't be used, just for the player costume
+    PLAYER_RONIN = (3, 30)
+
 
 class EntityCategory(Enum):
     FLYING = auto()

@@ -20,6 +20,15 @@ SPRITES = {
         MS.JUMPING: [AF(offset=player_offset, pos=PAE.PLAYER_JUMP.value, duration=12)],
         MS.FALLING: [AF(offset=player_offset, pos=PAE.PLAYER_FALL.value, duration=12)],
     },
+    ET.PLAYER_RONIN: {
+        MS.IDLE: [AF(offset=player_offset, pos=PAE.RONIN_IDLE.value, duration=12)],
+        MS.WALKING: [
+            AF(offset=player_offset, pos=PAE.RONIN_WALK_1.value, duration=6),
+            AF(offset=player_offset, pos=PAE.RONIN_WALK_2.value, duration=6)
+        ],
+        MS.JUMPING: [AF(offset=player_offset, pos=PAE.RONIN_JUMP.value, duration=12)],
+        MS.FALLING: [AF(offset=player_offset, pos=PAE.RONIN_FALL.value, duration=12)],
+    },
 
     ET.SKULL: {
         MS.IDLE: [AF(pos=SAE.SKULL_IDLE_1.value, duration=12)],

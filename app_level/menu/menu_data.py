@@ -7,6 +7,7 @@ class MenuData:
 
 
         self.menu_options = []
+        self.menu_components = []
         self.current_selection_index = 0
         self.title = Text(content=title, position=(24, 8))
         self.menu_type = menu_type
@@ -16,9 +17,28 @@ class MenuData:
         self.menu_options.append(menu_option)
 
     def index_up(self):
-        if self.current_selection_index > 0:
+        if not self.current_selection().index_up():
+            # returning false means the menu component has reached the end of its items
             self.current_selection_index -= 1
 
     def index_down(self):
-        if self.current_selection_index < len(self.menu_options) - 1:
+        component_index_changed = self.current_selection().index_down()
+        # if false, it can't move down anymore, and need to move to next component if possible
+
+        if not component_index_changed and (self.current_selection_index < len(self.menu_components) - 1):
             self.current_selection_index += 1
+
+    def current_selection(self):
+        return self.menu_components[self.current_selection_index]
+
+    def get_current_selection(self):
+        return self.menu_components[self.current_selection_index].get_current_selection()
+
+    def add_component(self, menu_component):
+        self.menu_components.append(menu_component)
+
+    def items_to_draw(self):
+        items = []
+        for component in self.menu_components:
+            items.extend(component.items_to_draw())
+        return items

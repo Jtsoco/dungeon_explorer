@@ -16,12 +16,14 @@ class MenuRenderer():
         title = menu_data.title
         pyxel.text(title.position[0], title.position[1], title.content, title.color)
         selection_color = 11
-        for index, option in enumerate(menu_data.menu_options):
-            x = option.text.position[0]
-            if index == menu_data.current_selection_index:
-                pyxel.text(x + 8, option.text.position[1], "> " + option.text.content, selection_color)
+        items = menu_data.items_to_draw()
+        current_selection = menu_data.get_current_selection()
+        for text in items:
+            x = text.position[0]
+            if current_selection.text == text:
+                pyxel.text(x + 8, text.position[1], "> " + text.content, selection_color)
             else:
-                pyxel.text(x, option.text.position[1], option.text.content, option.text.color)
+                pyxel.text(x, text.position[1], text.content, text.color)
 
     def render_with_game(self, menu_data, game):
         # draw a dark rectangle over the game for menu background

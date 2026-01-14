@@ -7,6 +7,7 @@ from animations.animation_frame import AnimationFrame as AF
         # basically offset is for where you want to hold something on a sprite,
         # but for a weapon it represents where the handle is drawn relative to the top left of its brick tile
 player_offset = (7, 5)
+ronin_offset = (7, 6)
 
 # possibly refactor later so players and enemies have their own sprite registries, and if it expands to other dungeons separate enemy registries by dungeons so not all loaded at once, or maybe types of enemies for separation criteria
 SPRITES = {
@@ -21,13 +22,13 @@ SPRITES = {
         MS.FALLING: [AF(offset=player_offset, pos=PAE.PLAYER_FALL.value, duration=12)],
     },
     ET.PLAYER_RONIN: {
-        MS.IDLE: [AF(offset=player_offset, pos=PAE.RONIN_IDLE.value, duration=12)],
+        MS.IDLE: [AF(offset=ronin_offset, pos=PAE.RONIN_IDLE.value, duration=12)],
         MS.WALKING: [
-            AF(offset=player_offset, pos=PAE.RONIN_WALK_1.value, duration=6),
-            AF(offset=player_offset, pos=PAE.RONIN_WALK_2.value, duration=6)
+            AF(offset=ronin_offset, pos=PAE.RONIN_WALK_1.value, duration=6),
+            AF(offset=ronin_offset, pos=PAE.RONIN_WALK_2.value, duration=6)
         ],
-        MS.JUMPING: [AF(offset=player_offset, pos=PAE.RONIN_JUMP.value, duration=12)],
-        MS.FALLING: [AF(offset=player_offset, pos=PAE.RONIN_FALL.value, duration=12)],
+        MS.JUMPING: [AF(offset=ronin_offset, pos=PAE.RONIN_JUMP.value, duration=12)],
+        MS.FALLING: [AF(offset=ronin_offset, pos=PAE.RONIN_FALL.value, duration=12)],
     },
 
     ET.SKULL: {

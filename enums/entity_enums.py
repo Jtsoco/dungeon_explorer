@@ -97,3 +97,4 @@ class SHIELD_CATEGORY(Enum):
     IRON_SHIELD = auto()
     MAGIC_SHIELD = auto()
     BLADE = auto()
+    DAGGER = auto()

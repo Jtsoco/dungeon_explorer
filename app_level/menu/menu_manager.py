@@ -53,7 +53,7 @@ class MenuManager(BaseManager):
                 self.bus.send_event(StateChangeEvent(new_state=MenuState.MAIN_MENU))
 
     def execute_current_selection(self):
-        current_option = self.menu_data.menu_options[self.menu_data.current_selection_index]
+        current_option = self.menu_data.get_current_selection()
         action = current_option.action
         # Here we would handle the action, e.g., changing menus or executing commands
         # For now, we will just print the action

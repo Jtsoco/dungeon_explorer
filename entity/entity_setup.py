@@ -5,7 +5,7 @@ from enums.entity_enums import EntityType as ET, EntityCategory as EC, WeaponCat
 from animations.attack_registry import WEAPON_STATS, WEAPONS_ANIMATIONS, WEAPONS_HITBOXES
 from animations.shield_registry import SHIELD_ANIMATIONS, SHIELD_HITBOXES, SHIELD_STATS
 from defense.shield_data import ShieldData
-
+from animations.sprite_registry import SPRITES
 
 def spawn_player(position: tuple = (0, 0)) -> EntityData:
     weapon= spawn_weapon(WC.KATANA, CET.ENEMY)
@@ -16,13 +16,13 @@ def spawn_player(position: tuple = (0, 0)) -> EntityData:
         "player": True,
         "entity_type": ET.PLAYER,
         "entity_category": EC.GROUND,
-        "animation_data": AnimationData(),
+        "animation_data": AnimationData(SPRITES[ET.PLAYER_RONIN]),
         "weapon_data": weapon,
         "speed": 2
 
     }
     player_data = EntityData(**player_setup)
-    shield = spawn_shield(SC.IRON_SHIELD)
+    shield = spawn_shield(SC.DAGGER)
     player_data.shield = shield
     # player_data.power_ups[PUS.DOUBLE_JUMP] = True  # give player double jump powerup for testing
     return player_data

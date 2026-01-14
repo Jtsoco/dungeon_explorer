@@ -96,7 +96,7 @@ class GroundPhysics:
             case MS.JUMPING | MS.FALLING:
                 if collided:
 
-                    if self.upward_momentum(data):
+                    if self.downward_momentum(data):
                         # landed, wait naming of method is confusing, rename it
                         event = LandedEvent()
                         data.velocity[1] = 0
@@ -109,6 +109,11 @@ class GroundPhysics:
                         data.velocity[1] = 0
                         data.secondary_momentum[1] = 0
                         self.local_bus.send_event(event)
+                elif data.movement_state == MS.JUMPING and self.downward_momentum(data):
+                    # started falling
+                    event = StartedFallingEvent()
+                    self.local_bus.send_event(event)
+
 
             case _:
                 if collided:
@@ -137,7 +142,7 @@ class GroundPhysics:
         return self.has_tile_collision(bricks, context)
 
 
-    def upward_momentum(self, data):
+    def downward_momentum(self, data):
         if data.velocity[1] + data.secondary_momentum[1] < 0:
             return True
         return False

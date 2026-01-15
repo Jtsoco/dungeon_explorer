@@ -24,6 +24,8 @@ class InputEnums(Enum):
     JUMP = auto()
     ATTACK = auto()
     STOP_MOVE = auto()
+    BLOCK = auto()
+    STOP_BLOCK = auto()
 
 class AttackType(Enum):
     MELEE = auto()
@@ -42,6 +44,9 @@ class EntityType(Enum):
     SKULL = (3, 15)
     KNIGHT = (3, 16)
     WINGED_KNIGHT = (3, 23)
+    # this spawn won't be used, just for the player costume
+    PLAYER_RONIN = (3, 30)
+
 
 class EntityCategory(Enum):
     FLYING = auto()
@@ -63,6 +68,8 @@ class WeaponCategory(Enum):
     STAFF = auto()
     AXE = auto()
     GLAIVE = auto()
+    KATANA = auto()
+    ENEMY_SWORD = auto()
 
 class BoundaryType(Enum):
     X = (3, 8)
@@ -73,3 +80,22 @@ class SimpleAIState(Enum):
     CHASE = auto()
     ATTACK = auto()
     FLEE = auto()
+    JUMP_ATTACK = auto()
+
+class PowerUpStates(Enum):
+    DOUBLE_JUMP = auto()
+
+class SHIELD_ACTION_STATE(Enum):
+    IDLE = auto()
+    TO_BLOCK = auto()
+    BLOCK = auto()
+    DEFLECT = auto()
+    TO_REST = auto()
+    BROKEN = auto()
+
+class SHIELD_CATEGORY(Enum):
+    WOODEN_SHIELD = auto()
+    IRON_SHIELD = auto()
+    MAGIC_SHIELD = auto()
+    BLADE = auto()
+    DAGGER = auto()

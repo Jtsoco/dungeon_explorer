@@ -12,9 +12,9 @@ from events_commands.events import PossibleAttackCollisionEvent as PACE, DamageE
 from events_commands.commands import EffectCommand, SoundCommand, MusicCommand, AudioCommand
 from HUD.hud_manager import HUDManager
 from temporary_managers.powerup_manager import PowerupManager
+from temporary_managers.item_manager import ItemManager
 from effects.effects_manager import EffectsManager
 from audio.sound_effects_manager import SoundEffectsManager
-
 from system.context import Context
 
 from datetime import datetime
@@ -72,6 +72,7 @@ class Game():
 
         self.hud_manager = HUDManager(self.context)
         self.hud_manager.setup_player_hud(self.context.data_context.player_data)
+        self.item_manager = ItemManager(self.context)
 
 
     def update(self):
@@ -126,6 +127,8 @@ class Game():
         enemies = self.cell_manager.current_state.get_enemies()
         for enemy in enemies:
             self.entity_manager.draw(enemy)
+        items = self.cell_manager.current_state.get_items()
+        self.scene_manager.render_items(items)
         self.entity_manager.draw(self.context.data_context.player_data)
         self.scene_manager.render_effects(effects)
         camera_pos = self.scene_manager.camera.current_camera

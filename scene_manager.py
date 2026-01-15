@@ -25,6 +25,8 @@ class SceneManager(BaseManager):
     def render_effects(self, effects):
         self.renderer.render_effects(effects)
 
+    def render_items(self, items):
+        self.renderer.render_items(items)
 
     def notify(self, event):
         # event will be a custom event class later

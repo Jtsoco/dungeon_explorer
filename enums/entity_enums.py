@@ -99,3 +99,23 @@ class SHIELD_CATEGORY(Enum):
     MAGIC_SHIELD = auto()
     BLADE = auto()
     DAGGER = auto()
+
+
+class ItemType(Enum):
+    HEALTH = auto()
+    MANA = auto()
+    WEAPON = auto()
+    SHIELD = auto()
+    POWERUP = auto()
+
+class ItemAction(Enum):
+    PICKUP = auto()
+    DROP = auto()
+    USE = auto()
+    EQUIP = auto()
+    UNEQUIP = auto()
+
+class InventoryCategory(Enum):
+    WEAPONS = auto()
+    SHIELDS = auto()
+    ITEMS = auto()

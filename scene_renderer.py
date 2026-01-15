@@ -21,6 +21,11 @@ class SceneRenderer():
         for effect in effects:
             self.render_effect(effect)
 
+    def render_items(self, items):
+        for item in items:
+            self.render_effect(item)
+
+
     def render_effect(self, effect):
         x = effect.position[0]
         y = effect.position[1]

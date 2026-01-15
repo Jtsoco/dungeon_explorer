@@ -33,7 +33,7 @@ class HUDManager(BaseManager):
             case PDe():
                 self.handle_damage(event)
             case PHe():
-                pass
+                self.handle_damage(event)
             case PDea():
                 pass
             case PSDe():

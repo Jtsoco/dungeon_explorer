@@ -1,7 +1,7 @@
 from events_commands.events import PossibleAttackCollisionEvent as PACE, BoundaryCollisionEvent as BCE
-from enums.entity_enums import EntityType as ET, CollisionEntityTarget as CET, DirectionState as DS, SHIELD_ACTION_STATE as SAS
+from enums.entity_enums import EntityType as ET, CollisionEntityTarget as CET, DirectionState as DS, SHIELD_ACTION_STATE as SAS, ItemAction as IA
 from base_manager import BaseManager
-from events_commands.commands import LoadActiveAttackCollisionCommand as LAACC, LoadEntityCollisionCommand as LECC, LoadMultipleEntityCollisionCommand as LMECC, LoadMultipleBoundariesCollisionCommand as LMBCC, CollisionCommand, DamageCommand as DC, EntitySeparationCommand as ESC, ShieldHitCommand as SHC
+from events_commands.commands import LoadActiveAttackCollisionCommand as LAACC, LoadEntityCollisionCommand as LECC, LoadMultipleEntityCollisionCommand as LMECC, LoadMultipleBoundariesCollisionCommand as LMBCC, CollisionCommand, DamageCommand as DC, EntitySeparationCommand as ESC, ShieldHitCommand as SHC, LoadItemCollisionCommand as LICC, HandleItemCommand
 
 class CollisionManager(BaseManager):
     def __init__(self, context):
@@ -11,7 +11,9 @@ class CollisionManager(BaseManager):
         self.active_entities = set()
         self.active_attacks = set()
         self.active_boundaries = set()
+        self.active_items = set()
         self.player = None
+
 
         self.recent_collisions = set()
         self.recent_attack_collisions = set()
@@ -40,7 +42,16 @@ class CollisionManager(BaseManager):
                 self.load_multiple_entity_collision(command)
             case LMBCC():
                 self.load_active_boundaries(command)
+            case LICC():
+                self.load_item(command)
         # adds a command to be acted upon
+
+    def load_item(self, command):
+        if command.load:
+            self.active_items.add(command.item)
+        else:
+            if command.item in self.active_items:
+                self.active_items.remove(command.item)
 
     def handle_event(self, event):
         pass
@@ -141,6 +152,15 @@ class CollisionManager(BaseManager):
         self.recent_collisions = new_recent_collisions
         # TODO for now return these events and they'll be acted upon in the current game loop, but eventually have the collision manager send them through the event bus
 
+        self.check_item_collisions()
+
+    def check_item_collisions(self):
+        p_rect = self.context.data_context.player_data.rect
+        for item in self.active_items:
+            item_rect = item.rect
+            if item_rect.is_rect_colliding(p_rect):
+                item_command = HandleItemCommand(item_entity=item, action=IA.PICKUP)
+                self.context.bus.send_command(item_command)
 
         # change these to commands to do something if they have only one target, like damage or separate entities, and keep as events for things that may have multiple targets. will boundary be an event or command? probably event for now
         # I don't plan on having this return events right now, it will primarily send things through the bus

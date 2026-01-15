@@ -176,3 +176,25 @@ class BreakShieldCommand(DefenseCommand):
         super().__init__()
         self.name = "BreakShieldCommand"
         self.target = target
+
+class ItemCommand(Command):
+    def __init__(self, name="ItemCommand"):
+        super().__init__(name=name)
+
+class HandleItemCommand(ItemCommand):
+    def __init__(self, item_entity, action: str):
+        super().__init__(name="HandleItemCommand")
+        self.item_entity = item_entity
+        self.action = action  # e.g., "PICKUP", "DROP"
+
+class LoadItemCommand(Command):
+    def __init__(self, item, load: bool = True):
+        super().__init__(name="LoadItemCommand")
+        self.item = item
+        self.load = load
+
+class LoadItemCollisionCommand(CollisionCommand):
+    def __init__(self, load=True, item=None):
+        super().__init__(load=load)
+        self.name = "LoadItemCollisionCommand"
+        self.item = item

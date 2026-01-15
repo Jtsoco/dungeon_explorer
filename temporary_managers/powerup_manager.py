@@ -1,7 +1,8 @@
 from base_manager import BaseManager
 from events_commands.events import BossDeathEvent
 from enums.entity_enums import PowerUpStates as PUS
-from events_commands.commands import TemporaryMessageCommand
+from events_commands.commands import TemporaryMessageCommand, SoundCommand
+from audio.sound_enums import SoundEnum
 class PowerupManager(BaseManager):
     # this class gives powerups to the player and possibly other entities when the time comes
     def __init__(self, context):
@@ -25,6 +26,7 @@ class PowerupManager(BaseManager):
     def grant_boss_powerup(self, entity):
         if entity.powerup_reward:
             # this will set the dictionary to have double jump, as it's enabled by the key existing, and True means can currently use double jump
+            self.context.bus.send_command(SoundCommand(sound_enum=SoundEnum.POWER_UP))
             player = self.context.data_context.player_data
             player.power_ups[entity.powerup_reward] = True
             # message differs based on powerup granted

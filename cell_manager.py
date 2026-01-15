@@ -7,7 +7,7 @@ from entity.animation_data import AnimationData
 from attack.weapon_data import WeaponData
 from entity.entity_setup import spawn_weapon, spawn_winged_boss
 from base_manager import BaseManager
-from events_commands.commands import LoadMultipleEntityCollisionCommand as LMECC, LoadMultipleBoundariesCollisionCommand as LMBCC, LoadEntityCollisionCommand as LECC, LoadActiveAttackCollisionCommand as LAACC
+from events_commands.commands import LoadMultipleEntityCollisionCommand as LMECC, LoadMultipleBoundariesCollisionCommand as LMBCC, LoadEntityCollisionCommand as LECC, LoadActiveAttackCollisionCommand as LAACC, LoadItemCommand, LoadItemCollisionCommand
 import pyxel
 from entity.entity_setup import spawn_weapon
 
@@ -27,6 +27,7 @@ class CellManager(BaseManager):
     def setup_bus(self):
         self.context.bus.register_event_listener(BCE, self)
         self.context.bus.register_event_listener(DeathEvent, self)
+        self.context.bus.register_command_listener(LoadItemCommand, self)
 
 
     def draw(self):
@@ -42,6 +43,29 @@ class CellManager(BaseManager):
             case DeathEvent():
                 self.current_state.remove_entity(event.entity)
 
+
+    def handle_command(self, command):
+        match command:
+            case LoadItemCommand():
+                self.load_item(command)
+
+    def load_item(self, command):
+        if command.load:
+            item = command.item
+            cell_coords = item.cell_pos
+            if cell_coords in self.cells:
+                cell = self.cells[cell_coords]
+                cell.items.add(item)
+                self.context.bus.send_command(LoadItemCollisionCommand(load=True, item=item))
+        else:
+            item = command.item
+            cell_coords = item.cell_pos
+            if cell_coords in self.cells:
+                cell = self.cells[cell_coords]
+                if item in cell.items:
+                    cell.items.remove(item)
+                    self.context.bus.send_command(LoadItemCollisionCommand(load=False, item=item))
+        # else, item is in a cell that doesn't exist? ignore for now
 
 class SingleCellManager():
     def __init__(self, cell_data):
@@ -242,19 +266,25 @@ class MultipleCellManager(SingleCellManager):
             new_cells = active_cells.union(adjacent)
             enemies = self.enemies_to_load(old_cells, new_cells)
             boundaries = self.boundaries_to_load(self.central_cells, active_cells)
+            items = self.items_to_load(old_cells, new_cells)
 
-            if enemies or boundaries:
+            if enemies or boundaries or items:
                 # if enemies are newly loaded boundaries should have something newly loaded too and vice versa
                 self.context.bus.send_command(LMECC(load=True, entities=enemies))
                 self.context.bus.send_command(LMBCC(load=True, boundaries=boundaries))
+                for item in items:
+                    self.context.bus.send_command(LoadItemCollisionCommand(load=True, item=item))
 
 
             enemies = self.enemies_to_unload(old_cells, new_cells)
             boundaries = self.boundaries_to_unload(self.central_cells, active_cells)
+            items = self.items_to_unload(old_cells, new_cells)
 
             if enemies or boundaries:
                 self.context.bus.send_command(LMECC(load=False, entities=enemies))
                 self.context.bus.send_command(LMBCC(load=False, boundaries=boundaries))
+                for item in items:
+                    self.context.bus.send_command(LoadItemCollisionCommand(load=False, item=item))
 
 
 
@@ -268,22 +298,26 @@ class MultipleCellManager(SingleCellManager):
     def all_to_load(self, old_cells, new_cells):
         enemies = set()
         boundaries = set()
+        items = set()
         # should only ever be max 8 cells to iterate through
         for cell in new_cells:
             if cell not in old_cells:
                 enemies.update(cell.get_enemies())
                 boundaries.update(cell.get_boundaries())
-        return enemies, boundaries
+                items.update(cell.get_items())
+        return enemies, boundaries, items
 
     def all_to_unload(self, old_cells, new_cells):
         enemies = set()
         boundaries = set()
+        items = set()
         # should only ever be max 8 cells to iterate through
         for cell in old_cells:
             if cell not in new_cells:
                 enemies.update(cell.get_enemies())
                 boundaries.update(cell.get_boundaries())
-        return enemies, boundaries
+                items.update(cell.get_items())
+        return enemies, boundaries, items
 
     def boundaries_to_load(self, old_cells, new_cells):
         items = set()
@@ -316,6 +350,22 @@ class MultipleCellManager(SingleCellManager):
             if cell not in new_cells:
                 enemies.update(cell.get_enemies())
         return enemies
+
+    def items_to_load(self, old_cells, new_cells):
+        items = set()
+        # should only ever be max 8 cells to iterate through
+        for cell in new_cells:
+            if cell not in old_cells:
+                items.update(cell.get_items())
+        return items
+
+    def items_to_unload(self, old_cells, new_cells):
+        # should only ever be max 8 cells to iterate through
+        items = set()
+        for cell in old_cells:
+            if cell not in new_cells:
+                items.update(cell.get_items())
+        return items
 
     def get_boundaries(self):
         return self.get_active_boundaries()
@@ -352,6 +402,13 @@ class MultipleCellManager(SingleCellManager):
     def get_active(self):
         return self.central_cells.union(self.adjacent)
 
+    def get_items(self):
+        items = set()
+        for cell in self.central_cells:
+            items.update(cell.get_items())
+        for cell in self.adjacent:
+            items.update(cell.get_items())
+        return items
     def handle_loading(self, active_cells):
         adjacent_cells = set()
         newly_loaded = set()

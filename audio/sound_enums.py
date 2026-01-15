@@ -11,6 +11,8 @@ class SoundEnum(Enum):
     BREAK = 5
     BLOCK = 6
     UNBLOCK = 7
+    ITEM_GET = 8
+    POWER_UP = 9
     # EXPLOSION = auto()
 
 class MusicEnum(Enum):

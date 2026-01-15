@@ -7,9 +7,9 @@ class Rect:
           # x, y tuple
     def is_rect_colliding(self, other_rect):
         # simple aabb collision detection
-        if (self.position[0] < other_rect.position[0] + other_rect.width and
+        if (self.position[0] <= other_rect.position[0] + other_rect.width and
             self.position[0] + self.width > other_rect.position[0] and
-            self.position[1] < other_rect.position[1] + other_rect.height and
+            self.position[1] <= other_rect.position[1] + other_rect.height and
             self.position[1] + self.height > other_rect.position[1]):
             return True
         return False

@@ -1,5 +1,5 @@
 # basic entity data
-from enums.entity_enums import MovementState as MS, DirectionState as DS, ActionState as AS, EntityType as ET, EntityCategory as EC, SimpleAIState as SAIS
+from enums.entity_enums import MovementState as MS, DirectionState as DS, ActionState as AS, EntityType as ET, EntityCategory as EC,SimpleAIState as SAIS, InventoryCategory as IC
 # make an enemy type enum, and use composition for enemy behaviors/ things later
 from entity.animation_data import AnimationData
 from shared_components.rect import Rect
@@ -9,6 +9,7 @@ class EntityData():
                  position: list = [0, 0],
                  w_h: tuple = (8, 8), animation_data=AnimationData(), weapon_data = None, entity_type=ET.KNIGHT, entity_category=EC.GROUND, speed=1, cell_pos=(0,0), player=False, health=100, touch_damage=0, knockback=(1.5, 1)):
         self.health = health
+        self.max_health = health
         self.player = player
         self.position = position  # (x, y)
         self.w_h = w_h  # (width, height)
@@ -49,6 +50,12 @@ class EntityData():
         self.power_ups = {}
         self.powerup_reward = None
         # for enemies that give powerups when defeated
+
+        self.inventory = {
+            IC.WEAPONS: [],
+            IC.SHIELDS: [],
+            IC.ITEMS: []
+        }
 
     def weapon_active(self):
         return self.weapon is not None and self.weapon.active

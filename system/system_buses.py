@@ -1,7 +1,7 @@
 
 
 from events_commands.events import Event, DeathEvent, BoundaryCollisionEvent, NewlyLoadedCellsEvent, PlayerEvent, BossDeathEvent, StateChangedEvent, StateUpdateEvent
-from events_commands.commands import Command, AudioCommand, EffectCommand, CollisionCommand, DefenseCommand, PhysicsCommand, CombatCommand, HUDCommand
+from events_commands.commands import Command, AudioCommand, EffectCommand, CollisionCommand, DefenseCommand, PhysicsCommand, CombatCommand, HUDCommand, LoadItemCommand, HandleItemCommand
 from app_level.app_commands_events import AppEvent, AppCommand, MenuCommand, StateChangeEvent as AppStateChangeEvent, SetMainCharacterCommand
 
 class SystemBus:
@@ -25,6 +25,8 @@ class SystemBus:
             CombatCommand: [],
             HUDCommand: [],
             DefenseCommand: [],
+            LoadItemCommand: [],
+            HandleItemCommand: []
         }
         #
         self.event_listeners = {
@@ -92,6 +94,8 @@ class SystemBus:
                 listener.notify_command(command)
 
     def send_event(self, event):
+        if isinstance(event, DeathEvent):
+            print("Death Event Sent to Bus")
         key = self.get_event_key(event)
         if key:
             listeners = self.event_listeners[key]

@@ -109,4 +109,4 @@ class MenuRenderer():
                         draw_only_weapon(option.item, position_x, position_y, line=line)
                     elif action == MenuState.SHIELD_SELECT:
                         draw_only_shield(option.item, position_x, position_y, line=line)
-                    position_x += 32
+                    position_x += 8

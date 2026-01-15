@@ -29,7 +29,7 @@ class App():
         pyxel.init(128, 128, title="Dungeon Explorer")
         pyxel.load("dungeon_explorer_assets.pyxres")
         # Hide the spawn and border transition tiles
-        pyxel.images[0].rect(24, 64, 16, 72, TRANSPARENT_COLOR)
+        pyxel.images[0].rect(24, 64, 16, 248, TRANSPARENT_COLOR)
 
         # need bus for communication between systems
         # need game class to handle game loop

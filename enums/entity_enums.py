@@ -48,6 +48,9 @@ class EntityType(Enum):
     # this spawn won't be used, just for the player costume
     PLAYER_RONIN = (3, 30)
 
+class WeaponSpawns(Enum):
+    GLAIVE = (3,27)
+
 
 class EntityCategory(Enum):
     FLYING = auto()

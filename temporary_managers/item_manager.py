@@ -8,6 +8,7 @@ from events_commands.commands import LoadItemCommand, SoundCommand
 
 from enums.hud_enums import HUDComponentType
 from audio.sound_enums import SoundEnum
+from entity.entity_setup import spawn_weapon, spawn_shield
 
 
 
@@ -70,7 +71,14 @@ class ItemManager(BaseManager):
                 player.health = min(player.max_health, player.health + item_entity.value)
                 player_healed_event = PlayerHealedEvent(heal_amount=item_entity.value)
                 self.context.bus.send_event(player_healed_event)
-        self.context.bus.send_command(LoadItemCommand(item=item_entity, load=False))
+                self.context.bus.send_command(LoadItemCommand(item=item_entity, load=False))
+            case IT.WEAPON:
+                # for now just equip the weapon directly
+                player = self.context.data_context.player_data
+                weapon = spawn_weapon(item_entity.value)
+                player.add_weapon(weapon)
+                self.context.bus.send_command(LoadItemCommand(item=item_entity, load=False))
+
         self.context.bus.send_command(SoundCommand(sound_enum=SoundEnum.ITEM_GET))
             # case IT.MANA:
             #     player = self.context.data_context.player_data

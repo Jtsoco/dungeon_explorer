@@ -12,7 +12,7 @@ WEAPONS_ANIMATIONS = {
             AF(offset=(1, 5), pos=(3, 7), duration=6),
         ],
         WAS.INVENTORY: [
-            AF(offset=(1, 8), pos=(2, 6), duration=12)
+            AF(offset=(0, 0), pos=(1, 8), duration=12)
         ]
     },
     WC.ENEMY_SWORD: {
@@ -24,7 +24,7 @@ WEAPONS_ANIMATIONS = {
             AF(offset=(1, 5), pos=(3, 7), duration=6),
         ],
         WAS.INVENTORY: [
-            AF(offset=(1, 8), pos=(2, 6), duration=12)
+            AF(offset=(0, 0), pos=(2, 6), duration=12)
         ]
     },
     WC.KATANA: {
@@ -36,7 +36,7 @@ WEAPONS_ANIMATIONS = {
             AF(pos=(10,7), offset=(1,6), duration=1),
         ],
         WAS.INVENTORY: [
-            AF(pos=(10,8), offset=(7,6), duration=12)
+            AF(pos=(10,8), offset=(0,0), duration=12)
         ]
     },
     WC.GLAIVE: {
@@ -64,7 +64,7 @@ WEAPONS_ANIMATIONS = {
             AF(pos=(0,26), duration=1, offset=(6,12), w_h=(8, 16), rotation=330),
         ],
         WAS.INVENTORY: [
-            AF(pos=(2,27), duration=12, offset=(6,14), w_h=(8, 16))
+            AF(pos=(2,27), duration=12, offset=(0,0), w_h=(8, 16))
         ]
     }
 

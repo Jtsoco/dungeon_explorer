@@ -78,7 +78,7 @@ def draw_only_weapon(weapon, x, y, image_bank=0, color_key=2, line=True, invento
         w_width = weapon_frame.w_h[0]
         w_height= weapon_frame.w_h[1]
     if line:
-        pyxel.line(x - 4, y + w_height, x + w_width - 4, y + w_height, 8)
+        pyxel.line(x, y + w_height, x + w_width, y + w_height, 8)
 
     wu = weapon_frame.pos[0] * 8
     wv = weapon_frame.pos[1] * 8

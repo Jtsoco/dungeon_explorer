@@ -1,4 +1,4 @@
-from enums.entity_enums import EntityType as ET, BoundaryType as BT, CollisionEntityTarget as CET, WeaponCategory as WC
+from enums.entity_enums import EntityType as ET, BoundaryType as BT, CollisionEntityTarget as CET, WeaponCategory as WC, WeaponSpawns as WS, ItemType as IT
 from events_commands.events import BoundaryCollisionEvent as BCE, NewlyLoadedCellsEvent as NLCE, DeathEvent
 from boundaries.boundary import Boundary
 from entity.entity_data import EntityData
@@ -10,6 +10,7 @@ from base_manager import BaseManager
 from events_commands.commands import LoadMultipleEntityCollisionCommand as LMECC, LoadMultipleBoundariesCollisionCommand as LMBCC, LoadEntityCollisionCommand as LECC, LoadActiveAttackCollisionCommand as LAACC, LoadItemCommand, LoadItemCollisionCommand
 import pyxel
 from entity.entity_setup import spawn_weapon
+from items.item import Item
 
 class CellManager(BaseManager):
     def __init__(self, cells_data, active_cell: tuple, context):
@@ -95,11 +96,12 @@ class SingleCellManager():
 
     def load_cell(self, cell_data):
         cell_data.loaded = True
-        enemies, entity_types, x_boundaries, y_boundaries = self.load_objects(cell_data)
+        enemies, entity_types, x_boundaries, y_boundaries, items = self.load_objects(cell_data)
         cell_data.enemies = enemies
         cell_data.entity_types = entity_types
         cell_data.x_boundaries = x_boundaries
         cell_data.y_boundaries = y_boundaries
+        cell_data.items = items
 
     def remove_entity(self, entity):
         if entity in self.active_cell.enemies:
@@ -113,6 +115,7 @@ class SingleCellManager():
         entity_types = set()
         x_boundaries = set()
         y_boundaries = set()
+        items = set()
         for brick_x in range(start_x, start_x + 16):
             for brick_y in range(start_y, start_y + 16):
                 tile = pyxel.tilemaps[0].pget(brick_x, brick_y)
@@ -146,10 +149,17 @@ class SingleCellManager():
                         case BT.Y.value:
                             boundary = Boundary(BT.Y, position=(brick_x * 8, brick_y * 8))
                             y_boundaries.add(boundary)
+                if tile in WS:
+                    match tile:
+                        case WS.GLAIVE.value:
+                            # separating weapon spaawns from weapon category means i can make alternate versions of the same weapon, like different stats and such later
+                            item = Item(item_type=IT.WEAPON, value=WC.GLAIVE, position=[brick_x * 8, brick_y * 8], cell_pos=(cell_data.cell_x, cell_data.cell_y))
+                            items.add(item)
 
 
 
-        return enemies, entity_types, x_boundaries, y_boundaries
+
+        return enemies, entity_types, x_boundaries, y_boundaries, items
 
 
 

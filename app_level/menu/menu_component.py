@@ -35,6 +35,7 @@ class MenuComponent():
     def add_option(self, option):
         option.text.position = (self.position[0], self.position[1] + len(self.options) * self.y_offset)
         self.options.append(option)
+
     def add_horizontal_option(self, option):
         option.text.position = (self.position[0] + len(self.horizontal_options) * self.x_offset, self.position[1])
         self.horizontal_options.append(option)

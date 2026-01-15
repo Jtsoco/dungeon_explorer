@@ -3,6 +3,7 @@
 from app_level.menu.menu_option import MenuOption
 from HUD.text import Text
 from enums.entity_enums import EntityType
+from app_level.app_enums import MenuState
 
 class MenuComponent():
     def __init__(self, pos, x_offset, y_offset, title=None):
@@ -116,7 +117,7 @@ class TwoDMenuComponent(MenuComponent):
 class HorizontalMenuComponent(MenuComponent):
     def __init__(self, pos, x_offset, y_offset, title=None):
         super().__init__(pos, x_offset, y_offset, title)
-        self.options.append(MenuOption(text=title, position=pos, action=None))
+        self.options.append(MenuOption(text=title, position=pos, action=MenuState.HORIZONTAL_SELECT))
         self.title = None
 
     def index_up(self):

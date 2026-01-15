@@ -30,9 +30,7 @@ class MenuManager(BaseManager):
             self.handle_menu_command(command)
 
     def get_characters_to_draw(self):
-        characters = []
-        for component in self.menu_data.menu_components:
-            characters.extend(component.characters_to_draw())
+        characters = self.menu_data.get_characters_to_draw()
         return characters
 
 
@@ -50,6 +48,10 @@ class MenuManager(BaseManager):
                 self.menu_data.index_up()
             case MenuCommandTypes.DOWN:
                 self.menu_data.index_down()
+            case MenuCommandTypes.LEFT:
+                self.menu_data.index_left()
+            case MenuCommandTypes.RIGHT:
+                self.menu_data.index_right()
             case MenuCommandTypes.SELECT:
                 self.execute_current_selection()
 
@@ -65,10 +67,19 @@ class MenuManager(BaseManager):
         # For now, we will just print the action
         match self.menu_data.menu_type:
             case MenuState.MAIN_MENU:
-                if action == MenuState.GAME:
-                    characters = self.get_characters_to_draw()
-                    # this will return entity data, and when it's main menu their should only be one in the menu, the player selection
-                    if characters:
-                        player_entity = characters[0]
-                        self.bus.send_event(SetMainCharacterCommand(entity_data=player_entity))
+                if action == MenuState.GAME or action == MenuState.CHARACTER_SELECT:
+                    self.set_character()
+                    print('character set!')
+                elif action == MenuState.HORIZONTAL_SELECT:
+                    pass
+                    # this isn't needed yet, character is set when game starts, but for things like sound and such, it would be good to get the horizontal select option, then send that out as its own event, so that will go here
+
+
         self.bus.send_event(StateChangeEvent(new_state=action))
+
+    def set_character(self):
+        characters = self.get_characters_to_draw()
+            # this will return entity data, and when it's main menu their should only be one in the menu, the player selection
+        if characters:
+            player_entity = characters[0]
+            self.bus.send_event(SetMainCharacterCommand(entity_data=player_entity))

@@ -17,6 +17,7 @@ class MenuState(Enum):
     GAME_OVER = auto()
     QUIT = auto()
     CHARACTER_SELECT = auto()
+    HORIZONTAL_SELECT = auto()
 
     # the game enum references when the actual game is being played
     GAME = auto()

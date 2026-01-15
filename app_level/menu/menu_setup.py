@@ -39,7 +39,7 @@ def setup_main_menu():
     character_select_component = CharacterSelectMenuComponent(pos=(24, position_y), x_offset=40, y_offset=0)
 
     for character in character_options:
-        menu_option = CharacterMenuOption(character=character, position=(0,0), action=MenuState.GAME)
+        menu_option = CharacterMenuOption(character=character, position=(0,0), action=MenuState.CHARACTER_SELECT)
         character_select_component.add_horizontal_option(menu_option)
     position_y += 16
 

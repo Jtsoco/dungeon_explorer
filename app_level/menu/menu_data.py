@@ -17,7 +17,7 @@ class MenuData:
         self.menu_options.append(menu_option)
 
     def index_up(self):
-        if not self.current_selection().index_up():
+        if not self.current_selection().index_up() and (self.current_selection_index > 0):
             # returning false means the menu component has reached the end of its items
             self.current_selection_index -= 1
 
@@ -27,6 +27,13 @@ class MenuData:
 
         if not component_index_changed and (self.current_selection_index < len(self.menu_components) - 1):
             self.current_selection_index += 1
+
+
+    def index_left(self):
+        self.current_selection().index_left()
+
+    def index_right(self):
+        self.current_selection().index_right()
 
     def current_selection(self):
         return self.menu_components[self.current_selection_index]
@@ -42,3 +49,9 @@ class MenuData:
         for component in self.menu_components:
             items.extend(component.items_to_draw())
         return items
+
+    def get_characters_to_draw(self):
+        characters = []
+        for component in self.menu_components:
+            characters.extend(component.characters_to_draw())
+        return characters

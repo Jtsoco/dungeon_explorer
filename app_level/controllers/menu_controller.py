@@ -24,6 +24,10 @@ class MenuController(AppController):
             recents.add(pyxel.KEY_UP)
         if pyxel.btn(pyxel.KEY_DOWN):
             recents.add(pyxel.KEY_DOWN)
+        if pyxel.btn(pyxel.KEY_LEFT):
+            recents.add(pyxel.KEY_LEFT)
+        if pyxel.btn(pyxel.KEY_RIGHT):
+            recents.add(pyxel.KEY_RIGHT)
         if pyxel.btn(pyxel.KEY_TAB):
             recents.add(pyxel.KEY_TAB)
 
@@ -43,6 +47,10 @@ class MenuController(AppController):
                     commands.add(MenuCommandTypes.UP)
                 case pyxel.KEY_DOWN:
                     commands.add(MenuCommandTypes.DOWN)
+                case pyxel.KEY_LEFT:
+                    commands.add(MenuCommandTypes.LEFT)
+                case pyxel.KEY_RIGHT:
+                    commands.add(MenuCommandTypes.RIGHT)
                 case pyxel.KEY_TAB:
                     commands.add(MenuCommandTypes.QUIT)
 

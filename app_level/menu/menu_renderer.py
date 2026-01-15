@@ -24,7 +24,9 @@ class MenuRenderer():
                 pyxel.text(x + 8, text.position[1], "> " + text.content, selection_color)
             else:
                 pyxel.text(x, text.position[1], text.content, text.color)
-
+        characters = menu_data.get_characters_to_draw()
+        for character in characters:
+            draw_entity(character, character.position[0], character.position[1])
     def render_with_game(self, menu_data, game):
         # draw a dark rectangle over the game for menu background
 

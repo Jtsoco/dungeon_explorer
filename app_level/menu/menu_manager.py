@@ -82,4 +82,4 @@ class MenuManager(BaseManager):
             # this will return entity data, and when it's main menu their should only be one in the menu, the player selection
         if characters:
             player_entity = characters[0]
-            self.bus.send_event(SetMainCharacterCommand(entity_data=player_entity))
+            self.bus.send_command(SetMainCharacterCommand(entity_data=player_entity))

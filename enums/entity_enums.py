@@ -49,7 +49,11 @@ class EntityType(Enum):
     PLAYER_RONIN = (3, 30)
 
 class WeaponSpawns(Enum):
-    GLAIVE = (3,27)
+    GLAIVE = (3,27),
+
+class ShieldSpawns(Enum):
+    DAGGER = (3, 11)
+    TOWER = (3, 12)
 
 
 class EntityCategory(Enum):
@@ -96,6 +100,7 @@ class SHIELD_ACTION_STATE(Enum):
     DEFLECT = auto()
     TO_REST = auto()
     BROKEN = auto()
+    INVENTORY = auto()
 
 class SHIELD_CATEGORY(Enum):
     WOODEN_SHIELD = auto()
@@ -103,6 +108,7 @@ class SHIELD_CATEGORY(Enum):
     MAGIC_SHIELD = auto()
     BLADE = auto()
     DAGGER = auto()
+    TOWER = auto()
 
 
 class ItemType(Enum):

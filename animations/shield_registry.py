@@ -18,6 +18,9 @@ IRON_SHIELD = {
     SHIELD_ACTION_STATE.BROKEN: [
         AF(pos=(5,9), duration=6),
         AF(pos=(6,9), duration=6),
+    ],
+    SHIELD_ACTION_STATE.INVENTORY: [
+        AF(pos=(5,6), duration=12)
     ]
 
 }
@@ -44,11 +47,42 @@ DAGGER = {
     SHIELD_ACTION_STATE.BROKEN: [
         AF(pos=(8,11), duration=6),
         AF(pos=(9,11), duration=6),
+    ],
+    SHIELD_ACTION_STATE.INVENTORY: [
+        AF(pos=(10,9), duration=12)
     ]
 }
+
+TOWER = {
+    SHIELD_ACTION_STATE.IDLE: [
+        AF(pos=(6,13), duration=12)
+    ],
+    SHIELD_ACTION_STATE.TO_BLOCK: [
+        AF(pos=(7,13), duration=5),
+        AF(pos=(6,14), duration=1),
+        AF(pos=(7,14), duration=1),
+        AF(pos=(6,15), duration=3),
+    ],
+    SHIELD_ACTION_STATE.BLOCK: [
+        AF(pos=(7,15), duration=12)
+    ],
+
+    SHIELD_ACTION_STATE.BROKEN: [
+        AF(pos=(6,16), duration=6),
+        AF(pos=(7,16), duration=6),
+    ],
+    SHIELD_ACTION_STATE.INVENTORY: [
+        AF(pos=(6,13), duration=12)
+    ]
+
+}
+TOWER[SHIELD_ACTION_STATE.TO_REST] = list(reversed(TOWER[SHIELD_ACTION_STATE.TO_BLOCK].copy()))
+
 SHIELD_ANIMATIONS = {
     SHIELD_CATEGORY.IRON_SHIELD: IRON_SHIELD,
-    SHIELD_CATEGORY.DAGGER: DAGGER
+    SHIELD_CATEGORY.DAGGER: DAGGER,
+    SHIELD_CATEGORY.TOWER: TOWER
+
 
 }
 
@@ -60,6 +94,9 @@ SHIELD_HITBOXES = {
     },
     SHIELD_CATEGORY.DAGGER: {
         (4,4)
+    },
+    SHIELD_CATEGORY.TOWER: {
+        (6,6)
     }
 
 }
@@ -78,6 +115,13 @@ SHIELD_STATS = {
         "drain_resistance": 10,
         "damage_resist": 0.5,
         "regen_delay": 2,
+        "regen_amount": 25
+    },
+    SHIELD_CATEGORY.TOWER: {
+        "max_stamina": 500,
+        "drain_resistance": 40,
+        "damage_resist": 1.5,
+        "regen_delay": 30,
         "regen_amount": 25
     }
 }

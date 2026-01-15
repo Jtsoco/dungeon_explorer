@@ -1,4 +1,4 @@
-from enums.entity_enums import EntityType as ET, BoundaryType as BT, CollisionEntityTarget as CET, WeaponCategory as WC, WeaponSpawns as WS, ItemType as IT
+from enums.entity_enums import EntityType as ET, BoundaryType as BT, CollisionEntityTarget as CET, WeaponCategory as WC, WeaponSpawns as WS, ItemType as IT, ShieldSpawns as SS, SHIELD_CATEGORY as SC
 from events_commands.events import BoundaryCollisionEvent as BCE, NewlyLoadedCellsEvent as NLCE, DeathEvent
 from boundaries.boundary import Boundary
 from entity.entity_data import EntityData
@@ -141,7 +141,7 @@ class SingleCellManager():
                             enemies.add(enemy)
                             if ET.WINGED_KNIGHT not in entity_types:
                                 entity_types.add(ET.WINGED_KNIGHT)
-                if tile in BT:
+                elif tile in BT:
                     match tile:
                         case BT.X.value:
                             boundary = Boundary(BT.X, position=(brick_x * 8, brick_y * 8))
@@ -149,17 +149,30 @@ class SingleCellManager():
                         case BT.Y.value:
                             boundary = Boundary(BT.Y, position=(brick_x * 8, brick_y * 8))
                             y_boundaries.add(boundary)
-                if tile in WS:
+                elif tile in WS:
                     match tile:
                         case WS.GLAIVE.value:
                             # separating weapon spaawns from weapon category means i can make alternate versions of the same weapon, like different stats and such later
                             item = Item(item_type=IT.WEAPON, value=WC.GLAIVE, position=[brick_x * 8, brick_y * 8], cell_pos=(cell_data.cell_x, cell_data.cell_y))
                             items.add(item)
 
-
-
-
+                elif tile in SS:
+                    shield_category = self.get_shield_category(tile)
+                    item = Item(item_type=IT.SHIELD, value=shield_category, position=[brick_x * 8, brick_y * 8], cell_pos=(cell_data.cell_x, cell_data.cell_y))
+                    items.add(item)
         return enemies, entity_types, x_boundaries, y_boundaries, items
+
+    def get_shield_category(self, tile: SS):
+        match tile:
+            case SS.DAGGER.value:
+                return SC.DAGGER
+            case SS.TOWER.value:
+                return SC.TOWER
+
+
+
+
+
 
 
 

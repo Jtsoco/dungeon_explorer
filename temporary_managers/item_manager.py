@@ -80,6 +80,12 @@ class ItemManager(BaseManager):
 
                 self.context.bus.send_command(LoadItemCommand(item=item_entity, load=False))
                 self.context.bus.send_command(TemporaryMessageCommand(message=f"Weapon Acquired"))
+            case IT.SHIELD:
+                player = self.context.data_context.player_data
+                shield = spawn_shield(item_entity.value)
+                self.context.bus.send_command(LoadItemCommand(item=item_entity, load=False))
+                player.add_shield(shield)
+                self.context.bus.send_command(TemporaryMessageCommand(message=f"Shield Acquired"))
 
         self.context.bus.send_command(SoundCommand(sound_enum=SoundEnum.ITEM_GET))
             # case IT.MANA:

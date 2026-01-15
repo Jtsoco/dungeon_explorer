@@ -6,7 +6,7 @@ class SpriteComponent():
     # this is a generic sprite component for HUD elements
     # things like health and defense which use multiple sprites to display things will use this
 
-    def __init__(self, max_value=100, current_value=100, sprite_enum=HE.HEALTH, start_position=(0,0), x_offset=10, y_offset=0):
+    def __init__(self, max_value=1000, current_value=100, sprite_enum=HE.HEALTH, start_position=(0,0), x_offset=10, y_offset=0):
         self.max_value = max_value
         self.current_value = current_value
         self.sprite_data = HUD_REGISTRY[sprite_enum]
@@ -41,9 +41,10 @@ class SpriteComponent():
         self.sprite_list = sprites
 
     def set_new_max_value(self, new_max_value, reset_value=False):
-        self.max_value = new_max_value
-        if reset_value:
-            self.current_value = new_max_value
+        # self.max_value = new_max_value
+        # if reset_value:
+        #     self.current_value = new_max_value
+        # for now, as it's just hud, don't allow new setting of max value
 
         self.set_new_value(self.current_value)
 

@@ -15,8 +15,8 @@ class HUDManager(BaseManager):
         # HUD elements can be initialized here
         # e.g., health bars, score displays, etc.
         self.components = {
-            HCT.HEALTH: SpriteComponent(max_value=100),
-            HCT.SHIELD: SpriteComponent(max_value=100, x_offset=-10, start_position=(0, 10), sprite_enum=HCT.SHIELD),
+            HCT.HEALTH: SpriteComponent(max_value=1000),
+            HCT.SHIELD: SpriteComponent(max_value=1000, start_position=(0, 10), sprite_enum=HCT.SHIELD),
         }
         self.renderer = HudRenderer()
         self.temporary_messages = []  # For displaying temporary messages on HUD
@@ -84,7 +84,9 @@ class HUDManager(BaseManager):
     def setup_player_hud(self, player_data):
         health_component = self.components[HCT.HEALTH]
 
-        health_component.set_new_max_value(player_data.health, True)
+        # health_component.set_new_max_value(player_data.health, True)
+        health_component.set_new_value(player_data.health)
 
         shield_component = self.components[HCT.SHIELD]
-        shield_component.set_new_max_value(player_data.shield.max_stamina, True)
+        # shield_component.set_new_max_value(player_data.shield.max_stamina, True)
+        shield_component.set_new_value(player_data.shield.current_stamina)

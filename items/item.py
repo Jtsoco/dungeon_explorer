@@ -1,7 +1,7 @@
 from shared_components.rect import Rect
 from items.item_registry import ITEM_REGISTRY
 from animations.attack_registry import WEAPONS_ANIMATIONS
-
+from animations.shield_registry import SHIELD_ANIMATIONS
 from enums.entity_enums import ItemType as IT, WeaponActionState as WAS, WeaponCategory as WC, SHIELD_ACTION_STATE as SAS
 class Item():
     def __init__(self, item_type, value, position: list = [0, 0], w_h: tuple = (8, 8), cell_pos=(0,0)):
@@ -14,7 +14,7 @@ class Item():
             self.animation_frames = WEAPONS_ANIMATIONS[value][WAS.INVENTORY]
 
         elif item_type == IT.SHIELD:
-            self.animation_frames = WEAPONS_ANIMATIONS[value][SAS.IDLE]
+            self.animation_frames = SHIELD_ANIMATIONS[value][SAS.INVENTORY]
         else:
             self.animation_frames = ITEM_REGISTRY[item_type]
         self.cell_pos = cell_pos  # (cell_x_min, cell_y_min, cell_x_max, cell_y_max)

@@ -152,7 +152,7 @@ class HorizontalMenuComponent(MenuComponent):
         return items
 
 class CharacterSelectMenuComponent(HorizontalMenuComponent):
-    def __init__(self, pos, x_offset, y_offset, title="Select Character"):
+    def __init__(self, pos, x_offset, y_offset, title="Select Character <->"):
         super().__init__(pos, x_offset, y_offset, title)
 
         # rethink titles how they function

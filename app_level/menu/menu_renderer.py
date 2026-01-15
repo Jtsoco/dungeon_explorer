@@ -11,6 +11,7 @@ class MenuRenderer():
             self.render_with_game(menu_data, game)
         else:
             self.menu_render(menu_data)
+            self.draw_character_select(menu_data)
 
     def menu_render(self, menu_data):
         title = menu_data.title
@@ -24,9 +25,37 @@ class MenuRenderer():
                 pyxel.text(x + 8, text.position[1], "> " + text.content, selection_color)
             else:
                 pyxel.text(x, text.position[1], text.content, text.color)
+
+
+    def draw_character_select(self, menu_data):
         characters = menu_data.get_characters_to_draw()
+        # should only be one character in this
+        position_x = pyxel.width // 4 - 20
+        position_y = pyxel.height - 20
         for character in characters:
-            draw_entity(character, character.position[0], character.position[1])
+            self.render_character_with_weapons(character, position_x, position_y)
+
+    def render_character_with_weapons(self, character, position_x, position_y):
+        pyxel.text(position_x - 8, position_y - 12, "Player", 7)
+        draw_entity(character, position_x, position_y)
+
+        if character.weapon:
+            position_x = position_x + 28
+            position_y = position_y
+            weapon_type = str(character.weapon.category.name)
+            weapon_type = weapon_type.replace("_", " ")
+            pyxel.text(position_x - 8, position_y - 12, weapon_type, 7)
+            draw_weapon(character, position_x, position_y)
+            position_x = position_x + 12
+        if character.shield:
+            position_x = position_x + 32
+            position_y = position_y
+            shield_type = str(character.shield.shield_category.name)
+            shield_type = shield_type.replace("_", " ")
+            pyxel.text(position_x - 8, position_y - 12, shield_type, 7)
+            draw_shield(character, position_x, position_y)
+            position_x = position_x + 8
+
     def render_with_game(self, menu_data, game):
         # draw a dark rectangle over the game for menu background
 
@@ -34,26 +63,9 @@ class MenuRenderer():
         player = game.context.data_context.player_data
         position_x = pyxel.width // 4 - 20
         position_y = pyxel.height - 20
+        self.render_character_with_weapons(player, position_x, position_y)
 
-        pyxel.text(position_x - 8, position_y - 12, "Player", 7)
-        draw_entity(player, position_x, position_y)
 
-        if player.weapon:
-            position_x = position_x + 28
-            position_y = position_y
-            weapon_type = str(player.weapon.category.name)
-            weapon_type = weapon_type.replace("_", " ")
-            pyxel.text(position_x - 8, position_y - 12, weapon_type, 7)
-            draw_weapon(player, position_x, position_y)
-            position_x = position_x + 12
-        if player.shield:
-            position_x = position_x + 32
-            position_y = position_y
-            shield_type = str(player.shield.shield_category.name)
-            shield_type = shield_type.replace("_", " ")
-            pyxel.text(position_x - 8, position_y - 12, shield_type, 7)
-            draw_shield(player, position_x, position_y)
-            position_x = position_x + 8
 
 
 

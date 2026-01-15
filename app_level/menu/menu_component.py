@@ -59,6 +59,7 @@ class MenuComponent():
             self.y_index += 1
             return True
         return False
+
     def characters_to_draw(self):
         return []
 
@@ -137,6 +138,9 @@ class HorizontalMenuComponent(MenuComponent):
             return True
         return False
 
+    def get_current_horizontal_selection(self):
+        return self.horizontal_options[self.x_index]
+
 
     def items_to_draw(self):
         items = []
@@ -158,5 +162,5 @@ class CharacterSelectMenuComponent(HorizontalMenuComponent):
 
 
     def characters_to_draw(self):
-        current_option = self.get_current_selection()
+        current_option = self.get_current_horizontal_selection()
         return [current_option.character]

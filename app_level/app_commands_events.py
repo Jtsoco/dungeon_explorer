@@ -17,3 +17,8 @@ class StateChangeEvent(AppEvent):
     def __init__(self, new_state: MenuState):
         super().__init__(name="StateChangeEvent")
         self.new_state = new_state
+
+class SetMainCharacterCommand(AppCommand):
+    def __init__(self, entity_data):
+        super().__init__(name="SetMainCharacterCommand")
+        self.entity_data = entity_data

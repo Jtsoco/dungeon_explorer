@@ -1,7 +1,7 @@
 from base_manager import BaseManager
 from app_level.menu.menu_data import MenuData
 from app_level.menu.menu_renderer import MenuRenderer
-from app_level.app_commands_events import MenuCommand, StateChangeEvent
+from app_level.app_commands_events import MenuCommand, StateChangeEvent, SetMainCharacterCommand
 from app_level.app_enums import MenuCommandTypes, MenuState
 
 
@@ -28,6 +28,12 @@ class MenuManager(BaseManager):
         # handle menu related commands
         if isinstance(command, MenuCommand):
             self.handle_menu_command(command)
+
+    def get_characters_to_draw(self):
+        characters = []
+        for component in self.menu_data.menu_components:
+            characters.extend(component.characters_to_draw())
+        return characters
 
 
     def handle_event(self, event):
@@ -57,4 +63,12 @@ class MenuManager(BaseManager):
         action = current_option.action
         # Here we would handle the action, e.g., changing menus or executing commands
         # For now, we will just print the action
+        match self.menu_data.menu_type:
+            case MenuState.MAIN_MENU:
+                if action == MenuState.GAME:
+                    characters = self.get_characters_to_draw()
+                    # this will return entity data, and when it's main menu their should only be one in the menu, the player selection
+                    if characters:
+                        player_entity = characters[0]
+                        self.bus.send_event(SetMainCharacterCommand(entity_data=player_entity))
         self.bus.send_event(StateChangeEvent(new_state=action))

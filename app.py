@@ -12,7 +12,7 @@
 # and will run multiple cells during a cell transition
 from app_level.menu.menu_manager import MenuManager
 from system.system_buses import SystemBus
-from app_level.app_commands_events import StateChangeEvent
+from app_level.app_commands_events import StateChangeEvent, SetMainCharacterCommand
 from app_level.controllers.menu_controller import MenuController
 from app_level.app_enums import MenuState
 from app_level.menu.menu_setup import setup_main_menu, setup_pause_menu
@@ -49,6 +49,7 @@ class App():
         self.top_bus = SystemBus(False)
         self.menu_manager = MenuManager(bus=self.top_bus)
         self.top_bus.register_event_listener(StateChangeEvent, self)
+        self.top_bus.register_command_listener(SetMainCharacterCommand, self)
 
         self.controller = MenuController(self.top_bus)
 
@@ -58,6 +59,8 @@ class App():
         self.menu_manager.set_menu(main_menu)
         self.setup_menu_mode()
         self.menu_stack = []
+
+        self.player_data = None
 
     def state_change_event(self, new_state):
 
@@ -101,7 +104,10 @@ class App():
     def setup_game_mode(self):
         self.menu_stack.append(MenuState.GAME)
         if not self.game:
-            self.game = Game()
+            if self.player_data:
+                self.game = Game(player_data=self.player_data)
+            else:
+                self.game = Game()
             self.menu_manager.game = self.game
         self.current_update = self.game.update
         self.current_draw = self.game.draw
@@ -111,6 +117,13 @@ class App():
         match event:
             case StateChangeEvent():
                 self.state_change_event(event.new_state)
+
+    def notify_command(self, command):
+        match command:
+            case SetMainCharacterCommand():
+                if self.game:
+                    self.game.context.data_context.player_data = command.entity_data
+                self.player_data = command.entity_data
 
     def run(self):
         self.running = True

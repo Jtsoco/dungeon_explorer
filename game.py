@@ -19,7 +19,7 @@ from system.context import Context
 
 from datetime import datetime
 class Game():
-    def __init__(self):
+    def __init__(self, player_data=None):
     # need bus for communication between game systems
     # need camera system
     # need player system, divided into controller, player data, and player logic, and rendering
@@ -39,18 +39,21 @@ class Game():
         self.collision_manager = CollisionManager(self.context)
         self.cell_manager = CellManager(self.game_world, self.context.data_context.start_cell, self.context)
         self.scene_manager = SceneManager(self.context)
-        self.player_data = spawn_player()
+        if player_data:
+            self.context.data_context.player_data = player_data
+        else:
+            self.context.data_context.player_data = spawn_player()
         # for now player is just stored here, later might make a separate player manager if needed
-        self.player_data.rect.position = [self.context.data_context.player_start[0] * self.context.data_context.BRICK_SIZE, self.context.data_context.player_start[1] * self.context.data_context.BRICK_SIZE]
-        self.scene_manager.camera.set_target(self.player_data.rect)
+        self.context.data_context.player_data.rect.position = [self.context.data_context.player_start[0] * self.context.data_context.BRICK_SIZE, self.context.data_context.player_start[1] * self.context.data_context.BRICK_SIZE]
+        self.scene_manager.camera.set_target(self.context.data_context.player_data.rect)
 
         # just have it use players attack and animation manager for now, as they work, restructure later if needed
         self.entity_manager = EntityManager(context=self.context)
         types = self.cell_manager.current_state.get_entity_types()
-        self.entity_manager.setup_entity(self.player_data.entity_type)
+        self.entity_manager.setup_entity(self.context.data_context.player_data.entity_type)
         self.entity_manager.setup_entities(types)
         # just this quick one for now on setting up entities, refactor later when redoing cell loading system
-        self.collision_manager.player = self.player_data
+        self.collision_manager.player = self.context.data_context.player_data
 
         self.damage_manager = DamageManager(self.context)
         self.PowerupManager = PowerupManager(self.context)
@@ -61,20 +64,20 @@ class Game():
         self.current_time = datetime.now()
         self.last_frame_count = 0
         self.current_frame_count = 0
-        self.context.data_context.player_data = self.player_data
+        self.context.data_context.player_data = self.context.data_context.player_data
 
         self.effects_manager = EffectsManager(self.context)
         self.sound_effects_manager = SoundEffectsManager(self.context)
         self.sound_effects_manager.handle_command(MusicCommand(music_enum=0))  # Start background music
 
         self.hud_manager = HUDManager(self.context)
-        self.hud_manager.setup_player_hud(self.player_data)
+        self.hud_manager.setup_player_hud(self.context.data_context.player_data)
 
 
     def update(self):
 
         all_entities = self.cell_manager.current_state.get_enemies()
-        all_entities.add(self.player_data)
+        all_entities.add(self.context.data_context.player_data)
 
         for entity in all_entities:
             self.entity_manager.update_entity(entity)
@@ -124,9 +127,9 @@ class Game():
         enemies = self.cell_manager.current_state.get_enemies()
         for enemy in enemies:
             self.entity_manager.draw(enemy)
-        self.entity_manager.draw(self.player_data)
+        self.entity_manager.draw(self.context.data_context.player_data)
         camera_pos = self.scene_manager.camera.current_camera
-        # display_info(f"Player Pos: {self.player_data.position[0]}", pos_x=camera_pos[0]+2, pos_y=camera_pos[1]+8)
+        # display_info(f"Player Pos: {self.context.data_context.player_data.position[0]}", pos_x=camera_pos[0]+2, pos_y=camera_pos[1]+8)
 
         # hud has no knowledge of world positions, so temporary set to 0,0 for drawing then set back
         self.scene_manager.set_camera_to_zero()

@@ -2,7 +2,7 @@
 
 from events_commands.events import Event, DeathEvent, BoundaryCollisionEvent, NewlyLoadedCellsEvent, PlayerEvent, BossDeathEvent, StateChangedEvent, StateUpdateEvent
 from events_commands.commands import Command, AudioCommand, EffectCommand, CollisionCommand, DefenseCommand, PhysicsCommand, CombatCommand, HUDCommand
-from app_level.app_commands_events import AppEvent, AppCommand, MenuCommand, StateChangeEvent as AppStateChangeEvent
+from app_level.app_commands_events import AppEvent, AppCommand, MenuCommand, StateChangeEvent as AppStateChangeEvent, SetMainCharacterCommand
 
 class SystemBus:
 
@@ -39,6 +39,8 @@ class SystemBus:
     def setup_app_bus(self):
         self.command_listeners = {
             MenuCommand: [],
+            SetMainCharacterCommand: []
+
         }
         self.event_listeners = {
             AppStateChangeEvent: [],

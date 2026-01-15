@@ -6,7 +6,7 @@ from enums.entity_enums import ItemType as IT, WeaponActionState as WAS, WeaponC
 class Item():
     def __init__(self, item_type, value, position: list = [0, 0], w_h: tuple = (8, 8), cell_pos=(0,0)):
         self.item_type = item_type  # e.g., "HEALTH", "MANA"
-        self.value = value  # e.g., amount of health or mana restored
+        self.value = value  # e.g., amount of health or mana restored, in case of weapons and shields the specific type
         self.position = position  # (x, y)
         self.w_h = w_h  # (width, height)
         self.rect = Rect(w_h[0], w_h[1], position=position)

@@ -1,7 +1,7 @@
 from base_manager import BaseManager
 from events_commands.events import BossDeathEvent, DeathEvent, PlayerHealedEvent
-from events_commands.commands import HandleItemCommand
-from enums.entity_enums import ItemType as IT, ItemAction as IA
+from events_commands.commands import HandleItemCommand, TemporaryMessageCommand
+from enums.entity_enums import ItemType as IT, ItemAction as IA, CollisionEntityTarget as CET
 import random
 from items.item import Item
 from events_commands.commands import LoadItemCommand, SoundCommand
@@ -75,9 +75,11 @@ class ItemManager(BaseManager):
             case IT.WEAPON:
                 # for now just equip the weapon directly
                 player = self.context.data_context.player_data
-                weapon = spawn_weapon(item_entity.value)
+                weapon = spawn_weapon(item_entity.value, CET.ENEMY)
                 player.add_weapon(weapon)
+
                 self.context.bus.send_command(LoadItemCommand(item=item_entity, load=False))
+                self.context.bus.send_command(TemporaryMessageCommand(message=f"Weapon Acquired"))
 
         self.context.bus.send_command(SoundCommand(sound_enum=SoundEnum.ITEM_GET))
             # case IT.MANA:

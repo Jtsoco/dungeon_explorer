@@ -12,3 +12,8 @@ class CharacterMenuOption(MenuOption):
     def __init__(self, character, position=(0,0), action=None):
         super().__init__(text=character.name, position=position, action=action)
         self.character = spawn_player(p_type=character)
+
+class ItemMenuOption(MenuOption):
+    def __init__(self, item, position=(0,0), action=None):
+        super().__init__(text="", position=position, action=action)
+        self.item = item

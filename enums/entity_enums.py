@@ -38,6 +38,7 @@ class WeaponActionState(Enum):
     DASHATTACK = auto()
     AIRATTACK = auto()
     DEFAULT = auto()
+    INVENTORY = auto()
 
 class EntityType(Enum):
     PLAYER = (3, 10)

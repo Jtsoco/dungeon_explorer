@@ -67,3 +67,32 @@ def draw_entity(entity_data, x, y, image_bank=0, color_key=2, additions=True):
     # pyxel.rect(x, y, entity_data.rect.width, entity_data.rect.height, 6)
 
 # TODO change these to allow scale to be easily modified later
+
+def draw_only_weapon(weapon, x, y, image_bank=0, color_key=2, line=True, inventory=True):
+    if inventory:
+        weapon_frame = weapon.get_inventory_frame()
+        w_width = 8
+        w_height = 8
+    else:
+        weapon_frame = weapon.get_current_frame()
+        w_width = weapon_frame.w_h[0]
+        w_height= weapon_frame.w_h[1]
+    if line:
+        pyxel.line(x - 4, y + w_height, x + w_width - 4, y + w_height, 8)
+
+    wu = weapon_frame.pos[0] * 8
+    wv = weapon_frame.pos[1] * 8
+    pyxel.blt(x, y, image_bank, wu, wv, w_width, w_height, color_key, rotate=weapon_frame.rotation)
+
+def draw_square(x, y, width, height, color=8):
+    pyxel.rectb(x, y, width, height, color)
+
+def draw_only_shield(shield, x, y, image_bank=0, color_key=2, line=True):
+    shield_frame = shield.get_current_frame()
+    s_width = shield_frame.w_h[0]
+    s_height = shield_frame.w_h[1]
+    wu = shield_frame.pos[0] * 8
+    wv = shield_frame.pos[1] * 8
+    if line:
+        pyxel.line(x - 4, y + s_height, x + s_width, y + s_height, 8)
+    pyxel.blt(x, y, image_bank, wu, wv, s_width, s_height, color_key, rotate=shield_frame.rotation)

@@ -55,3 +55,10 @@ class MenuData:
         for component in self.menu_components:
             characters.extend(component.characters_to_draw())
         return characters
+
+    def get_horizontal_components(self):
+        horizontal_components = []
+        for component in self.menu_components:
+            if len(component.horizontal_options) > 0:
+                horizontal_components.append(component)
+        return horizontal_components

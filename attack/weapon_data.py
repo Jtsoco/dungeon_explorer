@@ -71,3 +71,6 @@ class WeaponData():
         attack_y = entity_data.rect.position[1]
         # super simple that doesn't take into account any offsets or anything, revisit later
         return (attack_x, attack_y)
+
+    def get_inventory_frame(self):
+        return self.animations[WS.INVENTORY][0]

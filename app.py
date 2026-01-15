@@ -77,7 +77,7 @@ class App():
                 self.setup_menu_mode()
             case MenuState.PAUSE_MENU:
                 self.menu_stack.append(MenuState.PAUSE_MENU)
-                pause_menu = setup_pause_menu()
+                pause_menu = setup_pause_menu(self.game.context)
                 self.menu_manager.set_menu(pause_menu)
                 self.setup_menu_mode()
             case MenuState.GAME:
@@ -112,6 +112,7 @@ class App():
                 self.game = Game(player_data=self.player_data)
             else:
                 self.game = Game()
+            self.menu_manager.context = self.game.context
             self.menu_manager.game = self.game
         self.current_update = self.game.update
         self.current_draw = self.game.draw

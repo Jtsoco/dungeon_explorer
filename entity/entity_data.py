@@ -7,7 +7,7 @@ from shared_components.rect import Rect
 class EntityData():
     def __init__(self,
                  position: list = [0, 0],
-                 w_h: tuple = (8, 8), animation_data=AnimationData(), weapon_data = None, entity_type=ET.KNIGHT, entity_category=EC.GROUND, speed=1, cell_pos=(0,0), player=False, health=100, touch_damage=0, knockback=(1.5, 1)):
+                 w_h: tuple = (8, 8), animation_data=AnimationData(), weapon_data = None, entity_type=ET.KNIGHT, entity_category=EC.GROUND, speed=1, cell_pos=(0,0), player=False, health=100, touch_damage=0, knockback=(1.5, 1),shield_data = None):
         self.health = health
         self.max_health = health
         self.player = player
@@ -24,7 +24,8 @@ class EntityData():
         self.action_state = AS.NONE
 
         self.weapon = weapon_data
-        self.shield = None
+        self.shield = shield_data
+
 
         self.velocity = [0, 0]  # (x_velocity, y_velocity)
 
@@ -51,9 +52,10 @@ class EntityData():
         self.powerup_reward = None
         # for enemies that give powerups when defeated
 
+
         self.inventory = {
-            IC.WEAPONS: [],
-            IC.SHIELDS: [],
+            IC.WEAPONS: [self.weapon] if self.weapon else [],
+            IC.SHIELDS: [self.shield] if self.shield else [],
             IC.ITEMS: []
         }
 
@@ -62,3 +64,8 @@ class EntityData():
 
     def shield_active(self):
         return self.shield is not None and self.shield.active
+
+    def add_weapon(self, weapon):
+        self.inventory[IC.WEAPONS].append(weapon)
+    def add_shield(self, shield):
+        self.inventory[IC.SHIELDS].append(shield)

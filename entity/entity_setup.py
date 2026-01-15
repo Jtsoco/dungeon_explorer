@@ -28,12 +28,15 @@ def spawn_player(position: tuple = (0, 0), p_type=ET.PLAYER) -> EntityData:
         "entity_category": EC.GROUND,
         "animation_data": AnimationData(SPRITES[p_type]),
         "weapon_data": weapon,
-        "speed": 2
+        "speed": 2,
+        "shield_data": shield,
 
     }
     player_data = EntityData(**player_setup)
-    player_data.shield = shield
     # player_data.power_ups[PUS.DOUBLE_JUMP] = True  # give player double jump powerup for testing
+    # new weapon test
+    weapon_two = spawn_weapon(WC.KATANA, CET.ENEMY)
+    player_data.add_weapon(weapon_two)
     return player_data
 
 # honestly could change weapon category to entity type, and apply weapon based on a mapping later, and consolidate loading into one function

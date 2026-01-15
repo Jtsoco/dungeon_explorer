@@ -76,9 +76,38 @@ class MenuManager(BaseManager):
                 elif action == MenuState.HORIZONTAL_SELECT:
                     pass
                     # this isn't needed yet, character is set when game starts, but for things like sound and such, it would be good to get the horizontal select option, then send that out as its own event, so that will go here
+            case MenuState.PAUSE_MENU:
+                if action == MenuState.HORIZONTAL_SELECT:
+                    self.pause_horizontal_select()
+                    return
+                # don't need to change state here
 
 
         self.bus.send_event(StateChangeEvent(new_state=action))
+
+    def pause_horizontal_select(self):
+        current_horizontal = self.menu_data.get_current_selection()
+        # this gives back the option
+        horizontals = self.menu_data.get_horizontal_components()
+        for horizontal in horizontals:
+            if horizontal.get_current_selection() == current_horizontal:
+                option = horizontal.get_current_horizontal_selection()
+                if option.action == MenuState.WEAPON_SELECT:
+                    self.select_weapon(option)
+                elif option.action == MenuState.SHIELD_SELECT:
+                    self.select_shield(option)
+
+
+    def select_weapon(self, option):
+        weapon = option.item
+        player = self.context.data_context.player_data
+        player.weapon = weapon
+
+    def select_shield(self, option):
+        shield = option.item
+        player = self.context.data_context.player_data
+        player.shield = shield
+
 
     def set_character(self):
         characters = self.get_characters_to_draw()

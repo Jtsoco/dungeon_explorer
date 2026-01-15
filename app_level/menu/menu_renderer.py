@@ -1,6 +1,8 @@
 import pyxel
-from HUD.player_draw import draw_entity, draw_weapon, draw_shield
+from HUD.player_draw import draw_entity, draw_weapon, draw_shield, draw_only_shield, draw_only_weapon
 from app_level.app_enums import MenuState
+from app_level.menu.menu_option import ItemMenuOption
+from enums.entity_enums import InventoryCategory as IC
 class MenuRenderer():
 
     def __init__(self):
@@ -11,6 +13,7 @@ class MenuRenderer():
             pyxel.rect(0, 0, pyxel.width, pyxel.height, 0)
             self.menu_render(menu_data)
             self.render_with_game(menu_data, game)
+            self.render_inventory(menu_data, game)
         else:
             self.draw_background()
             self.menu_render(menu_data)
@@ -89,3 +92,21 @@ class MenuRenderer():
         x = 240 * 8
         y = option * 8
         pyxel.bltm(0, 0, 0, x, y, width, height)
+
+    def render_inventory(self, menu_data, game):
+        horizontal = menu_data.get_horizontal_components()
+        for component in horizontal:
+            current_horizontal_selection = component.get_current_horizontal_selection()
+            options = component.horizontal_options
+            position_x = component.position[0] + 48
+            position_y = component.position[1]
+            for option in options:
+                if isinstance(option, ItemMenuOption):
+
+                    action = option.action
+                    line = current_horizontal_selection == option
+                    if action == MenuState.WEAPON_SELECT:
+                        draw_only_weapon(option.item, position_x, position_y, line=line)
+                    elif action == MenuState.SHIELD_SELECT:
+                        draw_only_shield(option.item, position_x, position_y, line=line)
+                    position_x += 32

@@ -102,6 +102,7 @@ class App():
         self.current_draw = self.menu_manager.draw
 
     def setup_game_mode(self):
+        pyxel.stop()
         if self.menu_manager.menu_data.menu_type == MenuState.MAIN_MENU:
             self.game = None
             # fresh load

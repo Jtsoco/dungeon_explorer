@@ -3,6 +3,7 @@ from app_level.menu.menu_data import MenuData
 from app_level.menu.menu_renderer import MenuRenderer
 from app_level.app_commands_events import MenuCommand, StateChangeEvent, SetMainCharacterCommand
 from app_level.app_enums import MenuCommandTypes, MenuState
+import pyxel
 
 
 class MenuManager(BaseManager):
@@ -43,6 +44,8 @@ class MenuManager(BaseManager):
         self.renderer.render(self.menu_data, self.game)
 
     def handle_menu_command(self, command):
+        # whenever a button is pressed, play basic sound
+        pyxel.play(1, 1)
         match command.action:
             case MenuCommandTypes.UP:
                 self.menu_data.index_up()

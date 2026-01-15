@@ -3,6 +3,7 @@ from app_level.menu.menu_option import MenuOption, CharacterMenuOption
 from app_level.menu.menu_component import MenuComponent, CharacterSelectMenuComponent
 from app_level.app_enums import MenuCommandTypes, MenuState
 from enums.entity_enums import EntityType
+import pyxel
 
 menu_registry = {
     MenuState.MAIN_MENU: [
@@ -18,6 +19,8 @@ menu_registry = {
     ]
 }
 def setup_main_menu():
+    # honestly don't need a full music manager for menu, just this for now
+    pyxel.playm(1, loop=True)
     main_menu = MenuData(MenuState.MAIN_MENU, title="Main Menu")
     main_menu_component = MenuComponent(pos=(24, 24), x_offset=0, y_offset=16)
     position_x = 24

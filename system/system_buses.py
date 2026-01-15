@@ -94,8 +94,6 @@ class SystemBus:
                 listener.notify_command(command)
 
     def send_event(self, event):
-        if isinstance(event, DeathEvent):
-            print("Death Event Sent to Bus")
         key = self.get_event_key(event)
         if key:
             listeners = self.event_listeners[key]

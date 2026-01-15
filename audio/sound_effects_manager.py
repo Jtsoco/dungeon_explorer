@@ -21,6 +21,7 @@ class SoundEffectsManager(BaseManager):
 
     def handle_updates(self):
         # play any queued sounds
+
         for sound_enum in self.sounds_to_play:
             self.play_sound(sound_enum[0], sound_enum[1])
 

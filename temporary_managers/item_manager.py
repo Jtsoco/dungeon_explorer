@@ -33,13 +33,13 @@ class ItemManager(BaseManager):
 
     def handle_death_event(self, event):
         chance = random.randint(1, 10)
-        if chance <= 10:
+        if chance <= 3:
             self.spawn_item_at_entity(event.entity)
 
     def spawn_item_at_entity(self, entity):
         # for now just health
         item_type = IT.HEALTH
-        value = 25
+        value = 25 * random.randint(1, 3)
         position = entity.rect.position.copy()
         item_w_h = (8, 8)
         item = Item(item_type=item_type, value=value, position=position, w_h=item_w_h, cell_pos=entity.cell_pos)

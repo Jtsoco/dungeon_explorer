@@ -102,6 +102,9 @@ class App():
         self.current_draw = self.menu_manager.draw
 
     def setup_game_mode(self):
+        if self.menu_manager.menu_data.menu_type == MenuState.MAIN_MENU:
+            self.game = None
+            # fresh load
         self.menu_stack.append(MenuState.GAME)
         if not self.game:
             if self.player_data:

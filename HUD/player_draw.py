@@ -26,6 +26,11 @@ def draw_weapon(entity_data, x, y, image_bank=0, color_key=2,):
     wv = weapon_frame.pos[1] * 8
     # for now just hardcoding weapon width and w_height, revisit later
     pyxel.blt(weapon_x, weapon_y, image_bank, wu, wv, w_width, w_height, color_key, rotate=weapon_frame.rotation)
+    # weapon_hitbox_pos = entity_data.weapon.get_position(entity_data)
+
+    # hitbox = entity_data.weapon.get_current_hitbox()
+    # pyxel.rect(weapon_hitbox_pos[0], weapon_hitbox_pos[1], hitbox[0], hitbox[1], 8)
+
 
 def draw_shield(entity_data, x, y, image_bank=0, color_key=2):
     shield_frame = entity_data.shield.get_current_frame()
@@ -59,5 +64,6 @@ def draw_entity(entity_data, x, y, image_bank=0, color_key=2, additions=True):
     if additions:
         if entity_data.shield:
             draw_shield(entity_data, x, y, image_bank, color_key)
+    # pyxel.rect(x, y, entity_data.rect.width, entity_data.rect.height, 6)
 
 # TODO change these to allow scale to be easily modified later

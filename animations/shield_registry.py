@@ -69,11 +69,15 @@ SHIELD_STATS = {
     SHIELD_CATEGORY.IRON_SHIELD: {
         "max_stamina": 100,
         "drain_resistance": 25,
-        "damage_resist": 1.0
+        "damage_resist": 1.0,
+        "regen_delay": 20,
+        "regen_amount": 10
     },
     SHIELD_CATEGORY.DAGGER: {
         "max_stamina": 50,
         "drain_resistance": 10,
-        "damage_resist": 0.5
+        "damage_resist": 0.5,
+        "regen_delay": 2,
+        "regen_amount": 25
     }
 }

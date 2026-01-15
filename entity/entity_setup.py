@@ -16,7 +16,6 @@ def spawn_player(position: tuple = (0, 0), p_type=ET.PLAYER) -> EntityData:
         case _:
             # default is knight
             weapon = spawn_weapon(WC.SHORTSWORD, CET.ENEMY)
-            weapon = spawn_weapon(WC.SHORTSWORD, CET.ENEMY)
             shield = spawn_shield(SC.IRON_SHIELD)
 
 
@@ -62,7 +61,9 @@ def spawn_shield(shield_category: SC = SC.IRON_SHIELD):
         hitbox=hitbox,
         damage_resist=stats['damage_resist'],
         max_stamina=stats['max_stamina'],
-        drain_resistance=stats['drain_resistance']
+        drain_resistance=stats['drain_resistance'],
+        regen_delay=stats['regen_delay'],
+        regen_amount=stats['regen_amount']
     )
     return shield_data
 
@@ -74,5 +75,6 @@ def spawn_winged_boss(cell_position, brick_x, brick_y, BOSS_SPRITES):
     enemy_data.boss = True
     enemy_data.power_ups[PUS.DOUBLE_JUMP] = True
     enemy_data.powerup_reward = PUS.DOUBLE_JUMP
+    enemy_data.touch_damage = 0
     # give boss double jump ability
     return enemy_data

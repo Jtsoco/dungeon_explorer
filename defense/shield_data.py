@@ -13,7 +13,7 @@
 from enums.entity_enums import SHIELD_CATEGORY as SC, SHIELD_ACTION_STATE as SAS
 from animations.shield_registry import SHIELD_ANIMATIONS, SHIELD_HITBOXES
 class ShieldData:
-    def __init__(self, shield_category=SC.IRON_SHIELD, max_stamina=100, drain_resistance=25, animation=SHIELD_ANIMATIONS[SC.IRON_SHIELD], damage_resist=1.0, hitbox=SHIELD_HITBOXES[SC.IRON_SHIELD]):
+    def __init__(self, shield_category=SC.IRON_SHIELD, max_stamina=100, drain_resistance=25, animation=SHIELD_ANIMATIONS[SC.IRON_SHIELD], damage_resist=1.0, hitbox=SHIELD_HITBOXES[SC.IRON_SHIELD], regen_delay=20, regen_amount=10):
         self.shield_category = shield_category
         self.max_stamina = max_stamina
         self.current_stamina = max_stamina
@@ -32,8 +32,8 @@ class ShieldData:
         self.pending_unblock = False
 
         self.regen_timer = None
-        self.regen_amount = 10
-        self.regen_delay = 20
+        self.regen_amount = regen_amount
+        self.regen_delay = regen_delay
         self.regen_active = False
 
     def get_current_frame(self):

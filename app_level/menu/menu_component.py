@@ -7,6 +7,7 @@ from enums.entity_enums import EntityType
 class MenuComponent():
     def __init__(self, pos, x_offset, y_offset, title=None):
         self.options = []
+        self.horizontal_options = []
         # for multiple options, a 2d array could be used later
         self.position = pos
         self.x_offset = x_offset
@@ -33,6 +34,9 @@ class MenuComponent():
     def add_option(self, option):
         option.text.position = (self.position[0], self.position[1] + len(self.options) * self.y_offset)
         self.options.append(option)
+    def add_horizontal_option(self, option):
+        option.text.position = (self.position[0] + len(self.horizontal_options) * self.x_offset, self.position[1])
+        self.horizontal_options.append(option)
 
     def get_bottom_y(self):
         return self.y_offset * len(self.options) + self.position[1]
@@ -55,6 +59,8 @@ class MenuComponent():
             self.y_index += 1
             return True
         return False
+    def characters_to_draw(self):
+        return []
 
     def index_right(self):
 
@@ -109,15 +115,18 @@ class TwoDMenuComponent(MenuComponent):
 class HorizontalMenuComponent(MenuComponent):
     def __init__(self, pos, x_offset, y_offset, title=None):
         super().__init__(pos, x_offset, y_offset, title)
+        self.options.append(MenuOption(text=title, position=pos, action=None))
+        self.title = None
 
     def index_up(self):
+        # only wil have 0 index
         return False
 
     def index_down(self):
         return False
 
     def index_right(self):
-        if self.x_index < len(self.options) - 1:
+        if self.x_index < len(self.horizontal_options) - 1:
             self.x_index += 1
             return True
         return False
@@ -128,8 +137,6 @@ class HorizontalMenuComponent(MenuComponent):
             return True
         return False
 
-    def get_current_selection(self):
-        return self.options[self.x_index]
 
     def items_to_draw(self):
         items = []
@@ -143,7 +150,13 @@ class CharacterSelectMenuComponent(HorizontalMenuComponent):
     def __init__(self, pos, x_offset, y_offset, title="Select Character"):
         super().__init__(pos, x_offset, y_offset, title)
 
+        # rethink titles how they function
 
-    def character_to_draw(self):
+    def items_to_draw(self):
+        return super().items_to_draw()
+
+
+
+    def characters_to_draw(self):
         current_option = self.get_current_selection()
-        return current_option.character
+        return [current_option.character]

@@ -7,8 +7,19 @@ from animations.shield_registry import SHIELD_ANIMATIONS, SHIELD_HITBOXES, SHIEL
 from defense.shield_data import ShieldData
 from animations.sprite_registry import SPRITES
 
-def spawn_player(position: tuple = (0, 0)) -> EntityData:
-    weapon= spawn_weapon(WC.KATANA, CET.ENEMY)
+def spawn_player(position: tuple = (0, 0), p_type=ET.PLAYER) -> EntityData:
+    match p_type:
+
+        case ET.PLAYER_RONIN:
+            weapon = spawn_weapon(WC.KATANA, CET.ENEMY)
+            shield = spawn_shield(SC.DAGGER)
+        case _:
+            # default is knight
+            weapon = spawn_weapon(WC.SHORTSWORD, CET.ENEMY)
+            weapon = spawn_weapon(WC.SHORTSWORD, CET.ENEMY)
+            shield = spawn_shield(SC.IRON_SHIELD)
+
+
     player_setup = {
         "health": 500,
         "position": list(position),
@@ -16,13 +27,12 @@ def spawn_player(position: tuple = (0, 0)) -> EntityData:
         "player": True,
         "entity_type": ET.PLAYER,
         "entity_category": EC.GROUND,
-        "animation_data": AnimationData(SPRITES[ET.PLAYER_RONIN]),
+        "animation_data": AnimationData(SPRITES[p_type]),
         "weapon_data": weapon,
         "speed": 2
 
     }
     player_data = EntityData(**player_setup)
-    shield = spawn_shield(SC.DAGGER)
     player_data.shield = shield
     # player_data.power_ups[PUS.DOUBLE_JUMP] = True  # give player double jump powerup for testing
     return player_data

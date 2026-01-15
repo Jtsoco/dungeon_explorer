@@ -23,25 +23,33 @@ def setup_main_menu():
     position_x = 24
     position_y = 24
 
-    character_component = ("Character Select", MenuState.CHARACTER_SELECT),
     for option_text, action in menu_registry[MenuState.MAIN_MENU]:
         menu_option = MenuOption(text=option_text, position=(position_x, position_y), action=action)
         main_menu_component.add_option(menu_option)
         position_y += 16
 
     main_menu.add_component(main_menu_component)
-    new_component = MenuComponent(pos=(24, position_y + 16), x_offset=0, y_offset=16)
-    new_option = ("Quit", MenuState.QUIT)
-    menu_option = MenuOption(text=new_option[0], position=(position_x, position_y + 16), action=new_option[1])
-    new_component.add_option(menu_option)
-    main_menu.add_component(new_component)
 
-
-    # character_select component
     character_options = [
         EntityType.PLAYER,
         EntityType.PLAYER_RONIN
     ]
+
+    # character_select component
+    character_select_component = CharacterSelectMenuComponent(pos=(24, position_y), x_offset=40, y_offset=0)
+
+    for character in character_options:
+        menu_option = CharacterMenuOption(character=character, position=(0,0), action=MenuState.GAME)
+        character_select_component.add_horizontal_option(menu_option)
+    position_y += 16
+
+    main_menu.add_component(character_select_component)
+
+    new_component = MenuComponent(pos=(24, position_y), x_offset=0, y_offset=16)
+    new_option = ("Quit", MenuState.QUIT)
+    menu_option = MenuOption(text=new_option[0], position=(position_x, position_y + 16), action=new_option[1])
+    new_component.add_option(menu_option)
+    main_menu.add_component(new_component)
 
     return main_menu
 

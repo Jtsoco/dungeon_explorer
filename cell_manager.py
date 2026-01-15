@@ -9,6 +9,7 @@ from entity.entity_setup import spawn_weapon, spawn_winged_boss
 from base_manager import BaseManager
 from events_commands.commands import LoadMultipleEntityCollisionCommand as LMECC, LoadMultipleBoundariesCollisionCommand as LMBCC, LoadEntityCollisionCommand as LECC, LoadActiveAttackCollisionCommand as LAACC
 import pyxel
+from entity.entity_setup import spawn_weapon
 
 class CellManager(BaseManager):
     def __init__(self, cells_data, active_cell: tuple, context):
@@ -103,7 +104,7 @@ class SingleCellManager():
                                 entity_types.add(ET.SKULL)
                         case ET.KNIGHT.value:
                             animation_data = AnimationData(SPRITES[ET.KNIGHT])
-                            weapon_data = WeaponData(target_type=CET.PLAYER)
+                            weapon_data = spawn_weapon(WC.ENEMY_SWORD)
                             enemy_data = EntityData(entity_type=ET.KNIGHT, position=[brick_x * 8, brick_y * 8], animation_data=animation_data, weapon_data=weapon_data, cell_pos=(cell_data.cell_x, cell_data.cell_y), touch_damage=0, health=150)
                             enemies.add(enemy_data)
                             if ET.KNIGHT not in entity_types:

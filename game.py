@@ -122,12 +122,12 @@ class Game():
 
         self.scene_manager.draw()
         effects = self.effects_manager.get_effects()
-        self.scene_manager.render_effects(effects)
         # for now this, but change it later when i have time
         enemies = self.cell_manager.current_state.get_enemies()
         for enemy in enemies:
             self.entity_manager.draw(enemy)
         self.entity_manager.draw(self.context.data_context.player_data)
+        self.scene_manager.render_effects(effects)
         camera_pos = self.scene_manager.camera.current_camera
         # display_info(f"Player Pos: {self.context.data_context.player_data.position[0]}", pos_x=camera_pos[0]+2, pos_y=camera_pos[1]+8)
 

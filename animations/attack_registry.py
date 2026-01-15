@@ -1,3 +1,4 @@
+
 from animations.animation_frame import AnimationFrame as AF
 from enums.entity_enums import WeaponActionState as WAS, WeaponCategory as WC
 
@@ -6,6 +7,15 @@ WEAPONS_ANIMATIONS = {
         WAS.SHEATHED: [AF(offset=(0, 6), pos=(2, 6), duration=3)],
         WAS.DEFAULT: [
             AF(offset=(0, 6), pos=(2, 6), duration=3),
+            AF(offset=(1, 5), pos=(3, 6), duration=1),
+            AF(offset=(1, 5), pos=(2, 7), duration=1),
+            AF(offset=(1, 5), pos=(3, 7), duration=6),
+        ]
+    },
+    WC.ENEMY_SWORD: {
+        WAS.SHEATHED: [AF(offset=(0, 6), pos=(2, 6), duration=15)],
+        WAS.DEFAULT: [
+            AF(offset=(0, 6), pos=(2, 6), duration=15),
             AF(offset=(1, 5), pos=(3, 6), duration=1),
             AF(offset=(1, 5), pos=(2, 7), duration=1),
             AF(offset=(1, 5), pos=(3, 7), duration=6),
@@ -21,15 +31,16 @@ WEAPONS_ANIMATIONS = {
         ]
     },
     WC.GLAIVE: {
-        WAS.SHEATHED: [AF(pos=(0,26), duration=3, offset=(6,14), w_h=(8, 16))],
+        WAS.SHEATHED: [AF(pos=(0,26), duration=10, offset=(6,14), w_h=(8, 16))],
         WAS.DEFAULT: [
-            AF(pos=(0,26), duration=3, offset=(6,14), w_h=(8, 16)),
+            AF(pos=(0,26), duration=10, offset=(6,14), w_h=(8, 16)),
             AF(pos=(1,26), duration=1, offset=(5,13), w_h=(8, 16), rotation=30),
             AF(pos=(1,26), duration=1, offset=(4,12), w_h=(8, 16), rotation=60),
             AF(pos=(0,26), duration=11, offset=(3,11), w_h=(8, 16), rotation=90),
         ],
         WAS.AIRATTACK: [
             # honestly given the attack is spinning around, might be good to make a system to allow for a looping animation frame, that instead uses a duration to determine when to use the next rotation frame. For now, just use a bunch of AF instances, because it's quickest for this one attack
+            AF(pos=(0,26), duration=10, offset=(6,12), w_h=(8, 16), rotation=0),
             AF(pos=(1,26), duration=2, offset=(6,12), w_h=(8, 16), rotation=0),
             AF(pos=(1,26), duration=2, offset=(5,11), w_h=(8, 16), rotation=30),
             AF(pos=(1,26), duration=2, offset=(4,10), w_h=(8, 16), rotation=60),
@@ -47,8 +58,20 @@ WEAPONS_ANIMATIONS = {
 
 }
 
+
 WEAPONS_HITBOXES = {
     WC.SHORTSWORD: {
+        WAS.SHEATHED: {
+            0: (0, 0)  # no hitbox when sheathed
+        },
+        WAS.DEFAULT: {
+            0: (0, 0),  # no hitbox on first animation frame
+            1: (8, 4),
+            2: (8, 6),
+            3: (8, 8),
+        }
+    },
+    WC.ENEMY_SWORD: {
         WAS.SHEATHED: {
             0: (0, 0)  # no hitbox when sheathed
         },
@@ -113,5 +136,9 @@ WEAPON_STATS = {
     WC.KATANA: {
         "damage": 50,
         "knockback": (.3, 0)
-    }
+    },
+    WC.ENEMY_SWORD: {
+        "damage": 40,
+        "knockback": (1.0, 0.5)
+    },
 }

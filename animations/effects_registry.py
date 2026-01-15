@@ -22,11 +22,17 @@ PARTICLE_REGISTRY = {
         AnimationFrame((6,10)),
 
     ],
+    ParticleEffectType.ENEMY_ATTACK_START: [
+        AnimationFrame((7, 10)),
+        AnimationFrame((7, 9)),
+    ],
 }
 set_lengths_according_to_fps(PARTICLE_REGISTRY[ParticleEffectType.JUMP_DUST], seconds=0.3)
 set_offset(PARTICLE_REGISTRY[ParticleEffectType.JUMP_DUST], offset=(0,2))
 set_lengths_according_to_fps(PARTICLE_REGISTRY[ParticleEffectType.LAND_DUST], seconds=0.3)
 set_lengths_according_to_fps(PARTICLE_REGISTRY[ParticleEffectType.BREAK], seconds=0.2)
+
+set_lengths_according_to_fps(PARTICLE_REGISTRY[ParticleEffectType.ENEMY_ATTACK_START], seconds=0.2)
 
 EFFECTS_REGISTRY = {
     EffectType.PARTICLE: PARTICLE_REGISTRY,

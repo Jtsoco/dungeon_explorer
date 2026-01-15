@@ -1,8 +1,9 @@
 from enums.entity_enums import WeaponActionState as WAS, MovementState as MS, CollisionEntityTarget as CET, DirectionState as DS
 from events_commands.events import AttackFinishedEvent as AFE, PossibleAttackCollisionEvent as PACE
-from events_commands.commands import AttackCommand, SoundCommand, LoadActiveAttackCollisionCommand as LAACC
+from events_commands.commands import AttackCommand, SoundCommand, LoadActiveAttackCollisionCommand as LAACC, EffectCommand
 from audio.sound_enums import SoundEnum
 from base_manager import BaseManager
+from enums.effects_enums import EffectType, ParticleEffectType as PET
 
 class AttackManager(BaseManager):
     def __init__(self, context, local_bus):
@@ -72,6 +73,9 @@ class AttackManager(BaseManager):
             weapon.set_current_hitboxes(state)
             self.context.bus.send_command(SoundCommand(sound_enum=weapon.attack_sound))
             self.context.bus.send_command(LAACC(load=True, attacking_entity=entity_data))
+        if not entity_data.player:
+            effect = EffectCommand(effect_type=EffectType.PARTICLE, sub_type=PET.ENEMY_ATTACK_START, pos=weapon.get_position(entity_data))
+            self.context.bus.send_command(effect)
 
 
     def get_jump_attack(self, weapon_data):

@@ -7,9 +7,11 @@ class EffectType(Enum):
     SOUND = auto()
     DEATH_ANIMATION = auto()
 
+
 class ParticleEffectType(Enum):
     JUMP_DUST = auto()
     LAND_DUST = auto()
     EXPLOSION = auto()
     SPARKLES = auto()
     BREAK = auto()
+    ENEMY_ATTACK_START = auto()

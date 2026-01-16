@@ -163,7 +163,7 @@ class SingleCellManager():
                 elif tile in ItemSpawns:
                     match tile:
                         case ItemSpawns.HEALTH.value:
-                            item = Item(item_type=IT.HEALTH, value=25, position=[brick_x * 8, brick_y * 8], cell_pos=(cell_data.cell_x, cell_data.cell_y))
+                            item = Item(item_type=IT.HEALTH, value=100, position=[brick_x * 8, brick_y * 8], cell_pos=(cell_data.cell_x, cell_data.cell_y))
                             items.add(item)
         return enemies, entity_types, x_boundaries, y_boundaries, items
 

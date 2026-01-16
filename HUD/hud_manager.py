@@ -1,6 +1,6 @@
 from base_manager import BaseManager
 from events_commands.events import PlayerEvent as PE, PlayerDamagedEvent as PDe, PlayerHealedEvent as PHe, PlayerDeathEvent as PDea, PlayerShieldDamagedEvent as PSDe
-from events_commands.commands import HUDCommand, TemporaryMessageCommand
+from events_commands.commands import HUDCommand, TemporaryMessageCommand, HUDUpdateCommand
 from enums.hud_enums import HUDComponentType as HCT
 from renderers.hud_renderer import HudRenderer
 from HUD.temporary_message import TemporaryMessage
@@ -39,10 +39,13 @@ class HUDManager(BaseManager):
             case PSDe():
                 self.handle_damage(event, HCT.SHIELD)
 
+
     def handle_command(self, command):
         match command:
             case TemporaryMessageCommand():
                 self.make_temporary_message(command.message, command.seconds_duration)
+            case HUDUpdateCommand():
+                self.update_player_hud(self.context.data_context.player_data)
 
     def make_temporary_message(self, message, seconds_duration):
         # for now fps is hardlocked to 30, will eventuall change it so context provides it but for now, let it be a constant
@@ -80,6 +83,10 @@ class HUDManager(BaseManager):
             message = self.temporary_messages[0]
             self.renderer.render_message(message.message)
         # self.renderer.render_message('Test Message, how easy to read?')
+
+    def update_player_hud(self, player_data):
+        self.setup_player_hud(player_data)
+        # change it later to just refresh the components, for now it's low cost so this is fine
 
     def setup_player_hud(self, player_data):
         health_component = self.components[HCT.HEALTH]

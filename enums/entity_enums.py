@@ -49,11 +49,14 @@ class EntityType(Enum):
     PLAYER_RONIN = (3, 30)
 
 class WeaponSpawns(Enum):
-    GLAIVE = (3,27),
+    GLAIVE = (3,27)
 
 class ShieldSpawns(Enum):
     DAGGER = (3, 11)
     TOWER = (3, 12)
+
+class ItemSpawns(Enum):
+    HEALTH = (3, 13)
 
 
 class EntityCategory(Enum):

@@ -3,6 +3,7 @@ from app_level.menu.menu_data import MenuData
 from app_level.menu.menu_renderer import MenuRenderer
 from app_level.app_commands_events import MenuCommand, StateChangeEvent, SetMainCharacterCommand
 from app_level.app_enums import MenuCommandTypes, MenuState
+from events_commands.commands import HUDCommand, HUDUpdateCommand
 import pyxel
 
 
@@ -102,11 +103,14 @@ class MenuManager(BaseManager):
         weapon = option.item
         player = self.context.data_context.player_data
         player.weapon = weapon
+        self.game.context.bus.send_command(HUDUpdateCommand())
 
     def select_shield(self, option):
         shield = option.item
         player = self.context.data_context.player_data
         player.shield = shield
+        self.game.context.bus.send_command(HUDUpdateCommand())
+
 
 
     def set_character(self):

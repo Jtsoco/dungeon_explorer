@@ -198,3 +198,6 @@ class LoadItemCollisionCommand(CollisionCommand):
         super().__init__(load=load)
         self.name = "LoadItemCollisionCommand"
         self.item = item
+class HUDUpdateCommand(HUDCommand):
+    def __init__(self):
+        super().__init__(name="HUDUpdateCommand")

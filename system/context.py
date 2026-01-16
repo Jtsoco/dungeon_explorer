@@ -59,7 +59,7 @@ class DataContext():
         self.collideable_tile_y = 3
 
         # these are just initial values, and determine just how far the map goes. For now, empty cell data for each cell will be loaded, scale of game is small and the cell data itself isn't large until enemies are loaded, so should be fine for now
-        self.cell_x = 3
+        self.cell_x = 6
         self.cell_y = 2
 
         # the transparent color for rendering

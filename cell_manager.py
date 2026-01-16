@@ -1,4 +1,4 @@
-from enums.entity_enums import EntityType as ET, BoundaryType as BT, CollisionEntityTarget as CET, WeaponCategory as WC, WeaponSpawns as WS, ItemType as IT, ShieldSpawns as SS, SHIELD_CATEGORY as SC
+from enums.entity_enums import EntityType as ET, BoundaryType as BT, CollisionEntityTarget as CET, WeaponCategory as WC, WeaponSpawns as WS, ItemType as IT, ShieldSpawns as SS, SHIELD_CATEGORY as SC, ItemSpawns
 from events_commands.events import BoundaryCollisionEvent as BCE, NewlyLoadedCellsEvent as NLCE, DeathEvent
 from boundaries.boundary import Boundary
 from entity.entity_data import EntityData
@@ -149,7 +149,7 @@ class SingleCellManager():
                         case BT.Y.value:
                             boundary = Boundary(BT.Y, position=(brick_x * 8, brick_y * 8))
                             y_boundaries.add(boundary)
-                elif tile in WS:
+                if tile in WS:
                     match tile:
                         case WS.GLAIVE.value:
                             # separating weapon spaawns from weapon category means i can make alternate versions of the same weapon, like different stats and such later
@@ -160,6 +160,11 @@ class SingleCellManager():
                     shield_category = self.get_shield_category(tile)
                     item = Item(item_type=IT.SHIELD, value=shield_category, position=[brick_x * 8, brick_y * 8], cell_pos=(cell_data.cell_x, cell_data.cell_y))
                     items.add(item)
+                elif tile in ItemSpawns:
+                    match tile:
+                        case ItemSpawns.HEALTH.value:
+                            item = Item(item_type=IT.HEALTH, value=25, position=[brick_x * 8, brick_y * 8], cell_pos=(cell_data.cell_x, cell_data.cell_y))
+                            items.add(item)
         return enemies, entity_types, x_boundaries, y_boundaries, items
 
     def get_shield_category(self, tile: SS):

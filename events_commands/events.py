@@ -168,3 +168,11 @@ class ActionFailedEvent(StateUpdateEvent):
 
 
 # notify_event must be held by managers to receive events to act upon during their secondary update cycle, basically they receive it, store it, then act upon it later
+
+class GameEvent(Event):
+    def __init__(self, name="GameEvent"):
+        super().__init__(name=name)
+
+class GameOverEvent(GameEvent):
+    def __init__(self):
+        super().__init__(name="GameOverEvent")

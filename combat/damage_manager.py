@@ -1,5 +1,5 @@
 from enums.entity_enums import DirectionState as DS
-from events_commands.events import DeathEvent, PlayerDamagedEvent, BossDeathEvent, PlayerShieldDamagedEvent
+from events_commands.events import DeathEvent, PlayerDamagedEvent, BossDeathEvent, PlayerShieldDamagedEvent, GameOverEvent
 from events_commands.commands import SoundCommand, DamageCommand, AddMomentumCommand, CombatCommand, ShieldHitCommand, EntitySeparationCommand, BreakShieldCommand
 from audio.sound_enums import SoundEnum
 from base_manager import BaseManager
@@ -70,6 +70,10 @@ class DamageManager(BaseManager):
             if target.boss:
                 boss_death_event = BossDeathEvent(target)
                 events.append(boss_death_event)
+            elif target.player:
+                # eventually make a different thing to manage game over than here, but for now just send event from here, don't have other conditions to care about
+                game_over_event = GameOverEvent()
+                self.context.bus.send_event(game_over_event)
 
             death_event = DeathEvent(target)
             events.append(death_event)

@@ -96,3 +96,11 @@ def draw_only_shield(shield, x, y, image_bank=0, color_key=2, line=True):
     if line:
         pyxel.line(x - 4, y + s_height, x + s_width, y + s_height, 8)
     pyxel.blt(x, y, image_bank, wu, wv, s_width, s_height, color_key, rotate=shield_frame.rotation)
+
+def shadow_text(position, message, color=0):
+    for i in range(-1, 2, 2):
+        # make a shadow effect for readability
+        pyxel.text(position[0]+i, position[1], message, color)
+        pyxel.text(position[0], position[1]+i, message, color)
+        pyxel.text(position[0]+i, position[1]+i, message, color)
+        pyxel.text(position[0]+i, position[1]-i, message, color)

@@ -5,10 +5,9 @@
 # these effects should be temporary in nature, and not persistent world objects.
 # if a visual effect must be permanent, it should be tied to the cell or entity system instead
 
-from animations.death_registry import GENERIC_DEATH_ANIMATION
-from animations.effects_registry import EFFECTS_REGISTRY
+from animations.effects_registry import EFFECTS_REGISTRY, DEATH_ANIMATION_REGISTRY
 
-from enums.effects_enums import EffectType, ParticleEffectType
+from enums.effects_enums import EffectType, ParticleEffectType, DEATH_ANIMATION_TYPE
 
 from events_commands.events import DeathEvent as Death
 from events_commands.commands import EffectCommand
@@ -79,7 +78,11 @@ class EffectsManager(BaseManager):
         entity = event.entity
         effect_position = entity.rect.position
         effect_type = EffectType.DEATH_ANIMATION
-        animation = GENERIC_DEATH_ANIMATION
+        if entity.player:
+            sub_type = DEATH_ANIMATION_TYPE.PLAYER_HEART_SHATTER
+        else:
+            sub_type = DEATH_ANIMATION_TYPE.DEFAULT_DEATH
+        animation = EFFECTS_REGISTRY[effect_type][sub_type]
         new_effect = Effect(effect_type, effect_position, animation)
         self.active_effects.append(new_effect)
 

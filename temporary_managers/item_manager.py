@@ -33,6 +33,8 @@ class ItemManager(BaseManager):
                 self.handle_item_interaction(command)
 
     def handle_death_event(self, event):
+        if event.entity.player:
+            return
         chance = random.randint(1, 10)
         if chance <= 3:
             self.spawn_item_at_entity(event.entity)

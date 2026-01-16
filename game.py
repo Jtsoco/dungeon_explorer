@@ -7,8 +7,9 @@ from entity.entity_manager import EntityManager
 from collisions.collision_manager import CollisionManager
 from combat.damage_manager import DamageManager
 from entity.entity_setup import spawn_player
+from HUD.player_draw import shadow_text
 
-from events_commands.events import PossibleAttackCollisionEvent as PACE, DamageEvent as DE, PhysicsEvent as PE, DeathEvent as Death, NewlyLoadedCellsEvent as NLCE, BoundaryCollisionEvent as BCE
+from events_commands.events import PossibleAttackCollisionEvent as PACE, DamageEvent as DE, PhysicsEvent as PE, DeathEvent as Death, NewlyLoadedCellsEvent as NLCE, BoundaryCollisionEvent as BCE, GameEvent as GE, GameOverEvent as GOE
 from events_commands.commands import EffectCommand, SoundCommand, MusicCommand, AudioCommand
 from HUD.hud_manager import HUDManager
 from temporary_managers.powerup_manager import PowerupManager
@@ -73,10 +74,20 @@ class Game():
         self.hud_manager = HUDManager(self.context)
         self.hud_manager.setup_player_hud(self.context.data_context.player_data)
         self.item_manager = ItemManager(self.context)
+        self.current_update = self.regular_update
+
+        self.context.bus.register_event_listener(GE, self)
+        self.extra_message = ""
+        self.current_draw = self.regular_draw
 
 
     def update(self):
+        self.current_update()
 
+    def draw(self):
+        self.current_draw()
+
+    def regular_update(self):
         all_entities = self.cell_manager.current_state.get_enemies()
         all_entities.add(self.context.data_context.player_data)
 
@@ -118,7 +129,14 @@ class Game():
             self.cell_manager.current_state.remove_entity(entity)
             self.effects_manager.handle_event(event)
 
-    def draw(self):
+    def no_entity_update(self):
+        self.cell_manager.update()
+        self.effects_manager.update()
+        self.hud_manager.update()
+        self.sound_effects_manager.update()
+        self.scene_manager.camera.update()
+
+    def regular_draw(self):
         self.scene_manager.set_camera_to_current()
 
         self.scene_manager.draw()
@@ -152,3 +170,18 @@ class Game():
         self.last_time = self.current_time
         self.last_frame_count = self.current_frame_count
         # display_info(fps, pos_x=camera_pos[0]+2, pos_y=camera_pos[1]+2)
+
+    def extra_message_draw(self):
+        self.regular_draw()
+
+        message = self.extra_message
+        position = (pyxel.width // 2 - len(message) * 2, pyxel.height // 4)
+        shadow_text(position, message, color=0)
+        pyxel.text(position[0], position[1], message, 7)
+
+    def notify_event(self, event):
+        match event:
+            case GOE():
+                self.current_update = self.no_entity_update
+                self.current_draw = self.extra_message_draw
+                self.extra_message = "Game Over"

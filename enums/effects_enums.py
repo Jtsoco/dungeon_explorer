@@ -15,3 +15,9 @@ class ParticleEffectType(Enum):
     SPARKLES = auto()
     BREAK = auto()
     ENEMY_ATTACK_START = auto()
+
+class DEATH_ANIMATION_TYPE(Enum):
+    KNIGHT_FALL = auto()
+    ENEMY_DISINTEGRATE = auto()
+    PLAYER_HEART_SHATTER = auto()
+    DEFAULT_DEATH = auto()

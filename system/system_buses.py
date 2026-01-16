@@ -1,6 +1,6 @@
 
 
-from events_commands.events import Event, DeathEvent, BoundaryCollisionEvent, NewlyLoadedCellsEvent, PlayerEvent, BossDeathEvent, StateChangedEvent, StateUpdateEvent
+from events_commands.events import Event, DeathEvent, BoundaryCollisionEvent, NewlyLoadedCellsEvent, PlayerEvent, BossDeathEvent, StateChangedEvent, StateUpdateEvent, GameEvent
 from events_commands.commands import Command, AudioCommand, EffectCommand, CollisionCommand, DefenseCommand, PhysicsCommand, CombatCommand, HUDCommand, LoadItemCommand, HandleItemCommand
 from app_level.app_commands_events import AppEvent, AppCommand, MenuCommand, StateChangeEvent as AppStateChangeEvent, SetMainCharacterCommand
 
@@ -26,7 +26,7 @@ class SystemBus:
             HUDCommand: [],
             DefenseCommand: [],
             LoadItemCommand: [],
-            HandleItemCommand: []
+            HandleItemCommand: [],
         }
         #
         self.event_listeners = {
@@ -35,6 +35,7 @@ class SystemBus:
             NewlyLoadedCellsEvent: [],
             PlayerEvent: [],
             BossDeathEvent: [],
+            GameEvent: [],
 
         }
 

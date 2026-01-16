@@ -67,6 +67,10 @@ class App():
         match new_state:
             case MenuState.MAIN_MENU:
                 main_menu = setup_main_menu()
+                if self.menu_stack[-1] == MenuState.GAME:
+                    # coming from game, possibly game over, need to add enter to controller as quick fix
+                    self.controller.recent_keys.add(pyxel.KEY_RETURN)
+                    # rethink game over menu later, but for now it's just quickly running in game to have something now, plus it's very little code so not a big deal
                 if len(self.menu_stack) > 1:
                     # make sure a return to main menu from another menu resets to main menu
                     self.menu_stack = [MenuState.MAIN_MENU]
@@ -109,9 +113,9 @@ class App():
         self.menu_stack.append(MenuState.GAME)
         if not self.game:
             if self.player_data:
-                self.game = Game(player_data=self.player_data)
+                self.game = Game(self.top_bus, player_data=self.player_data)
             else:
-                self.game = Game()
+                self.game = Game(self.top_bus)
             self.menu_manager.context = self.game.context
             self.menu_manager.game = self.game
         self.current_update = self.game.update

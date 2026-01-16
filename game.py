@@ -9,6 +9,9 @@ from combat.damage_manager import DamageManager
 from entity.entity_setup import spawn_player
 from HUD.player_draw import shadow_text
 
+from app_level.app_commands_events import StateChangeEvent as AppStateChangeEvent
+from app_level.app_enums import MenuState
+
 from events_commands.events import PossibleAttackCollisionEvent as PACE, DamageEvent as DE, PhysicsEvent as PE, DeathEvent as Death, NewlyLoadedCellsEvent as NLCE, BoundaryCollisionEvent as BCE, GameEvent as GE, GameOverEvent as GOE
 from events_commands.commands import EffectCommand, SoundCommand, MusicCommand, AudioCommand
 from HUD.hud_manager import HUDManager
@@ -20,7 +23,7 @@ from system.context import Context
 
 from datetime import datetime
 class Game():
-    def __init__(self, player_data=None):
+    def __init__(self, top_bus, player_data=None):
     # need bus for communication between game systems
     # need camera system
     # need player system, divided into controller, player data, and player logic, and rendering
@@ -29,6 +32,8 @@ class Game():
     # possible could make an update array, and the camera class adds itself and moves out depending on whether it needs to handle a transition or not
 
     # anyway, start with just getting a camera and active cell (1 cell, no transitions) working first
+        # the upper bus exists to send events to app level, like during game over screen pressing enter to go back to menu
+        self.top_bus = top_bus
         self.context = Context()
         self.context.setup_defaults()
         # adjust this later
@@ -77,7 +82,6 @@ class Game():
         self.current_update = self.regular_update
 
         self.context.bus.register_event_listener(GE, self)
-        self.extra_message = ""
         self.current_draw = self.regular_draw
 
 
@@ -170,18 +174,30 @@ class Game():
         self.last_time = self.current_time
         self.last_frame_count = self.current_frame_count
         # display_info(fps, pos_x=camera_pos[0]+2, pos_y=camera_pos[1]+2)
+    def game_over_update(self):
+        self.no_entity_update()
 
-    def extra_message_draw(self):
+
+    def game_over_draw(self):
         self.regular_draw()
+        message = "Game Over!"
+        position = (pyxel.width // 2 - 20, pyxel.height // 4)
 
-        message = self.extra_message
-        position = (pyxel.width // 2 - len(message) * 2, pyxel.height // 4)
+        # pyxel.rect(position[0]-8, position[1]-8, pyxel.width // 2, 32, 0)
         shadow_text(position, message, color=0)
         pyxel.text(position[0], position[1], message, 7)
+        message = "Press Enter"
+        position = (position[0], pyxel.height // 3)
+        shadow_text(position, message, color=0)
+        pyxel.text(position[0], position[1], message, 7)
+
+        # this is here, because putting it in update caused drawing issues, where the hole screen would go black and stay that way, so until i investigate the bug this will be the hotfix
+        if pyxel.btnp(pyxel.KEY_RETURN):
+            # send event to app level to switch to game over menu
+            self.top_bus.send_event(AppStateChangeEvent(MenuState.MAIN_MENU))
 
     def notify_event(self, event):
         match event:
             case GOE():
-                self.current_update = self.no_entity_update
-                self.current_draw = self.extra_message_draw
-                self.extra_message = "Game Over"
+                self.current_update = self.game_over_update
+                self.current_draw = self.game_over_draw

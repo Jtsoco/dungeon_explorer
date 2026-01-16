@@ -193,7 +193,7 @@ class GroundPhysics:
         new_impossible = False
         RIGHT = entity_a.rect.position[0] < entity_b.rect.position[0]
         right = RIGHT
-        while entity_a.rect.is_rect_colliding(entity_b.rect) and not impossible:
+        if entity_a.rect.is_rect_colliding(entity_b.rect) and not impossible:
             # try to push out b
             if not new_impossible:
                 new_impossible = self.pushout_entity_b(entity_a, entity_b, right)
@@ -207,12 +207,13 @@ class GroundPhysics:
 
     def pushout_entity_b(self, entity_a, entity_b, RIGHT):
         impossible = False
+        movement = entity_b.move_speed
         if RIGHT:
-            entity_b.rect.position[0] += 1
-            stepback = 1
+            entity_b.rect.position[0] += movement
+            stepback = movement
         else:
-            entity_b.rect.position[0] -= 1
-            stepback = -1
+            entity_b.rect.position[0] -= movement
+            stepback = -movement
         if self.check_tile_collisions(entity_b, self.context):
             # if entity b hits a wall while being pushed out, then stop pushing it out
             entity_b.rect.position[0] -= stepback

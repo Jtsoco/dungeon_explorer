@@ -131,6 +131,7 @@ class CollisionManager(BaseManager):
                 else:
                     separation_command = ESC(entity, self.player)
                     self.context.bus.send_command(separation_command)
+
         new_recent_attacks = []
 
         for attacking_entity in self.active_attacks:
@@ -229,11 +230,15 @@ class CollisionManager(BaseManager):
     def touch_damage_collision(self, attacker, defender):
         collisions = []
         if (attacker, defender, defender.shield_active()) in self.recent_collisions:
+            collisions.append((attacker, defender, defender.shield_active()))
             return collisions  # already registered this collision recently
         if defender.shield_active():
             if self.successful_block(attacker, defender, None, defender.shield):
                 # separate b from them
                 self.context.bus.send_command(ESC(defender, attacker, b_only=True))
+                # the second command accounts for if they are overlapping too much due to both moving into each other
+                self.context.bus.send_command(ESC(attacker, defender, b_only=True))
+
                 return collisions
         # if no shield block, do damage
         damage_command = DC(attacker, defender, attacker.touch_damage, knockback=attacker.knockback)

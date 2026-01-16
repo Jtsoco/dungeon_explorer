@@ -48,7 +48,8 @@ class WingedKnightController(KnightController):
                     new_events = self.select_active_action(entity, context, distance_x, distance_y)
                     events.extend(new_events)
                 else:
-                    if not self.following_target(entity, player_data):
+                    if not self.following_target(entity, player_data) and not self.is_jumping(entity):
+                        # don't let him turn while jump attacking
                         # switch directions
                         events.append(self.swap_directions(entity))
                         entity.state_timer = 0
@@ -148,3 +149,9 @@ class WingedKnightController(KnightController):
         # decide whether to do another jump or just attack again in air
         choice = random.choice([IE.ATTACK, IE.JUMP])
         return InputEvent(choice)
+
+    def is_jump_attack(self, entity):
+        return entity.ai == SAIS.JUMP_ATTACK
+
+    def is_jumping(self, entity):
+        return entity.movement_state == MS.JUMPING or entity.movement_state == MS.FALLING

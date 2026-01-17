@@ -17,6 +17,16 @@ class AttackManager(BaseManager):
         # will create a dummy weapon data later, but also will in general will revisit how this is handled and if i will create a cleaner system that doesn't make calls to things that won't do anything, but for now this is fine
         if entity_data.weapon.active:
             self.update_weapon(entity_data)
+        else:
+            self.update_idle_weapon(entity_data)
+
+    def update_idle_weapon(self, entity_data):
+        weapon = entity_data.weapon
+        if weapon.frame_timer >= weapon.current_animation[weapon.current_frame].duration:
+            weapon.current_frame += 1
+            weapon.frame_timer = 0
+            self.set_current_frame_index(weapon)
+        weapon.frame_timer += 1
 
     def update_weapon(self, entity_data):
         if self.update_frame_index(entity_data.weapon):

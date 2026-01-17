@@ -49,6 +49,7 @@ class EntityType(Enum):
     PLAYER_RONIN = (3, 30)
 
 class WeaponSpawns(Enum):
+    FIRE_BLAST = (3,26)
     GLAIVE = (3,27)
 
 class ShieldSpawns(Enum):
@@ -81,6 +82,7 @@ class WeaponCategory(Enum):
     GLAIVE = auto()
     KATANA = auto()
     ENEMY_SWORD = auto()
+    FIRE_BLAST = auto()
 
 class BoundaryType(Enum):
     X = (3, 8)

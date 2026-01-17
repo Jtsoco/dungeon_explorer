@@ -155,6 +155,9 @@ class SingleCellManager():
                             # separating weapon spaawns from weapon category means i can make alternate versions of the same weapon, like different stats and such later
                             item = Item(item_type=IT.WEAPON, value=WC.GLAIVE, position=[brick_x * 8, brick_y * 8], cell_pos=(cell_data.cell_x, cell_data.cell_y))
                             items.add(item)
+                        case WS.FIRE_BLAST.value:
+                            item = Item(item_type=IT.WEAPON, value=WC.FIRE_BLAST, position=[brick_x * 8, brick_y * 8], cell_pos=(cell_data.cell_x, cell_data.cell_y))
+                            items.add(item)
 
                 elif tile in SS:
                     shield_category = self.get_shield_category(tile)

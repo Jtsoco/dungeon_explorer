@@ -66,7 +66,59 @@ WEAPONS_ANIMATIONS = {
         WAS.INVENTORY: [
             AF(pos=(2,27), duration=12, offset=(0,0), w_h=(8, 16))
         ]
-    }
+    },
+    WC.FIRE_BLAST: {
+        WAS.SHEATHED: [ AF(pos=(6,23), duration=2, offset=(4,5), w_h=(8,8)),
+                      AF(pos=(7,23), duration=2, offset=(4,5), w_h=(8,8)),
+                      AF(pos=(6,24), duration=2, offset=(4,5), w_h=(8,8)),
+                      AF(pos=(7,24), duration=2, offset=(4,5), w_h=(8,8)),
+                      AF(pos=(6,25), duration=2, offset=(4,5), w_h=(8,8)),],
+
+# should make a recharge/to rest cooldown for weapons like shields, but this is fine for now, just doing it quickly
+        WAS.DEFAULT: [
+                    # explosion style
+                    #   AF(pos=(6,21), duration=0, offset=(0,5), w_h=(8,8)),
+                    #   AF(pos=(7,21), duration=0, offset=(0,5), w_h=(8,8)),
+                    #   AF(pos=(8,21), duration=0, offset=(0,6), w_h=(8,8)),
+                    #   AF(pos=(9,21), duration=0, offset=(0,6), w_h=(8,8)),
+                    #   AF(pos=(6,22), duration=0, offset=(0,5), w_h=(8,8)),
+                    #   AF(pos=(7,22), duration=0, offset=(0,5), w_h=(8,8)),
+                    #   AF(pos=(8,22), duration=1, offset=(0,5), w_h=(8,8)),
+
+                    # delay added
+                    #   AF(pos=(9,22), duration=2, offset=(4,5), w_h=(8,8)),
+                    #   AF(pos=(10,22), duration=2, offset=(4,5), w_h=(8,8)),
+                    #   AF(pos=(9,22), duration=2, offset=(4,5), w_h=(8,8)),
+                    #   AF(pos=(10,22), duration=2, offset=(4,5), w_h=(8,8)),
+
+                        # flame thrower style
+                      AF(pos= (8, 23), duration=0, offset=(0,5), w_h=(8,8)),
+                      AF(pos=(9,23), duration=0, offset=(0,5), w_h=(8,8)),
+                      AF(pos=(8,24), duration=0, offset=(0,5), w_h=(8,8)),
+                      AF(pos=(9,24), duration=0, offset=(0,5), w_h=(8,8)),
+                      AF(pos=(8,25), duration=0, offset=(0,5), w_h=(8,8)),
+                      AF(pos=(9,25), duration=0, offset=(0,5), w_h=(8,8)),
+                      AF(pos=(8, 26), duration=0, offset=(0,5), w_h=(8,8)),
+                      AF(pos=(9,26), duration=0, offset=(0,5), w_h=(8,8)),
+                      AF(pos=(8, 27), duration=1, offset=(0,5), w_h=(8,8)),
+                      AF(pos=(9,27), duration=1, offset=(0,5), w_h=(8,8)),
+                      AF(pos=(8, 26), duration=1, offset=(0,5), w_h=(8,8)),
+                      AF(pos=(9,26), duration=1, offset=(0,5), w_h=(8,8)),
+                      AF(pos=(8, 27), duration=1, offset=(0,5), w_h=(8,8)),
+                      AF(pos=(9,27), duration=1, offset=(0,5), w_h=(8,8)),
+
+
+                      ],
+
+
+        WAS.INVENTORY: [ AF(pos=(6,23), duration=3, offset=(0,0), w_h=(8,8)),
+                        AF(pos=(7,23), duration=3, offset=(0,0), w_h=(8,8)),
+                      AF(pos=(6,24), duration=3, offset=(0,0), w_h=(8,8)),
+                      AF(pos=(7,24), duration=3, offset=(0,0), w_h=(8,8)),
+                      AF(pos=(6,25), duration=3, offset=(0,0), w_h=(8,8)),],
+
+    },
+
 
 }
 
@@ -130,6 +182,28 @@ WEAPONS_HITBOXES = {
             2: (8, 6),
             3: (8, 6),
         }
+    },
+    WC.FIRE_BLAST: {
+        WAS.SHEATHED: {
+            0: (0,0)
+        },
+        WAS.DEFAULT: {
+            0: (2,8),
+            1: (3,8),
+            2: (4,8),
+            3: (6,8),
+            4: (8,8),
+            5: (8,8),
+            6: (8,8),
+            7: (8,8),
+            8: (8,8),
+            9: (8,8),
+            10: (8,8),
+            11: (8,8),
+            12: (8,8),
+            13: (8,8),
+            14: (8,8)
+        }
     }
 
 
@@ -153,4 +227,8 @@ WEAPON_STATS = {
         "damage": 40,
         "knockback": (1.0, 0.5)
     },
+    WC.FIRE_BLAST: {
+        "damage": 30,
+        "knockback": (3, 0.5)
+    }
 }

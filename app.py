@@ -14,6 +14,7 @@ from app_level.menu.menu_manager import MenuManager
 from system.system_buses import SystemBus
 from app_level.app_commands_events import StateChangeEvent, SetMainCharacterCommand
 from app_level.controllers.menu_controller import MenuController
+from events_commands.commands import MusicCommand
 from app_level.app_enums import MenuState
 from app_level.menu.menu_setup import setup_main_menu, setup_pause_menu
 from app_level.controllers.menu_controller import MenuController
@@ -70,6 +71,8 @@ class App():
                 if self.menu_stack[-1] == MenuState.GAME:
                     # coming from game, possibly game over, need to add enter to controller as quick fix
                     self.controller.recent_keys.add(pyxel.KEY_RETURN)
+
+
                     # rethink game over menu later, but for now it's just quickly running in game to have something now, plus it's very little code so not a big deal
                 if len(self.menu_stack) > 1:
                     # make sure a return to main menu from another menu resets to main menu
@@ -106,12 +109,14 @@ class App():
         self.current_draw = self.menu_manager.draw
 
     def setup_game_mode(self):
-        pyxel.stop()
+
         if self.menu_manager.menu_data.menu_type == MenuState.MAIN_MENU:
             self.game = None
             # fresh load
         self.menu_stack.append(MenuState.GAME)
         if not self.game:
+            pyxel.stop()
+            # stop music
             if self.player_data:
                 self.game = Game(self.top_bus, player_data=self.player_data)
             else:
@@ -120,6 +125,7 @@ class App():
             self.menu_manager.game = self.game
         self.current_update = self.game.update
         self.current_draw = self.game.draw
+        # need to make this a last played music type of thing, do that later
         self.setup_game_controller()
 
     def notify_event(self, event):

@@ -99,7 +99,11 @@ class DefaultStateMachine():
                     self.landed_update(data)
                     if PUS.DOUBLE_JUMP in data.power_ups:
                         data.power_ups[PUS.DOUBLE_JUMP] = True  # reset double jump on land
-                    self.bus.send_command(EffectCommand(pos=data.rect.position, sub_type=PET.LAND_DUST, effect_type=EffectType.PARTICLE))
+                    if data.rect.height > 8:
+                        additional_height = 8
+                    else:
+                        additional_height = 0
+                    self.bus.send_command(EffectCommand(pos=data.rect.position, sub_type=PET.LAND_DUST, effect_type=EffectType.PARTICLE, additional_height=additional_height))
                     self.bus.send_command(SoundCommand(sound_enum=SoundEnum.LAND))  # LAND sound
                 case AttackFinishedEvent():
                     data.action_state = AS.NONE

@@ -10,7 +10,9 @@ class KnightController(DefaultController):
         self.long_wait = 90
         self.short_wait = 30
         self.medium_wait = 60
-        self.max_notice_distance = (40, 20)  # x, y distances
+        self.max_notice_distance = (40, 20)
+        self.action_distance = 20  # x, y distances
+        self.y_action_distance = 10
 
         # for now, just inherit default controller behavior
 
@@ -97,7 +99,7 @@ class KnightController(DefaultController):
                             events.extend(new_events)
             case SAIS.ATTACK:
                 # just have it check if it's still in range to attack, if not go to chase
-                if distance_x > 20 or distance_y > 10:
+                if distance_x > self.action_distance or distance_y > 10:
                     # out of range, go to chase
                     entity.ai = SAIS.CHASE
                     entity.state_timer = 0
@@ -134,14 +136,14 @@ class KnightController(DefaultController):
     def select_active_action(self, entity, context, distance_x, distance_y):
         events = []
         player_data = context.data_context.player_data
-        if distance_x < 20 and distance_y < 10:
+        if distance_x < self.action_distance and distance_y < self.y_action_distance:
             # attack
             events.append(InputEvent(IE.ATTACK))
             entity.state_timer = 0
             entity.state_timer_limit = self.random_wait_time()
             entity.ai = SAIS.ATTACK
             return events
-        elif distance_x < 40 and distance_y < 20:
+        elif distance_x < self.max_notice_distance[0] and distance_y < self.y_action_distance:
             # move toward player
             if (entity.rect.position[0] + entity.w_h[0] / 2) < (player_data.rect.position[0] + player_data.w_h[0] / 2):
                 events.append(InputEvent(IE.MOVE, direction=DS.RIGHT))

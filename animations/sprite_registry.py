@@ -79,8 +79,9 @@ BOSS_SPRITES = {
             pos=(7,26), duration=12, offset=(12, -1), w_h=(8,16))
         ],
         MS.WALKING: [
-            AF(pos=(7,26), duration=6, offset=(12, -1), w_h=(8,16)),
-            AF(pos=(6,26), duration=6, offset=(12, -1), w_h=(8,16))
+            AF(pos=(8,28), duration=6, offset=(12, -1), w_h=(8,16)),
+            AF(pos=(9,28), duration=6, offset=(12, -1), w_h=(8,16)),
+            AF(pos=(10,28), duration=6, offset=(12, -1), w_h=(8,16)),
         ],
         MS.JUMPING: [
             AF(pos=(6,28), duration=12, offset=(12, -1), w_h=(8,16))

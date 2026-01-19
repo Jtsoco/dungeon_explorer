@@ -34,11 +34,12 @@ class AttackCommand(Command):
 
 
 class EffectCommand(Command):
-    def __init__(self, pos=(0,0), sub_type=PET.JUMP_DUST, effect_type=EffectType.PARTICLE):
+    def __init__(self, pos=(0,0), sub_type=PET.JUMP_DUST, effect_type=EffectType.PARTICLE, additional_height=0):
         super().__init__(name="EffectCommand")
         self.position = pos
         self.sub_type = sub_type
         self.effect_type = effect_type
+        self.additional_height = additional_height
 
 class AudioCommand(Command):
     def __init__(self, name="AudioCommand"):

@@ -1,12 +1,13 @@
 class Effect:
     # a class for scene effects, like little animations for deaths and such
-    def __init__(self, effect_type, position, animation_frames):
+    def __init__(self, effect_type, position, animation_frames, additional_height=0):
         self.effect_type = effect_type
         self.position = position
         self.animation_frames = animation_frames
         self.current_frame = 0
         self.finished = False
         self.frame_timer = 0
+        self.additional_height = additional_height
 
     def update(self):
         pass

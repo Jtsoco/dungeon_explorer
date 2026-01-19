@@ -33,7 +33,7 @@ def spawn_player(position: tuple = (0, 0), p_type=ET.PLAYER) -> EntityData:
 
     }
     player_data = EntityData(**player_setup)
-    # player_data.power_ups[PUS.DOUBLE_JUMP] = True  # give player double jump powerup for testing
+    player_data.power_ups[PUS.DOUBLE_JUMP] = True  # give player double jump powerup for testing
     # new weapon test
     return player_data
 
@@ -91,7 +91,8 @@ def spawn_dark_lord(cell_position, brick_x, brick_y, BOSS_SPRITES):
     change_size(weapon_data)
     weapon_data.target_type = CET.PLAYER
     change_hitbox(weapon_data, new_hitbox=(14, 16), action_state=WAS.DEFAULT)
-    new_damage_knockback(weapon_data, damage=50, knockback=(2.0, 1.0))
+    new_damage_knockback(weapon_data, damage=50, knockback=(3.0, 1.0))
+    enemy_data.move_speed = 1
 
     return enemy_data
 

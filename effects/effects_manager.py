@@ -94,7 +94,7 @@ class EffectsManager(BaseManager):
         animation = self.get_animation(main_type, sub_type)
         # it should all be there, but for now to prevent nonexistent key errors, check
         if animation:
-            new_effect = Effect(main_type, effect_position, animation)
+            new_effect = Effect(main_type, effect_position, animation, additional_height = command.additional_height)
             self.active_effects.append(new_effect)
 
     def get_animation(self, effect_type, sub_type):

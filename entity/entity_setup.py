@@ -91,9 +91,14 @@ def spawn_dark_lord(cell_position, brick_x, brick_y, BOSS_SPRITES):
     change_size(weapon_data)
     weapon_data.target_type = CET.PLAYER
     change_hitbox(weapon_data, new_hitbox=(14, 16), action_state=WAS.DEFAULT)
+    new_damage_knockback(weapon_data, damage=50, knockback=(2.0, 1.0))
 
     return enemy_data
 
+def new_damage_knockback(weapon_data, damage, knockback):
+    weapon_data.damage = damage
+    weapon_data.knockback = knockback
+    return weapon_data
 
 def change_size(weapon_data):
     copy = weapon_data.animations.copy()

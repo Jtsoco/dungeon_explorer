@@ -47,6 +47,7 @@ class EntityType(Enum):
     WINGED_KNIGHT = (3, 23)
     # this spawn won't be used, just for the player costume
     PLAYER_RONIN = (3, 30)
+    DARK_LORD = (3, 24)
 
 class WeaponSpawns(Enum):
     FIRE_BLAST = (3,26)

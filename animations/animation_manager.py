@@ -1,4 +1,4 @@
-from enums.entity_enums import MovementState as MS
+from enums.entity_enums import MovementState as MS, ActionState as AS
 from events_commands.events import StateChangedEvent
 from base_manager import BaseManager
 class AnimationManager(BaseManager):
@@ -41,6 +41,8 @@ class AnimationManager(BaseManager):
         animation_data.current_animation = animation
 
     def get_next_animation(self, player_data):
+        if player_data.action_state == AS.ATTACKING:
+            return player_data.animation_data.animations.get(AS.ATTACKING, player_data.animation_data.animations[MS.IDLE])
         return player_data.animation_data.animations.get(player_data.movement_state, player_data.animation_data.animations[MS.IDLE])
 
     def reset(self, player_data):

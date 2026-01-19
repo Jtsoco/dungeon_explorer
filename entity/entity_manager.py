@@ -209,6 +209,10 @@ class EntityManager(BaseManager):
                 self.setup_controller(ET.WINGED_KNIGHT, WingedKnightController)
                 self.setup_physics(EC.GROUND, GroundPhysics, context=self.context)
                 # for now just use ground physics, revisit later to make a flying physics module
+            case ET.DARK_LORD:
+                # for now, just this is fine
+                self.setup_controller(ET.DARK_LORD, KnightController)
+                self.setup_physics(EC.GROUND, GroundPhysics, context=self.context)
 
 
     def setup_entities(self, entity_types):

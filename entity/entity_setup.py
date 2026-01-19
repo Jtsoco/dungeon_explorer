@@ -1,7 +1,7 @@
 from entity.entity_data import EntityData
 from entity.animation_data import AnimationData
 from attack.weapon_data import WeaponData
-from enums.entity_enums import EntityType as ET, EntityCategory as EC, WeaponCategory as WC, CollisionEntityTarget as CET, PowerUpStates as PUS, SHIELD_ACTION_STATE as SAS, SHIELD_CATEGORY as SC
+from enums.entity_enums import EntityType as ET, EntityCategory as EC, WeaponCategory as WC, CollisionEntityTarget as CET, PowerUpStates as PUS, SHIELD_ACTION_STATE as SAS, SHIELD_CATEGORY as SC, WeaponActionState as WAS
 from animations.attack_registry import WEAPON_STATS, WEAPONS_ANIMATIONS, WEAPONS_HITBOXES
 from animations.shield_registry import SHIELD_ANIMATIONS, SHIELD_HITBOXES, SHIELD_STATS
 from defense.shield_data import ShieldData
@@ -79,3 +79,40 @@ def spawn_winged_boss(cell_position, brick_x, brick_y, BOSS_SPRITES):
     enemy_data.touch_damage = 0
     # give boss double jump ability
     return enemy_data
+
+def spawn_dark_lord(cell_position, brick_x, brick_y, BOSS_SPRITES):
+    animation_data = AnimationData(BOSS_SPRITES[ET.DARK_LORD])
+    weapon_data = spawn_weapon(WC.FIRE_BLAST)
+    enemy_data = EntityData(entity_type=ET.DARK_LORD, position=[brick_x * 8, brick_y * 8], animation_data=animation_data, weapon_data=weapon_data, cell_pos=(cell_position[0], cell_position[1]), touch_damage=30, health=500)
+    enemy_data.boss = True
+    enemy_data.touch_damage = 0
+    enemy_data.rect.width = 8
+    enemy_data.rect.height = 16
+    change_size(weapon_data)
+    weapon_data.target_type = CET.PLAYER
+    change_hitbox(weapon_data, new_hitbox=(14, 16), action_state=WAS.DEFAULT)
+
+    return enemy_data
+
+
+def change_size(weapon_data):
+    copy = weapon_data.animations.copy()
+    for key in weapon_data.animations:
+        new_frames = []
+        for frame in weapon_data.animations[key]:
+            new_frame = frame.copy()
+            new_frame.scale = 2.0
+            new_frames.append(new_frame)
+        copy.update({key: new_frames})
+    weapon_data.animations = copy
+    return weapon_data
+
+def change_hitbox(weapon_data, new_hitbox, action_state=WAS.DEFAULT):
+    new_hitboxes = weapon_data.hitboxes.copy()
+    new_action_state = {}
+    new_hitboxes[action_state] = new_action_state
+
+    for hitbox in weapon_data.hitboxes[action_state]:
+        new_action_state[hitbox] = new_hitbox
+    weapon_data.hitboxes = new_hitboxes
+    return weapon_data

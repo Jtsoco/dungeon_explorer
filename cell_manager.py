@@ -5,7 +5,7 @@ from entity.entity_data import EntityData
 from animations.sprite_registry import SPRITES, BOSS_SPRITES
 from entity.animation_data import AnimationData
 from attack.weapon_data import WeaponData
-from entity.entity_setup import spawn_weapon, spawn_winged_boss
+from entity.entity_setup import spawn_weapon, spawn_winged_boss, spawn_dark_lord
 from base_manager import BaseManager
 from events_commands.commands import LoadMultipleEntityCollisionCommand as LMECC, LoadMultipleBoundariesCollisionCommand as LMBCC, LoadEntityCollisionCommand as LECC, LoadActiveAttackCollisionCommand as LAACC, LoadItemCommand, LoadItemCollisionCommand
 import pyxel
@@ -141,6 +141,11 @@ class SingleCellManager():
                             enemies.add(enemy)
                             if ET.WINGED_KNIGHT not in entity_types:
                                 entity_types.add(ET.WINGED_KNIGHT)
+                        case ET.DARK_LORD.value:
+                            enemy = spawn_dark_lord((cell_data.cell_x, cell_data.cell_y), brick_x, brick_y, BOSS_SPRITES)
+                            enemies.add(enemy)
+                            if ET.DARK_LORD not in entity_types:
+                                entity_types.add(ET.DARK_LORD)
                 elif tile in BT:
                     match tile:
                         case BT.X.value:

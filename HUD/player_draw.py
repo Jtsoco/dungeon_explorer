@@ -1,4 +1,4 @@
-from enums.entity_enums import DirectionState as DS
+from enums.entity_enums import DirectionState as DS, EntityType as ET
 import pyxel
 def draw_weapon(entity_data, x, y, image_bank=0, color_key=2,):
     current_frame = entity_data.animation_data.get_current_frame()
@@ -7,25 +7,37 @@ def draw_weapon(entity_data, x, y, image_bank=0, color_key=2,):
     w_height= weapon_frame.w_h[1]
     weapon_x = x
     weapon_y = y
+
     if entity_data.direction_state == DS.RIGHT:
         x_offset = abs(current_frame.offset[0] - weapon_frame.offset[0])
         weapon_x += x_offset
 
         # weapon_x = x
         y_offset = abs(current_frame.offset[1] - weapon_frame.offset[1])
-        weapon_y -= y_offset
+        # quick fix to allow bosses flames to be lowered properly
+        if current_frame.offset[1] < 0:
+            weapon_y += y_offset
+        else:
+            weapon_y -= y_offset
     else:
         x_offset = abs(current_frame.offset[0] - weapon_frame.offset[0])
         weapon_x = x - x_offset
         y_offset = abs(current_frame.offset[1] - weapon_frame.offset[1])
-        weapon_y -= y_offset
+        if current_frame.offset[1] < 0:
+            weapon_y += y_offset
+        else:
+            weapon_y -= y_offset
         w_width = -w_width
     # display_info(f"X offset: {x_offset}", pos_x=x, pos_y=y-40)
 
     wu = weapon_frame.pos[0] * 8
     wv = weapon_frame.pos[1] * 8
+    scale = weapon_frame.scale
     # for now just hardcoding weapon width and w_height, revisit later
-    pyxel.blt(weapon_x, weapon_y, image_bank, wu, wv, w_width, w_height, color_key, rotate=weapon_frame.rotation)
+    # if entity_data.entity_type == ET.DARK_LORD:
+    #     print("DRAWING DARK LORD WEAPON")
+    #     pyxel.blt(x, y, image_bank, wu, wv, w_width, w_height, color_key, rotate=weapon_frame.rotation, scale=2.0)
+    pyxel.blt(weapon_x, weapon_y, image_bank, wu, wv, w_width, w_height, color_key, rotate=weapon_frame.rotation, scale=scale)
     # weapon_hitbox_pos = entity_data.weapon.get_position(entity_data)
 
     # hitbox = entity_data.weapon.get_current_hitbox()

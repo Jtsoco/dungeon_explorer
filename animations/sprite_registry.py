@@ -1,4 +1,4 @@
-from enums.entity_enums import MovementState as MS, EntityType as ET
+from enums.entity_enums import MovementState as MS, EntityType as ET, ActionState as AS
 from animations.animation_enums import PlayerAnimationEnums as PAE, SkullAnimationEnums as SAE
 from animations.animation_frame import AnimationFrame as AF
 
@@ -71,5 +71,26 @@ BOSS_SPRITES = {
         MS.FALLING: [
             AF(pos=(0,25), duration=12, offset=player_offset)
         ]
+    },
+    ET.DARK_LORD: {
+        MS.IDLE:
+        [
+            AF(
+            pos=(7,26), duration=12, offset=(12, -1), w_h=(8,16))
+        ],
+        MS.WALKING: [
+            AF(pos=(7,26), duration=6, offset=(12, -1), w_h=(8,16)),
+            AF(pos=(6,26), duration=6, offset=(12, -1), w_h=(8,16))
+        ],
+        MS.JUMPING: [
+            AF(pos=(6,28), duration=12, offset=(12, -1), w_h=(8,16))
+        ],
+        MS.FALLING: [
+            AF(pos=(6,28), duration=12, offset=(12, -1), w_h=(8,16))
+        ],
+        AS.ATTACKING: [
+            AF(pos=(7,28), duration=4, offset=(16, -1), w_h=(8,16)),
+        ]
+
     }
 }

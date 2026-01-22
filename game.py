@@ -179,7 +179,8 @@ class Game():
         self.no_entity_update()
 
     def game_clear_update(self):
-        self.no_entity_update()
+        self.regular_update()
+        # let you play, but enter sends you back to start screen
 
 
     def game_over_draw(self):

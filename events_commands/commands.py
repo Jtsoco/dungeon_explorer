@@ -57,6 +57,9 @@ class MusicCommand(AudioCommand):
         self.music_enum = music_enum
         self.loop = loop
         self.priority = priority
+class LastMusicCommand(AudioCommand):
+    def __init__(self):
+        super().__init__(name="LastMusicCommand")
 
 class PhysicsCommand(Command):
     def __init__(self, name="PhysicsCommand"):

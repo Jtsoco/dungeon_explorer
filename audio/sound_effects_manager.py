@@ -1,5 +1,5 @@
 import pyxel
-from events_commands.commands import SoundCommand, MusicCommand, AudioCommand
+from events_commands.commands import SoundCommand, MusicCommand, AudioCommand, LastMusicCommand
 from audio.sound_enums import SoundEnum
 
 from base_manager import BaseManager
@@ -16,6 +16,7 @@ class SoundEffectsManager(BaseManager):
 
         self.effects_channels = (1, 2, 3)
         self.currently_used_channels = []
+        self.last_music = 1
     def setup_bus(self):
         self.context.bus.register_command_listener(AudioCommand, self)
 
@@ -27,6 +28,7 @@ class SoundEffectsManager(BaseManager):
 
         if self.music_to_play:
             music = self.get_max_priority_music(self.music_to_play)
+            self.last_music = music[0]
             pyxel.playm(music[0], loop=music[1])
 
         self.sounds_to_play.clear()
@@ -57,6 +59,8 @@ class SoundEffectsManager(BaseManager):
                 self.queue_sound(command.sound_enum, command.loop)
             case MusicCommand():
                 self.queue_music(command.music_enum, command.loop, command.priority)
+            case LastMusicCommand():
+                self.queue_music(self.last_music, loop=True, priority=1)
 
         return []  # No new events
 

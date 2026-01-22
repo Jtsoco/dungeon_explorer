@@ -149,6 +149,7 @@ class KnightController(DefaultController):
                 events.append(InputEvent(IE.MOVE, direction=DS.RIGHT))
             else:
                 events.append(InputEvent(IE.MOVE, direction=DS.LEFT))
+
             entity.ai = SAIS.CHASE
             entity.state_timer = 0
             entity.state_timer_limit = self.short_wait

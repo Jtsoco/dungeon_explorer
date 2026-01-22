@@ -1,6 +1,6 @@
 from enums.entity_enums import MovementState as MS, ActionState as AS, DirectionState as DS, InputEnums as IE, PowerUpStates as PUS, SHIELD_ACTION_STATE as SAS
 from events_commands.events import InputEvent, StartedFallingEvent, LandedEvent, StateChangedEvent, AttackFinishedEvent, BlockFinishedEvent, ActionFailedEvent
-from events_commands.commands import MoveCommand, JumpCommand, AttackCommand, EffectCommand, SoundCommand, EndBlockCommand, StartBlockCommand, BreakBlockCommand
+from events_commands.commands import MoveCommand, JumpCommand, AttackCommand, EffectCommand, SoundCommand, EndBlockCommand, StartBlockCommand, BreakBlockCommand, MusicCommand
 from audio.sound_enums import SoundEnum
 from enums.effects_enums import ParticleEffectType as PET, EffectType
 class DefaultStateMachine():
@@ -9,6 +9,10 @@ class DefaultStateMachine():
         self.events = []
         self.local_bus = local_bus
     # in here is the logic to determine what the next state is based on the previous
+
+    def music_input(self, data, music_enum):
+        # this is here so controllers can request music changes
+        self.bus.send_command(MusicCommand(music_enum=music_enum, loop=True, priority=1))
 
     def input_events(self, data, input_events):
         # will it set the data to hold state of moving/idle, or let something else handle that?
@@ -30,6 +34,8 @@ class DefaultStateMachine():
                     self.block_input(data)
                 case IE.STOP_BLOCK:
                     self.stop_block_input(data)
+                case IE.MUSIC:
+                    self.music_input(data, event.music_enum)
 
 
         new_states = [data.movement_state, data.action_state, data.direction_state]

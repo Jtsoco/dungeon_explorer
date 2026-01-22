@@ -26,6 +26,8 @@ class InputEnums(Enum):
     STOP_MOVE = auto()
     BLOCK = auto()
     STOP_BLOCK = auto()
+    SOUND = auto()
+    MUSIC = auto()
 
 class AttackType(Enum):
     MELEE = auto()

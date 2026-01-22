@@ -7,7 +7,7 @@ from entity.animation_data import AnimationData
 from attack.weapon_data import WeaponData
 from entity.entity_setup import spawn_weapon, spawn_winged_boss, spawn_dark_lord
 from base_manager import BaseManager
-from events_commands.commands import LoadMultipleEntityCollisionCommand as LMECC, LoadMultipleBoundariesCollisionCommand as LMBCC, LoadEntityCollisionCommand as LECC, LoadActiveAttackCollisionCommand as LAACC, LoadItemCommand, LoadItemCollisionCommand
+from events_commands.commands import LoadMultipleEntityCollisionCommand as LMECC, LoadMultipleBoundariesCollisionCommand as LMBCC, LoadEntityCollisionCommand as LECC, LoadActiveAttackCollisionCommand as LAACC, LoadItemCommand, LoadItemCollisionCommand, MusicCommand
 import pyxel
 from entity.entity_setup import spawn_weapon
 from items.item import Item
@@ -486,6 +486,12 @@ class MultipleCellManager(SingleCellManager):
                 self.context.bus.send_command(LECC(load=False, entity=entity))
                 if entity.entity_type == ET.DARK_LORD:
                     self.context.bus.send_event(GameClearEvent())
+                if entity.boss:
+                    # just doing it here as a 5 second hacky fix, make proper death manager later
+                    self.context.bus.send_command(MusicCommand(music_enum=0, loop=True, priority=1))
+
+
+
                 # need to unload weapons too
 
                 # i could make a group type class like pygame does, but i do kind of like the explicitness of this, like you know exactly where things are being removed from based on the event or command

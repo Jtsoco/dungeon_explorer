@@ -1,7 +1,8 @@
 from entity.controllers.default_controller import DefaultController
 from enums.entity_enums import MovementState as MS, DirectionState as DS, InputEnums as IE, SimpleAIState as SAIS
 from entity.controllers.knight_controller import KnightController
-from events_commands.events import InputEvent
+from events_commands.events import InputEvent, MusicInputEvent
+
 import random
 
 class WingedKnightController(KnightController):
@@ -12,6 +13,7 @@ class WingedKnightController(KnightController):
         self.medium_wait = 60
         self.max_notice_distance = (70, 30)  # x, y distances
         # for now, just inherit default controller behavior
+        self.first_encounter = False
 
 
     def jump(self, entity):
@@ -41,6 +43,9 @@ class WingedKnightController(KnightController):
             case SAIS.PATROL:
                 new_events = self.select_active_action(entity, context, distance_x, distance_y)
                 events.extend(new_events)
+                if not self.first_encounter:
+                    self.first_encounter = True
+                    events.append(MusicInputEvent(IE.MUSIC, music_enum=3))
             case SAIS.CHASE:
                 # check if still properly pursuing player in right direction, if not swap directions
                 # otherwise reevaluate active action

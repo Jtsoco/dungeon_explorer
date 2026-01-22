@@ -22,6 +22,16 @@ class InputEvent(Event):
         self.input_type = input_type
         self.direction = direction
         # MOVE events will have direction set to DS.LEFT or DS.RIGHT
+class SoundInputEvent(InputEvent):
+    def __init__(self, input_type: IE, sound_enum, direction: DS = None):
+        super().__init__(input_type, direction)
+        self.sound_enum = sound_enum
+
+class MusicInputEvent(InputEvent):
+    def __init__(self, input_type: IE, music_enum, direction: DS = None):
+        super().__init__(input_type, direction)
+        self.music_enum = music_enum
+
 
     def __str__(self):
         return f"InputEvent: {self.input_type}"

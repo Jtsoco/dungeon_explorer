@@ -176,3 +176,7 @@ class GameEvent(Event):
 class GameOverEvent(GameEvent):
     def __init__(self):
         super().__init__(name="GameOverEvent")
+
+class GameClearEvent(GameEvent):
+    def __init__(self):
+        super().__init__(name="GameClearEvent")

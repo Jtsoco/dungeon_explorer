@@ -12,7 +12,7 @@ from HUD.player_draw import shadow_text
 from app_level.app_commands_events import StateChangeEvent as AppStateChangeEvent
 from app_level.app_enums import MenuState
 
-from events_commands.events import PossibleAttackCollisionEvent as PACE, DamageEvent as DE, PhysicsEvent as PE, DeathEvent as Death, NewlyLoadedCellsEvent as NLCE, BoundaryCollisionEvent as BCE, GameEvent as GE, GameOverEvent as GOE
+from events_commands.events import PossibleAttackCollisionEvent as PACE, DamageEvent as DE, PhysicsEvent as PE, DeathEvent as Death, NewlyLoadedCellsEvent as NLCE, BoundaryCollisionEvent as BCE, GameEvent as GE, GameOverEvent as GOE, GameClearEvent as GCE
 from events_commands.commands import EffectCommand, SoundCommand, MusicCommand, AudioCommand
 from HUD.hud_manager import HUDManager
 from temporary_managers.powerup_manager import PowerupManager
@@ -175,6 +175,10 @@ class Game():
         self.last_frame_count = self.current_frame_count
         # display_info(fps, pos_x=camera_pos[0]+2, pos_y=camera_pos[1]+2)
     def game_over_update(self):
+        # maybe rename these and consolidate
+        self.no_entity_update()
+
+    def game_clear_update(self):
         self.no_entity_update()
 
 
@@ -196,8 +200,30 @@ class Game():
             # send event to app level to switch to game over menu
             self.top_bus.send_event(AppStateChangeEvent(MenuState.MAIN_MENU))
 
+    def game_clear_draw(self):
+        # TODO consolidate game over and clear draw to same type of thing, just different message. Was just easier to copy for now
+        self.regular_draw()
+        message = "Game Clear!"
+        position = (pyxel.width // 2 - 24, pyxel.height // 4)
+
+        # pyxel.rect(position[0]-8, position[1]-8, pyxel.width // 2, 32, 0)
+        shadow_text(position, message, color=0)
+        pyxel.text(position[0], position[1], message, 7)
+        message = "Press Enter"
+        position = (position[0], pyxel.height // 3)
+        shadow_text(position, message, color=0)
+        pyxel.text(position[0], position[1], message, 7)
+
+        # this is here, because putting it in update caused drawing issues, where the hole screen would go black and stay that way, so until i investigate the bug this will be the hotfix
+        if pyxel.btnp(pyxel.KEY_RETURN):
+            # send event to app level to switch to game over menu
+            self.top_bus.send_event(AppStateChangeEvent(MenuState.MAIN_MENU))
+
     def notify_event(self, event):
         match event:
             case GOE():
                 self.current_update = self.game_over_update
                 self.current_draw = self.game_over_draw
+            case GCE():
+                self.current_update = self.game_clear_update
+                self.current_draw = self.game_clear_draw

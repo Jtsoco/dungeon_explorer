@@ -1,5 +1,5 @@
 from enums.entity_enums import EntityType as ET, BoundaryType as BT, CollisionEntityTarget as CET, WeaponCategory as WC, WeaponSpawns as WS, ItemType as IT, ShieldSpawns as SS, SHIELD_CATEGORY as SC, ItemSpawns
-from events_commands.events import BoundaryCollisionEvent as BCE, NewlyLoadedCellsEvent as NLCE, DeathEvent
+from events_commands.events import BoundaryCollisionEvent as BCE, NewlyLoadedCellsEvent as NLCE, DeathEvent, GameClearEvent
 from boundaries.boundary import Boundary
 from entity.entity_data import EntityData
 from animations.sprite_registry import SPRITES, BOSS_SPRITES
@@ -106,6 +106,7 @@ class SingleCellManager():
     def remove_entity(self, entity):
         if entity in self.active_cell.enemies:
             self.active_cell.enemies.remove(entity)
+
             # for now just remove enemy, they're only referenced here and will be garbage collected
 
     def load_objects(self, cell_data):
@@ -483,6 +484,8 @@ class MultipleCellManager(SingleCellManager):
             if entity in cell.enemies:
                 cell.enemies.remove(entity)
                 self.context.bus.send_command(LECC(load=False, entity=entity))
+                if entity.entity_type == ET.DARK_LORD:
+                    self.context.bus.send_event(GameClearEvent())
                 # need to unload weapons too
 
                 # i could make a group type class like pygame does, but i do kind of like the explicitness of this, like you know exactly where things are being removed from based on the event or command

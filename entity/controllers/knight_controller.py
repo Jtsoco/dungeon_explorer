@@ -10,6 +10,10 @@ class KnightController(DefaultController):
         self.long_wait = 90
         self.short_wait = 30
         self.medium_wait = 60
+        self.max_notice_distance = (40, 20)
+        self.action_distance = 20  # x, y distances
+        self.y_action_distance = 10
+
         # for now, just inherit default controller behavior
 
     def contextless_update(self, entity):
@@ -49,21 +53,21 @@ class KnightController(DefaultController):
         entity.state_timer_limit = random.randint(30, 90)
 
     def distance_to_player(self, entity, context):
-        player_data = context.player_data
-        distance_x = abs((entity.position[0] + entity.w_h[0] / 2) - (player_data.position[0] + player_data.w_h[0] / 2))
-        distance_y = abs((entity.position[1] + entity.w_h[1] / 2) - (player_data.position[1] + player_data.w_h[1] / 2))
+        player_data = context.data_context.player_data
+        distance_x = abs((entity.rect.position[0] + entity.w_h[0] / 2) - (player_data.rect.position[0] + player_data.w_h[0] / 2))
+        distance_y = abs((entity.rect.position[1] + entity.w_h[1] / 2) - (player_data.rect.position[1] + player_data.w_h[1] / 2))
         return (distance_x, distance_y)
 
 
     def is_target_close(self, distance):
         distance_x = distance[0]
         distance_y = distance[1]
-        if distance_x < 40 and distance_y < 20:
+        if distance_x < self.max_notice_distance[0] and distance_y < self.max_notice_distance[1]:
             return True
         return False
 
     def player_close(self, entity, context, distance):
-        player_data = context.player_data
+        player_data = context.data_context.player_data
         distance_x = distance[0]
         distance_y = distance[1]
         events = []
@@ -95,7 +99,7 @@ class KnightController(DefaultController):
                             events.extend(new_events)
             case SAIS.ATTACK:
                 # just have it check if it's still in range to attack, if not go to chase
-                if distance_x > 20 or distance_y > 10:
+                if distance_x > self.action_distance or distance_y > 10:
                     # out of range, go to chase
                     entity.ai = SAIS.CHASE
                     entity.state_timer = 0
@@ -119,7 +123,7 @@ class KnightController(DefaultController):
                 return InputEvent(IE.MOVE, direction=DS.LEFT)
 
     def following_target(self, entity, player_data):
-        player_to_left = (entity.position[0] + entity.w_h[0] / 2) >= (player_data.position[0] + player_data.w_h[0] / 2)
+        player_to_left = (entity.rect.position[0] + entity.w_h[0] / 2) >= (player_data.rect.position[0] + player_data.w_h[0] / 2)
         match entity.direction_state:
             case DS.LEFT:
                 if player_to_left:
@@ -131,20 +135,21 @@ class KnightController(DefaultController):
 
     def select_active_action(self, entity, context, distance_x, distance_y):
         events = []
-        player_data = context.player_data
-        if distance_x < 20 and distance_y < 10:
+        player_data = context.data_context.player_data
+        if distance_x < self.action_distance and distance_y < self.y_action_distance:
             # attack
             events.append(InputEvent(IE.ATTACK))
             entity.state_timer = 0
             entity.state_timer_limit = self.random_wait_time()
             entity.ai = SAIS.ATTACK
             return events
-        elif distance_x < 40 and distance_y < 20:
+        elif distance_x < self.max_notice_distance[0] and distance_y < self.y_action_distance:
             # move toward player
-            if (entity.position[0] + entity.w_h[0] / 2) < (player_data.position[0] + player_data.w_h[0] / 2):
+            if (entity.rect.position[0] + entity.w_h[0] / 2) < (player_data.rect.position[0] + player_data.w_h[0] / 2):
                 events.append(InputEvent(IE.MOVE, direction=DS.RIGHT))
             else:
                 events.append(InputEvent(IE.MOVE, direction=DS.LEFT))
+
             entity.ai = SAIS.CHASE
             entity.state_timer = 0
             entity.state_timer_limit = self.short_wait

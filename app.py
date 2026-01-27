@@ -10,6 +10,16 @@
 # probably just fine to use an event system to notify camera of cell changes
 # and main game keeps track of what cell is active based on player position
 # and will run multiple cells during a cell transition
+from app_level.menu.menu_manager import MenuManager
+from system.system_buses import SystemBus
+from app_level.app_commands_events import StateChangeEvent, SetMainCharacterCommand
+from app_level.controllers.menu_controller import MenuController
+from events_commands.commands import MusicCommand
+from app_level.app_enums import MenuState
+from app_level.menu.menu_setup import setup_main_menu, setup_pause_menu
+from app_level.controllers.menu_controller import MenuController
+from app_level.controllers.game_controller import GameController
+
 import pyxel
 TRANSPARENT_COLOR = 2
 from game import Game
@@ -20,7 +30,7 @@ class App():
         pyxel.init(128, 128, title="Dungeon Explorer")
         pyxel.load("dungeon_explorer_assets.pyxres")
         # Hide the spawn and border transition tiles
-        pyxel.images[0].rect(24, 64, 16, 240, TRANSPARENT_COLOR)
+        pyxel.images[0].rect(24, 64, 16, 248, TRANSPARENT_COLOR)
 
         # need bus for communication between systems
         # need game class to handle game loop
@@ -29,22 +39,133 @@ class App():
         # for an actual game, the menu would select the game (dungeon) to play
         self.running = False
 
+        # for new app, menu system:
+        # need bus for communication
+        # app level controller to always be updated
+        # state change event to be handled here to switch between menu and game
+        # a stack of menu type enums or states to keep track of current menu
+        # leaning towards enums, because game menus access data through context, so no need to keep full state objects for different menus
+        # just reload menu each time based on enum
+        # and if last selection is desired, just save it with last selection too, for the stack
+        self.top_bus = SystemBus(False)
+        self.menu_manager = MenuManager(bus=self.top_bus)
+        self.top_bus.register_event_listener(StateChangeEvent, self)
+        self.top_bus.register_command_listener(SetMainCharacterCommand, self)
+
+        self.controller = MenuController(self.top_bus)
+
+        self.current_update = None
+        self.current_draw = None
+        main_menu = setup_main_menu()
+        self.menu_manager.set_menu(main_menu)
+        self.setup_menu_mode()
+        self.menu_stack = []
+
+        self.player_data = None
+
+    def state_change_event(self, new_state):
+
+        match new_state:
+            case MenuState.MAIN_MENU:
+                main_menu = setup_main_menu()
+                if self.menu_stack[-1] == MenuState.GAME:
+                    # coming from game, possibly game over, need to add enter to controller as quick fix
+                    self.controller.recent_keys.add(pyxel.KEY_RETURN)
+
+
+                    # rethink game over menu later, but for now it's just quickly running in game to have something now, plus it's very little code so not a big deal
+                if len(self.menu_stack) > 1:
+                    # make sure a return to main menu from another menu resets to main menu
+                    self.menu_stack = [MenuState.MAIN_MENU]
+                else:
+                    self.menu_stack.append(MenuState.MAIN_MENU)
+                self.menu_manager.set_menu(main_menu)
+
+                self.setup_menu_mode()
+            case MenuState.PAUSE_MENU:
+                self.menu_stack.append(MenuState.PAUSE_MENU)
+                pause_menu = setup_pause_menu(self.game.context)
+                self.menu_manager.set_menu(pause_menu)
+                self.setup_menu_mode()
+            case MenuState.GAME:
+                self.setup_game_mode()
+            case MenuState.QUIT:
+                self.quit()
+
+    def quit(self):
+        if self.menu_stack:
+            self.menu_stack.pop()
+            if self.menu_stack:
+                self.state_change_event(self.menu_stack[-1])
+            else:
+                self.state_change_event(MenuState.MAIN_MENU)
+                pyxel.quit()
+        else:
+            pyxel.quit()
+
+    def setup_menu_mode(self):
+        self.setup_menu_controller()
+        self.current_update = self.menu_manager.update
+        self.current_draw = self.menu_manager.draw
+
+    def setup_game_mode(self):
+
+        if self.menu_manager.menu_data.menu_type == MenuState.MAIN_MENU:
+            self.game = None
+            # fresh load
+        self.menu_stack.append(MenuState.GAME)
+        if not self.game:
+            pyxel.stop()
+            # stop music
+            if self.player_data:
+                self.game = Game(self.top_bus, player_data=self.player_data)
+            else:
+                self.game = Game(self.top_bus)
+            self.menu_manager.context = self.game.context
+            self.menu_manager.game = self.game
+        self.current_update = self.game.update
+        self.current_draw = self.game.draw
+        # need to make this a last played music type of thing, do that later
+        self.setup_game_controller()
+
+    def notify_event(self, event):
+        match event:
+            case StateChangeEvent():
+                self.state_change_event(event.new_state)
+
+    def notify_command(self, command):
+        match command:
+            case SetMainCharacterCommand():
+                if self.game:
+                    self.game.context.data_context.player_data = command.entity_data
+                self.player_data = command.entity_data
 
     def run(self):
         self.running = True
-        self.game = Game()
-        print("Starting game loop...")
+
         pyxel.run(self.update, self.draw)
 
 
     def update(self):
-        self.game.update()
+        self.controller.update()
+        self.current_update()
 
     def draw(self):
         # would actually draw the current active state, game for now
         pyxel.cls(0)
-        self.game.draw()
+        self.current_draw()
 
+
+    def setup_menu_controller(self):
+        recents = self.controller.recent_keys.copy()
+        # prevent losing recent commands when switching controllers
+        self.controller = MenuController(self.top_bus)
+        self.controller.recent_keys = recents
+
+    def setup_game_controller(self):
+        recents = self.controller.recent_keys.copy()
+        self.controller = GameController(self.top_bus)
+        self.controller.recent_keys = recents
 
 app = App()
 app.run()

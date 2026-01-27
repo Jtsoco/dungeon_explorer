@@ -1,19 +1,21 @@
 # basic entity data
-from enums.entity_enums import MovementState as MS, DirectionState as DS, ActionState as AS, EntityType as ET, EntityCategory as EC, SimpleAIState as SAIS
+from enums.entity_enums import MovementState as MS, DirectionState as DS, ActionState as AS, EntityType as ET, EntityCategory as EC,SimpleAIState as SAIS, InventoryCategory as IC
 # make an enemy type enum, and use composition for enemy behaviors/ things later
 from entity.animation_data import AnimationData
+from shared_components.rect import Rect
 
 class EntityData():
     def __init__(self,
                  position: list = [0, 0],
-                 w_h: tuple = (8, 8), animation_data=AnimationData(), weapon_data = None, entity_type=ET.KNIGHT, entity_category=EC.GROUND, speed=1, cell_pos=(0,0), player=False, health=100, touch_damage=0, knockback=(1.5, 1)):
+                 w_h: tuple = (8, 8), animation_data=AnimationData(), weapon_data = None, entity_type=ET.KNIGHT, entity_category=EC.GROUND, speed=1, cell_pos=(0,0), player=False, health=100, touch_damage=0, knockback=(.1, .1),shield_data = None):
         self.health = health
+        self.max_health = health
         self.player = player
         self.position = position  # (x, y)
         self.w_h = w_h  # (width, height)
         self.entity_type = entity_type
         self.entity_category = entity_category  # whether the entity is affected by gravity or not
-
+        self.rect = Rect(w_h[0], w_h[1], position=position)
         self.secondary_momentum = [0,0]
 
         self.animation_data = animation_data
@@ -22,6 +24,8 @@ class EntityData():
         self.action_state = AS.NONE
 
         self.weapon = weapon_data
+        self.shield = shield_data
+
 
         self.velocity = [0, 0]  # (x_velocity, y_velocity)
 
@@ -42,3 +46,26 @@ class EntityData():
         self.touch_damage = touch_damage
         self.knockback = knockback
         self.boss = False
+        # will have a powerup states dictionary to keep track of active powerups, based on enum
+
+        self.power_ups = {}
+        self.powerup_reward = None
+        # for enemies that give powerups when defeated
+
+
+        self.inventory = {
+            IC.WEAPONS: [self.weapon] if self.weapon else [],
+            IC.SHIELDS: [self.shield] if self.shield else [],
+            IC.ITEMS: []
+        }
+
+    def weapon_active(self):
+        return self.weapon is not None and self.weapon.active
+
+    def shield_active(self):
+        return self.shield is not None and self.shield.active
+
+    def add_weapon(self, weapon):
+        self.inventory[IC.WEAPONS].append(weapon)
+    def add_shield(self, shield):
+        self.inventory[IC.SHIELDS].append(shield)

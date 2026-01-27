@@ -1,11 +1,18 @@
-from enums.entity_enums import MovementState as MS, ActionState as AS, DirectionState as DS, InputEnums as IE
-from events_commands.events import InputEvent, StartedFallingEvent, LandedEvent, StateChangedEvent, AttackFinishedEvent
-from events_commands.commands import MoveCommand, JumpCommand, AttackCommand
+from enums.entity_enums import MovementState as MS, ActionState as AS, DirectionState as DS, InputEnums as IE, PowerUpStates as PUS, SHIELD_ACTION_STATE as SAS
+from events_commands.events import InputEvent, StartedFallingEvent, LandedEvent, StateChangedEvent, AttackFinishedEvent, BlockFinishedEvent, ActionFailedEvent
+from events_commands.commands import MoveCommand, JumpCommand, AttackCommand, EffectCommand, SoundCommand, EndBlockCommand, StartBlockCommand, BreakBlockCommand, MusicCommand
+from audio.sound_enums import SoundEnum
+from enums.effects_enums import ParticleEffectType as PET, EffectType
 class DefaultStateMachine():
-    def __init__(self):
+    def __init__(self, bus, local_bus):
+        self.bus = bus
         self.events = []
-
+        self.local_bus = local_bus
     # in here is the logic to determine what the next state is based on the previous
+
+    def music_input(self, data, music_enum):
+        # this is here so controllers can request music changes
+        self.bus.send_command(MusicCommand(music_enum=music_enum, loop=True, priority=1))
 
     def input_events(self, data, input_events):
         # will it set the data to hold state of moving/idle, or let something else handle that?
@@ -13,47 +20,65 @@ class DefaultStateMachine():
         # then again it only gets the input events once, need to think about this more
         last_states = [data.movement_state, data.action_state, data.direction_state]
 
-        return_events = []
-        return_commands = []
-        return_items = (return_events, return_commands)
         for event in input_events:
             match event.input_type:
                 case IE.MOVE:
-                    command = self.set_walking(data, event.direction)
-                    return_commands.append(command)
+                    self.set_walking(data, event.direction)
                 case IE.STOP_MOVE:
-                    command = self.stop_move(data)
-                    return_commands.append(command)
+                    self.stop_move(data)
                 case IE.JUMP:
-                    command = self.jump_input(data)
-                    if command:
-                        return_commands.append(command)
+                    self.jump_input(data)
                 case IE.ATTACK:
-                    command = self.attack_input(data)
-                    if command:
-                        return_commands.append(command)
+                    self.attack_input(data)
+                case IE.BLOCK:
+                    self.block_input(data)
+                case IE.STOP_BLOCK:
+                    self.stop_block_input(data)
+                case IE.MUSIC:
+                    self.music_input(data, event.music_enum)
+
 
         new_states = [data.movement_state, data.action_state, data.direction_state]
         if new_states != last_states:
-            return_events.append(StateChangedEvent())
-        return return_items
+            self.local_bus.send_event(StateChangedEvent())
+
+    def block_input(self, data):
+        match data.action_state:
+            case AS.NONE:
+                data.action_state = AS.DEFENDING
+                self.local_bus.send_command(StartBlockCommand())
+
+    def stop_block_input(self, data):
+        match data.action_state:
+            case AS.DEFENDING:
+                self.local_bus.send_command(EndBlockCommand())
 
     def attack_input(self, data):
         match data.action_state:
             case AS.NONE:
                 data.action_state = AS.ATTACKING
-                return AttackCommand()
-            case _:
-                return None
+                self.local_bus.send_command(AttackCommand())
 
     def jump_input(self, data):
         match data.movement_state:
             case MS.IDLE | MS.WALKING:
                 data.movement_state = MS.JUMPING
-                return JumpCommand()
+                self.local_bus.send_command(JumpCommand())
+                self.bus.send_command(SoundCommand(sound_enum=SoundEnum.JUMP))  # JUMP sound
             case MS.JUMPING | MS.FALLING:
-                # already jumping or falling, can't jump again
-                return None
+                if self.can_double_jump(data):
+                    data.movement_state = MS.JUMPING
+                    self.local_bus.send_command(JumpCommand())
+                    self.bus.send_command(EffectCommand(pos=data.rect.position))
+                    self.bus.send_command(SoundCommand(sound_enum=SoundEnum.JUMP))  # LAND sound on double jump
+
+    def can_double_jump(self, data):
+        if PUS.DOUBLE_JUMP in data.power_ups:
+            if data.power_ups[PUS.DOUBLE_JUMP]:
+                data.power_ups[PUS.DOUBLE_JUMP] = False  # mark as used
+                return True
+
+        return False
 
     def set_walking(self, data, event_type):
         # this will eventually decide
@@ -62,13 +87,13 @@ class DefaultStateMachine():
                 data.movement_state = MS.WALKING
         # event type is DS.LEFT or DS.RIGHT
         data.direction_state = event_type
-        return MoveCommand(event_type)
+        self.local_bus.send_command(MoveCommand(event_type))
 
     def stop_move(self, data):
         match data.movement_state:
             case MS.WALKING:
                 data.movement_state = MS.IDLE
-        return MoveCommand(DS.HALT)
+        self.local_bus.send_command(MoveCommand(DS.HALT))
 
     def state_updates(self, data, updates):
         last_states = [data.movement_state, data.action_state, data.direction_state]
@@ -77,9 +102,29 @@ class DefaultStateMachine():
                 case StartedFallingEvent():
                     data.movement_state = MS.FALLING
                 case LandedEvent():
-                    data.movement_state = MS.IDLE
+                    self.landed_update(data)
+                    if PUS.DOUBLE_JUMP in data.power_ups:
+                        data.power_ups[PUS.DOUBLE_JUMP] = True  # reset double jump on land
+                    if data.rect.height > 8:
+                        additional_height = 8
+                    else:
+                        additional_height = 0
+                    self.bus.send_command(EffectCommand(pos=data.rect.position, sub_type=PET.LAND_DUST, effect_type=EffectType.PARTICLE, additional_height=additional_height))
+                    self.bus.send_command(SoundCommand(sound_enum=SoundEnum.LAND))  # LAND sound
                 case AttackFinishedEvent():
                     data.action_state = AS.NONE
+                case BlockFinishedEvent():
+                    data.action_state = AS.NONE
+                case ActionFailedEvent():
+                    data.action_state = AS.NONE
         new_states = [data.movement_state, data.action_state, data.direction_state]
+        # events, commands = [], []
         if new_states != last_states:
-            return StateChangedEvent()
+            self.local_bus.send_event(StateChangedEvent())
+
+    def landed_update(self, data):
+        # if it's not 0, then they're walking
+        if not data.velocity[0]:
+            data.movement_state = MS.IDLE
+        else:
+            data.movement_state = MS.WALKING

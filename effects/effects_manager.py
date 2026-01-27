@@ -1,0 +1,105 @@
+# this class manages effects/visuals not tied to an entity, but that exist in the world without a solid interactable entity
+# the goals are to manage effects like particles, death smoke animations, etc
+# it gets events, creates effects based on them, updates them, removes them when finished, and returns current effects to draw when requested
+# it can also send out events tied to the effects if needed later
+# these effects should be temporary in nature, and not persistent world objects.
+# if a visual effect must be permanent, it should be tied to the cell or entity system instead
+
+from animations.effects_registry import EFFECTS_REGISTRY, DEATH_ANIMATION_REGISTRY
+
+from enums.effects_enums import EffectType, ParticleEffectType, DEATH_ANIMATION_TYPE
+
+from events_commands.events import DeathEvent as Death
+from events_commands.commands import EffectCommand
+from effects.effects import Effect
+from base_manager import BaseManager
+
+class EffectsManager(BaseManager):
+    def __init__(self, context=None):
+        super().__init__(context=context)
+        self.active_effects = []
+
+    def setup_bus(self):
+        self.context.bus.register_command_listener(EffectCommand, self)
+        self.context.bus.register_event_listener(Death, self)
+
+
+    def handle_updates(self):
+        to_remove = []
+        for effect in self.active_effects:
+            self.update_effect(effect)
+            if effect.finished:
+                to_remove.append(effect)
+        for effect in to_remove:
+            self.active_effects.remove(effect)
+        # remove finished effects
+
+        # eventually may have events to return based on effects finishing, for now just keep it simple
+        return []
+
+
+
+    def handle_event(self, event):
+        # based on event type, create new effects
+        match event:
+            case Death():
+                self.create_death_effect(event)
+
+    def handle_command(self, command):
+        match command:
+            case EffectCommand():
+                self.create_effect(command)
+
+    def update_effect(self, effect):
+        # effects store data, they don't have the logic in them for updates, that's the managers job
+        current_frame = effect.get_current_animation_frame()
+        # if moved to the next frame, update frame index. if 0 again, animation is done, mark finished
+        effect.frame_timer += 1
+        if self.next_frame(current_frame.duration, effect):
+            if effect.current_frame == 0:
+                effect.finished = True
+
+    def next_frame(self, frame_duration, data):
+        if data.frame_timer >= frame_duration:
+            data.current_frame += 1
+            data.frame_timer = 0
+            self.set_current_frame_index(data)
+            return True
+        return False
+
+    def set_current_frame_index(self, data):
+        data.current_frame %= len(data.animation_frames)
+
+    def get_effects(self):
+        return self.active_effects
+
+    def create_death_effect(self, event):
+        # for now just a simple placeholder effect, but will differ based on entity type later
+        entity = event.entity
+        effect_position = entity.rect.position
+        effect_type = EffectType.DEATH_ANIMATION
+        if entity.player:
+            sub_type = DEATH_ANIMATION_TYPE.PLAYER_HEART_SHATTER
+        else:
+            sub_type = DEATH_ANIMATION_TYPE.DEFAULT_DEATH
+        animation = EFFECTS_REGISTRY[effect_type][sub_type]
+        new_effect = Effect(effect_type, effect_position, animation)
+        self.active_effects.append(new_effect)
+
+
+    def create_effect(self, command):
+        effect_position = command.position
+        sub_type = command.sub_type
+        main_type = command.effect_type
+        animation = self.get_animation(main_type, sub_type)
+        # it should all be there, but for now to prevent nonexistent key errors, check
+        if animation:
+            new_effect = Effect(main_type, effect_position, animation, additional_height = command.additional_height)
+            self.active_effects.append(new_effect)
+
+    def get_animation(self, effect_type, sub_type):
+        main = EFFECTS_REGISTRY.get(effect_type, None)
+        if main:
+            animation = main.get(sub_type, None)
+            return animation
+        return None

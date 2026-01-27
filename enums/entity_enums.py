@@ -24,6 +24,10 @@ class InputEnums(Enum):
     JUMP = auto()
     ATTACK = auto()
     STOP_MOVE = auto()
+    BLOCK = auto()
+    STOP_BLOCK = auto()
+    SOUND = auto()
+    MUSIC = auto()
 
 class AttackType(Enum):
     MELEE = auto()
@@ -36,12 +40,28 @@ class WeaponActionState(Enum):
     DASHATTACK = auto()
     AIRATTACK = auto()
     DEFAULT = auto()
+    INVENTORY = auto()
 
 class EntityType(Enum):
     PLAYER = (3, 10)
     SKULL = (3, 15)
     KNIGHT = (3, 16)
     WINGED_KNIGHT = (3, 23)
+    # this spawn won't be used, just for the player costume
+    PLAYER_RONIN = (3, 30)
+    DARK_LORD = (3, 24)
+
+class WeaponSpawns(Enum):
+    FIRE_BLAST = (3,26)
+    GLAIVE = (3,27)
+
+class ShieldSpawns(Enum):
+    DAGGER = (3, 11)
+    TOWER = (3, 12)
+
+class ItemSpawns(Enum):
+    HEALTH = (3, 13)
+
 
 class EntityCategory(Enum):
     FLYING = auto()
@@ -63,6 +83,9 @@ class WeaponCategory(Enum):
     STAFF = auto()
     AXE = auto()
     GLAIVE = auto()
+    KATANA = auto()
+    ENEMY_SWORD = auto()
+    FIRE_BLAST = auto()
 
 class BoundaryType(Enum):
     X = (3, 8)
@@ -73,3 +96,44 @@ class SimpleAIState(Enum):
     CHASE = auto()
     ATTACK = auto()
     FLEE = auto()
+    JUMP_ATTACK = auto()
+
+class PowerUpStates(Enum):
+    DOUBLE_JUMP = auto()
+
+class SHIELD_ACTION_STATE(Enum):
+    IDLE = auto()
+    TO_BLOCK = auto()
+    BLOCK = auto()
+    DEFLECT = auto()
+    TO_REST = auto()
+    BROKEN = auto()
+    INVENTORY = auto()
+
+class SHIELD_CATEGORY(Enum):
+    WOODEN_SHIELD = auto()
+    IRON_SHIELD = auto()
+    MAGIC_SHIELD = auto()
+    BLADE = auto()
+    DAGGER = auto()
+    TOWER = auto()
+
+
+class ItemType(Enum):
+    HEALTH = auto()
+    MANA = auto()
+    WEAPON = auto()
+    SHIELD = auto()
+    POWERUP = auto()
+
+class ItemAction(Enum):
+    PICKUP = auto()
+    DROP = auto()
+    USE = auto()
+    EQUIP = auto()
+    UNEQUIP = auto()
+
+class InventoryCategory(Enum):
+    WEAPONS = auto()
+    SHIELDS = auto()
+    ITEMS = auto()

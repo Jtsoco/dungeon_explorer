@@ -33,7 +33,7 @@ def spawn_player(position: tuple = (0, 0), p_type=ET.PLAYER) -> EntityData:
 
     }
     player_data = EntityData(**player_setup)
-    player_data.power_ups[PUS.DOUBLE_JUMP] = True  # give player double jump powerup for testing
+    # player_data.power_ups[PUS.DOUBLE_JUMP] = True  # give player double jump powerup for testing
     # new weapon test
     return player_data
 

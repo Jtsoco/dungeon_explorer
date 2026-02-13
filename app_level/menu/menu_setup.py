@@ -9,7 +9,7 @@ menu_registry = {
     MenuState.MAIN_MENU: [
         ("Start Game", MenuState.GAME),
 
-        ("Options", MenuState.OPTIONS),
+        # ("Options", MenuState.OPTIONS),
     ],
     MenuState.PAUSE_MENU: [
         ("Resume", MenuState.GAME),
@@ -83,7 +83,7 @@ def setup_pause_menu(context=None):
 
         position_y += 16
     new_component = MenuComponent(pos=(position_x, position_y), x_offset=0, y_offset=16)
-    new_option = ("Dungeon Explorer", MenuState.MAIN_MENU)
+    new_option = ("Main Menu", MenuState.MAIN_MENU)
     menu_option = MenuOption(text=new_option[0], position=(position_x, position_y + 16), action=new_option[1])
     new_component.add_option(menu_option)
     pause_menu.add_component(new_component)

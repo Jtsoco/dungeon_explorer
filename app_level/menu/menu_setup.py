@@ -48,11 +48,11 @@ def setup_main_menu():
 
     main_menu.add_component(character_select_component)
 
-    new_component = MenuComponent(pos=(24, position_y), x_offset=0, y_offset=16)
-    new_option = ("Quit", MenuState.QUIT)
-    menu_option = MenuOption(text=new_option[0], position=(position_x, position_y + 16), action=new_option[1])
-    new_component.add_option(menu_option)
-    main_menu.add_component(new_component)
+    # new_component = MenuComponent(pos=(24, position_y), x_offset=0, y_offset=16)
+    # new_option = ("Quit", MenuState.QUIT)
+    # menu_option = MenuOption(text=new_option[0], position=(position_x, position_y + 16), action=new_option[1])
+    # new_component.add_option(menu_option)
+    # main_menu.add_component(new_component)
 
     return main_menu
 

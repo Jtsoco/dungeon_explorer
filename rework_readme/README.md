@@ -79,3 +79,4 @@ Health drops from enemies (30% chance), along with weapons, shields, and health 
 Tech Stack
 
 - Python + [Pyxel](https://github.com/kitao/pyxel) - retro game engine, 128x128 resolution, 16 colors, 4 sound channels
+- All assets were created by me using pyxels built in editor, saved in the dungeon_explorer_assets.pyxres resource file.

@@ -81,6 +81,8 @@ Tech Stack
 - Python + [Pyxel](https://github.com/kitao/pyxel) - retro game engine, 128x128 resolution, 16 colors, 4 sound channels
 - All assets were created by me using pyxels built in editor, saved in the dungeon_explorer_assets.pyxres resource file.
 
+Managers communicate through an event/command bus, entities don't communicate directly. Each enemy type has its own AI controller with states like PATROL, CHASE, ATTACK, JUMP_ATTACK.
+
 Game Update Loop
 
 ```mermaid
@@ -121,8 +123,10 @@ flowchart TD
 
 ```
 
+Entity Update Loop
 
 ```mermaid
+
 flowchart TD
     GAMEBUS["Game Loop Bus"]
     UE["update_entity(entity)"] --> R["reset_local()"]
@@ -147,3 +151,21 @@ flowchart TD
         LCHK -- no --> END("exit loop")
     end
 ```
+
+
+Extending the Game
+
+| Want to add... | What to touch |
+| -------------- | ------------- |
+| New Enemy | Create a controller in entity/controllers, register in entity_setup.py, add case with new entity enum type to use entity_setup function in cell_manager load_objects, add a spawnpoint to the map in the map editor |
+| New weapon | Add information to attack/weapon_data.py + animations/attack_registry.py if a map pickup add to cell_manager load method, spawn item with weapon data. |
+| New Shield | Add to defense/shield_data.py + animations/shield_registry.py if a map pickup add to cell_manager load method, spawn item with shield data. |
+| New Item | Add to items/item_registry.py wire into cell_manager load method, add any necessary additions to item_manager |
+
+## Roadmap
+
+- [ ] formalize entity AI system for easy mix and match of behaviors
+- [ ] Full Inventory Menu
+- [ ] Additional enemy types
+- [ ] Camera V2 using transitions
+- [ ] Options menu for sound adjust

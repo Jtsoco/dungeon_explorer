@@ -80,3 +80,70 @@ Tech Stack
 
 - Python + [Pyxel](https://github.com/kitao/pyxel) - retro game engine, 128x128 resolution, 16 colors, 4 sound channels
 - All assets were created by me using pyxels built in editor, saved in the dungeon_explorer_assets.pyxres resource file.
+
+Game Update Loop
+
+```mermaid
+flowchart TD
+    Start([start frame]) --> Entities["Entity Manager: update all entities"]
+    Entities --> Collision["collision_manager.update()"]
+    Collision --> Effects["effects_manager.update()"]
+    Effects --> Damage["damage_manager.update()"]
+    Damage --> Cell["cell_manager.update()"]
+    Cell --> EntityPost["entity_manager.update()"]
+    EntityPost --> HUD["hud_manager.update()"]
+    HUD --> Sound["sound_effects_manager.update()"]
+    Sound --> Camera["scene_manager.camera.update()"]
+    Camera --> LoopCheck{still running?}
+    LoopCheck -- yes --> Start
+    LoopCheck -- no --> End([end frame])
+
+    subgraph BusGroup[" "]
+        Bus{{"Game Level event / command bus (routes to listeners)"}}
+    end
+
+    %% each updater may post events/commands to the bus
+    Entities -.-> Bus
+    Collision -.-> Bus
+    Effects -.-> Bus
+    Damage -.-> Bus
+    Cell -.-> Bus
+
+    %% bus fans events out to interested systems
+    Bus -->|dispatch| EntityManager
+    Bus -->|dispatch| CellManager
+    Bus -->|dispatch| EffectsManager
+    Bus -->|dispatch| HUDManager
+    Bus -->|dispatch| SoundEffectsManager
+    Bus -->|dispatch| SceneManager
+
+
+
+```
+
+
+```mermaid
+flowchart TD
+    GAMEBUS["Game Loop Bus"]
+    UE["update_entity(entity)"] --> R["reset_local()"]
+    R --> I["get input (controller + state machine)"]
+    I --> A["animation_manager.update(entity)"]
+    A --> P["process_loop(entity)"]
+    P --> PHY["physics_manager.update(entity)"]
+    PHY --> ATK["attack_manager.update(entity)"]
+    ATK --> | Sound Commands and Events | GAMEBUS
+    ATK --> DEF["defense_manager.update(entity)"]
+    DEF --> HS["handle_state_updates(entity)"]
+    DEF --> | Sound Commands and Events | GAMEBUS
+    HS --> EXIT["End Loop"]
+
+
+    subgraph P["process_loop(entity)"]
+        LCHK{"local_events or commands?"}
+        HANDLE["Handle Event/Command"]
+        LCHK -- yes --> EVT["pop event"] --> HANDLE
+        LCHK -- yes --> CMD["pop command"] --> HANDLE
+        HANDLE --> LCHK
+        LCHK -- no --> END("exit loop")
+    end
+```

@@ -11,15 +11,15 @@ class PlayerController():
         new_recents = set()
         rl_movement = set()
         events = []
-        if pyxel.btn(pyxel.KEY_LEFT):
+        if pyxel.btn(pyxel.KEY_LEFT) or pyxel.btn(pyxel.GAMEPAD1_BUTTON_DPAD_LEFT):
             rl_movement.add(InputEvent(IE.MOVE, direction=DS.LEFT))
-        if pyxel.btn(pyxel.KEY_RIGHT):
+        if pyxel.btn(pyxel.KEY_RIGHT) or pyxel.btn(pyxel.GAMEPAD1_BUTTON_DPAD_RIGHT):
             rl_movement.add(InputEvent(IE.MOVE, direction=DS.RIGHT))
-        if pyxel.btn(pyxel.KEY_SPACE):
+        if pyxel.btn(pyxel.KEY_SPACE) or pyxel.btn(pyxel.GAMEPAD1_BUTTON_A) or pyxel.btn(pyxel.GAMEPAD1_BUTTON_B):
             new_recents.add(InputEvent(IE.JUMP))
-        if pyxel.btn(pyxel.KEY_D):
+        if pyxel.btn(pyxel.KEY_D) or pyxel.btn(pyxel.GAMEPAD1_BUTTON_X):
             new_recents.add(InputEvent(IE.ATTACK))
-        if pyxel.btn(pyxel.KEY_S):
+        if pyxel.btn(pyxel.KEY_S) or pyxel.btn(pyxel.GAMEPAD1_BUTTON_Y):
             new_recents.add(InputEvent(IE.BLOCK))
         else:
             new_recents.add(InputEvent(IE.STOP_BLOCK))

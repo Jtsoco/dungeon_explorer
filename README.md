@@ -169,3 +169,4 @@ Extending the Game
 - [ ] Additional enemy types
 - [ ] Camera V2 using transitions
 - [ ] Options menu for sound adjust
+- [ ] Add gamepad support (test html gamepad with ipad later)

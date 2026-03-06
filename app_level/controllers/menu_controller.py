@@ -18,17 +18,17 @@ class MenuController(AppController):
         # when backspace pressed, send a go back command
 
         # for later, when right or left pressed, send respective commands
-        if pyxel.btn(pyxel.KEY_RETURN):
+        if pyxel.btn(pyxel.KEY_RETURN) or pyxel.btn(pyxel.GAMEPAD1_BUTTON_A):
             recents.add(pyxel.KEY_RETURN)
-        if pyxel.btn(pyxel.KEY_UP):
+        if pyxel.btn(pyxel.KEY_UP) or pyxel.btn(pyxel.GAMEPAD1_BUTTON_DPAD_UP):
             recents.add(pyxel.KEY_UP)
-        if pyxel.btn(pyxel.KEY_DOWN):
+        if pyxel.btn(pyxel.KEY_DOWN) or pyxel.btn(pyxel.GAMEPAD1_BUTTON_DPAD_DOWN):
             recents.add(pyxel.KEY_DOWN)
-        if pyxel.btn(pyxel.KEY_LEFT):
+        if pyxel.btn(pyxel.KEY_LEFT) or pyxel.btn(pyxel.GAMEPAD1_BUTTON_DPAD_LEFT):
             recents.add(pyxel.KEY_LEFT)
-        if pyxel.btn(pyxel.KEY_RIGHT):
+        if pyxel.btn(pyxel.KEY_RIGHT) or pyxel.btn(pyxel.GAMEPAD1_BUTTON_DPAD_RIGHT):
             recents.add(pyxel.KEY_RIGHT)
-        if pyxel.btn(pyxel.KEY_TAB):
+        if pyxel.btn(pyxel.KEY_TAB) or pyxel.btn(pyxel.GAMEPAD1_BUTTON_B):
             recents.add(pyxel.KEY_TAB)
 
         return recents

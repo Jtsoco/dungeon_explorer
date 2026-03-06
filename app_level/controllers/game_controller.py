@@ -24,7 +24,7 @@ class GameController(AppController):
     def handle_inputs(self):
         recents = set()
         # handle game specific inputs here
-        if pyxel.btn(pyxel.KEY_TAB):
+        if pyxel.btn(pyxel.KEY_TAB) or pyxel.btn(pyxel.GAMEPAD1_BUTTON_START):
             recents.add(pyxel.KEY_TAB)
         return recents
 

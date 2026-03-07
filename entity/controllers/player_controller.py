@@ -8,6 +8,7 @@ class PlayerController():
         self.recent_movement = set()
 
     def poll_events(self):
+        print('recent movements before polling:', self.recent_movement)
         new_recents = set()
         rl_movement = set()
         events = []
@@ -15,11 +16,11 @@ class PlayerController():
             rl_movement.add(InputEvent(IE.MOVE, direction=DS.LEFT))
         if pyxel.btn(pyxel.KEY_RIGHT) or pyxel.btn(pyxel.GAMEPAD1_BUTTON_DPAD_RIGHT):
             rl_movement.add(InputEvent(IE.MOVE, direction=DS.RIGHT))
-        if pyxel.btn(pyxel.KEY_SPACE) or pyxel.btn(pyxel.GAMEPAD1_BUTTON_A) or pyxel.btn(pyxel.GAMEPAD1_BUTTON_B):
+        if pyxel.btn(pyxel.KEY_SPACE) or pyxel.btn(pyxel.GAMEPAD1_BUTTON_B):
             new_recents.add(InputEvent(IE.JUMP))
-        if pyxel.btn(pyxel.KEY_D) or pyxel.btn(pyxel.GAMEPAD1_BUTTON_X):
+        if pyxel.btn(pyxel.KEY_D) or pyxel.btn(pyxel.GAMEPAD1_BUTTON_A):
             new_recents.add(InputEvent(IE.ATTACK))
-        if pyxel.btn(pyxel.KEY_S) or pyxel.btn(pyxel.GAMEPAD1_BUTTON_Y):
+        if pyxel.btn(pyxel.KEY_S) or pyxel.btn(pyxel.GAMEPAD1_BUTTON_X):
             new_recents.add(InputEvent(IE.BLOCK))
         else:
             new_recents.add(InputEvent(IE.STOP_BLOCK))

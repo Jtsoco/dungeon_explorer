@@ -19,7 +19,8 @@ from app_level.app_enums import MenuState
 from app_level.menu.menu_setup import setup_main_menu, setup_pause_menu
 from app_level.controllers.menu_controller import MenuController
 from app_level.controllers.game_controller import GameController
-
+from events_commands.events import InputEvent
+from enums.entity_enums import InputEnums as IE, EntityType as ET
 import pyxel
 TRANSPARENT_COLOR = 2
 from game import Game
@@ -73,6 +74,8 @@ class App():
                 if self.menu_stack[-1] == MenuState.GAME:
                     # coming from game, possibly game over, need to add enter to controller as quick fix
                     self.controller.recent_keys.add(pyxel.KEY_RETURN)
+                    # add attack key, as it's assigned to B which is used for quick menu navigation on gamepad, adjust this later so gamepad mode is a thing and is adjusted for
+                    self.controller.recent_keys.add(pyxel.KEY_S)
 
 
                     # rethink game over menu later, but for now it's just quickly running in game to have something now, plus it's very little code so not a big deal
@@ -91,6 +94,7 @@ class App():
                 self.setup_menu_mode()
             case MenuState.GAME:
                 self.setup_game_mode()
+                self.quickPlayerControllerAdd()
             case MenuState.QUIT:
                 self.quit()
 
@@ -163,11 +167,29 @@ class App():
         # prevent losing recent commands when switching controllers
         self.controller = MenuController(self.top_bus)
         self.controller.recent_keys = recents
+        self.quickKeyAdd()
 
     def setup_game_controller(self):
         recents = self.controller.recent_keys.copy()
         self.controller = GameController(self.top_bus)
         self.controller.recent_keys = recents
+        self.quickKeyAdd()
+        self.quickPlayerControllerAdd()
+
+    def quickKeyAdd(self):
+        """
+        Quick fix for gamepad mode, as the gamepad buttons don't map directly in functions like the keyboard, ie game controller gamepad button may have a different use in the menu than it's counterpart during the game, and this prevents something like jumping when leaving the inventory screen for the player
+        """
+        self.controller.recent_keys.add(pyxel.KEY_TAB)
+        self.controller.recent_keys.add(pyxel.KEY_RETURN)
+        self.controller.recent_keys.add(pyxel.KEY_S)
+        self.controller.recent_keys.add(pyxel.KEY_SPACE)
+
+    def quickPlayerControllerAdd(self):
+        controller = self.game.entity_manager.controllers.get(ET.PLAYER, None)
+        if controller:
+            self.game.entity_manager.controllers[ET.PLAYER].recent_movement.add((IE.JUMP, None))
+            self.game.entity_manager.controllers[ET.PLAYER].recent_movement.add((IE.ATTACK, None))
 
 app = App()
 app.run()

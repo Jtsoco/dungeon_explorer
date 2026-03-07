@@ -186,18 +186,18 @@ class Game():
     def game_over_draw(self):
         self.regular_draw()
         message = "Game Over!"
-        position = (pyxel.width // 2 - 20, pyxel.height // 4)
+        position = (pyxel.width // 3 - 20, pyxel.height // 4)
 
         # pyxel.rect(position[0]-8, position[1]-8, pyxel.width // 2, 32, 0)
         shadow_text(position, message, color=0)
         pyxel.text(position[0], position[1], message, 7)
-        message = "Press Enter"
+        message = "Press Enter or Select"
         position = (position[0], pyxel.height // 3)
         shadow_text(position, message, color=0)
         pyxel.text(position[0], position[1], message, 7)
 
         # this is here, because putting it in update caused drawing issues, where the hole screen would go black and stay that way, so until i investigate the bug this will be the hotfix
-        if pyxel.btnp(pyxel.KEY_RETURN):
+        if pyxel.btnp(pyxel.KEY_RETURN) or pyxel.btn(pyxel.GAMEPAD1_BUTTON_BACK):
             # send event to app level to switch to game over menu
             self.top_bus.send_event(AppStateChangeEvent(MenuState.MAIN_MENU))
 
@@ -205,18 +205,18 @@ class Game():
         # TODO consolidate game over and clear draw to same type of thing, just different message. Was just easier to copy for now
         self.regular_draw()
         message = "Game Clear!"
-        position = (pyxel.width // 2 - 24, pyxel.height // 4)
+        position = (pyxel.width // 3 - 24, pyxel.height // 4)
 
         # pyxel.rect(position[0]-8, position[1]-8, pyxel.width // 2, 32, 0)
         shadow_text(position, message, color=0)
         pyxel.text(position[0], position[1], message, 7)
-        message = "Press Enter"
+        message = "Press Enter or Select"
         position = (position[0], pyxel.height // 3)
         shadow_text(position, message, color=0)
         pyxel.text(position[0], position[1], message, 7)
 
         # this is here, because putting it in update caused drawing issues, where the hole screen would go black and stay that way, so until i investigate the bug this will be the hotfix
-        if pyxel.btnp(pyxel.KEY_RETURN):
+        if pyxel.btnp(pyxel.KEY_RETURN) or pyxel.btn(pyxel.GAMEPAD1_BUTTON_BACK):
             # send event to app level to switch to game over menu
             self.top_bus.send_event(AppStateChangeEvent(MenuState.MAIN_MENU))
 

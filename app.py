@@ -25,8 +25,10 @@ TRANSPARENT_COLOR = 2
 from game import Game
 from datetime import datetime
 
+
 class App():
     def __init__(self):
+
         pyxel.init(128, 128, title="Dungeon Explorer")
         pyxel.load("dungeon_explorer_assets.pyxres")
         # Hide the spawn and border transition tiles

@@ -60,7 +60,8 @@ class MenuManager(BaseManager):
                 self.execute_current_selection()
 
             case MenuCommandTypes.QUIT:
-                self.bus.send_event(StateChangeEvent(new_state=MenuState.QUIT))
+                if self.menu_data.menu_type != MenuState.MAIN_MENU:
+                    self.bus.send_event(StateChangeEvent(new_state=MenuState.QUIT))
             case MenuCommandTypes.TO_MAIN_MENU:
                 self.bus.send_event(StateChangeEvent(new_state=MenuState.MAIN_MENU))
 

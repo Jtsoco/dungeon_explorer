@@ -170,3 +170,6 @@ Extending the Game
 - [ ] Camera V2 using transitions
 - [ ] Options menu for sound adjust
 - [ ] Add gamepad support (test html gamepad with ipad later)
+  - [x] GamePad Works
+  - [x] Quick Fix so that leaving menu doesn't cause player actions
+  - [ ] Long Term fix, reevaluate Player Controller
